@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Логин</title>
+  <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+<div class="login-wrapper">
+  <h1 class="login-header">Логин</h1>
+  <div class="login-window">
+    <form class="login-window" action="/login-web/">
+      <label for="tele-id" class="base-label">Telegram Id</label>
+      <input type="text" id="tele-id" class="base-input" name="telegram_id" placeholder="123456789">
+      {% if error %}
+        {{ error }}
+      {% endif %}
+      <input type="submit" class="base-btn" formmethod="post" value="Логин">
+    </form>
+  </div>
+</div>
+</body>
+</html>

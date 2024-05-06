@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Кабинет</title>
+  <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', path='/css/cabinet.css') }}" rel="stylesheet">
+</head>
+<body>
+  <div class="controls-wrapper">
+    <aside class="control-aside">
+      <h1 class="page-title">Кабинет</h1>
+      <ul class="aside-list">
+        <li class="aside-list-item">
+          <button class="basic-aside-btn" id="add-rout-btn">
+            Добавить маршрут
+          </button>
+        </li>
+        <li class="aside-list-item">
+          <button class="basic-aside-btn" id="show-rout-btn">
+            Управление маршрутами
+          </button>
+        </li>
+        <li class="aside-list-item">
+          <button class="basic-aside-btn" id="add-rout-point-btn">
+            Добавить точку
+          </button>
+        </li>
+        <li class="aside-list-item">
+          <button class="basic-aside-btn" id="show-rout-points-btn">
+            Управление точками
+          </button>
+        </li>
+      </ul>
+    </aside>
+    <section class="main-controls">
+      <div class="form-wrapper" id="add-rout-wrapper">
+        <h1 class="control-tag">Новый маршрут</h1>
+        <form class="base-form" id="add-rout">
+          <label for="rout-name" class="form-label">Название маршрута</label>
+          <input class="form-input" name="rout_name" id="rout-name" placeholder="Земун">
+          <input class="base-btn" type="submit" id="add-rout-submit" value="Добавить">
+        </form>
+      </div>
+      <div class="form-wrapper" id="all-rout-wrapper">
+        <h1 class="control-tag">Все маршруты</h1>
+        <table id="all-rout-table" class="basic-table">
+          <tr class="table-head">
+            <th class="table-cell head">ID</th>
+            <th class="table-cell head">Название маршрута</th>
+            <th class="table-cell head">Управление маршрутом</th>
+          </tr>
+        </table>
+      </div>
+      <div class="form-wrapper" id="add-rout-point-wrapper">
+        <h1 class="control-tag">Новая точка</h1>
+        <form class="base-form" id="add-rout-point">
+          <label for="rout" class="form-label">Для маршрута</label>
+          <select id="rout" class="form-input tall" name="rout_id">
+          </select>
+          <label for="rout-name" class="form-label">Описание</label>
+          <input type="text" class="form-input" name="description" id="rout-point-name" placeholder="Точка на улице X.Y">
+          <label for="rout-point-long" class="form-label">Долгота (первое число координат)</label>
+          <input type="number" step="0.000000001" class="form-input" name="lon" id="rout-point-long" placeholder="44.123">
+          <label for="rout-point-lat" class="form-label">Широта (второе число координат)</label>
+          <input type="number" step="0.000000001" class="form-input" name="lat" id="rout-point-lat" placeholder="20.123">
+          <label for="rout-point-img" class="form-label">Изображения</label>
+          <input type="file" multiple class="form-input tall" name="images" id="rout-point-img" placeholder="">
+          <label for="rout-point-audio" class="form-label">Аудио</label>
+          <input type="file" class="form-input tall" name="audio" id="rout-point-audio" placeholder="">
+          <input class="base-btn" type="submit" id="add-rout-point-submit" value="Добавить">
+        </form>
+      </div>
+    </section>
+  </div>
+</body>
+<script src="{{ url_for('static', path='/js/jquery-3.6.1.min.js') }}"></script>
+<script src="{{ url_for('static', path='/js/form-selector.js') }}"></script>
+<script src="{{ url_for('static', path='/js/forms.js') }}"></script>
+</html>

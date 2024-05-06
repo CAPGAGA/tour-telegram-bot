@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+python-telegram-bot
+pydantic
+sqlalchemy
+databases
+aiosqlite
+requests
+python-multipart
+yookassa
+jinja2
+python-dotenv
