@@ -17,6 +17,8 @@ from sql import database, users, routes, rout_points, admins, keys
 
 import logging
 import sys
+import uuid
+import time
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -152,28 +154,14 @@ async def edit_rout(rout_id: int, rout_name: str) -> dict:
     return {'updated': rout_name}
 
 # get all routs points in selected rout
-@app.get("/routs/{rout_id}")
-async def get_routs_points(rout_id: int) -> list:
-    query = select(rout_points).where(rout_points.columns.rout_id == rout_id)
+@app.get("/rout-points/")
+async def get_routs_points(rout_id: int = None) -> list:
+    if rout_id:
+        query = select(rout_points).where(rout_points.columns.rout_id == rout_id)
+    else:
+        query = select(rout_points)
+
     return await database.fetch_all(query)
-
-# class CustomUploadFile(UploadFile):
-#
-#     def __init__(
-#             self,
-#             filename: str,
-#             content_type: Optional[str] = None,
-#             file: Optional[Union[bytes, str]] = None
-#     ) -> None:
-#         # Check if filename is an empty string
-#         if filename == '':
-#             # If filename is empty, set it to None
-#             filename = None
-#
-#         # Call the constructor of the parent class with modified arguments
-#         super().__init__(filename=filename, content_type=content_type, file=file)
-
-# class CustomFormData(typing)
 
 #add specific point to the rout
 @app.post("/rout_points/")
@@ -205,12 +193,16 @@ async def add_rout_point(rout_id: int, description: str = None, lon: float = Non
                     images = [images]
                 for image in images:
                     contents_i = image.file.read()
-                    with open(MEDIA_DIR+'/images/'+image.filename, 'wb+') as f_i:
+                    abstract_image_name = f"{int(time.time())}_{uuid.uuid4().hex}.jpg"
+                    with open(MEDIA_DIR+'/images/'+abstract_image_name, 'wb+') as f_i:
                         f_i.write(contents_i)
+                    image.filename = abstract_image_name
             if audio:
                 contents_a = audio.file.read()
-                with open(MEDIA_DIR+'/audio/'+audio.filename, 'wb+') as f_a:
+                abstract_audio_name = f"{int(time.time())}_{uuid.uuid4().hex}.mp3"
+                with open(MEDIA_DIR+'/audio/'+abstract_audio_name, 'wb+') as f_a:
                     f_a.write(contents_a)
+                audio.filename = abstract_audio_name
         except Exception as e:
             print(e)
             return {"message": "Error while uploading files"}
@@ -244,6 +236,12 @@ async def add_rout_point(rout_id: int, description: str = None, lon: float = Non
     u_query = update(rout_points).values(next_point=current_point_id).where(rout_points.columns.id == previous_point_id)
     await database.execute(u_query)
     return {'record': 'done'}
+
+@app.delete('/rout-points/{rout_point_id}')
+async def delete_rout_point(rout_point_id: int):
+    query = delete(rout_points).where(rout_points.columns.id == rout_point_id)
+    await database.execute(query)
+    return {'deleted': rout_point_id}
 
 # get starting point
 @app.get("/rout-points-first/{rout_id}/")
@@ -294,6 +292,7 @@ async def activate_user(username:str, key: Optional[str]) -> Response:
 # HTML TEMPLATES
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/media", StaticFiles(directory="media"), name="media")
 
 templates = Jinja2Templates(directory="templates")
 

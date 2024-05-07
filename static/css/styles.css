@@ -77,6 +77,7 @@ body{
     background-color: var(--wenge);
     cursor: pointer;
     margin-top: 0.5rem;
+    font-size: calc(6px + 0.390625vw);
 }
 
 .base-btn:hover{

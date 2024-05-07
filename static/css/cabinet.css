@@ -111,33 +111,33 @@
 
 td, th {padding: 6px;}
 
-.table-head .table-cell:nth-child(1){
+#all-rout-table > tbody .table-head .table-cell:nth-child(1){
     width:10%;
 }
 
-.table-head .table-cell:nth-child(2){
+#all-rout-table > tbody .table-head .table-cell:nth-child(2){
     width: 30%;
 }
 
-.table-head .table-cell:nth-child(3){
+#all-rout-table > tbody .table-head .table-cell:nth-child(3){
     width: 60%;
 }
 
-.table-row:nth-child(odd){
+#all-rout-table > .table-row:nth-child(odd){
     background-color: var(--nyanza-dark);
 }
 
-.table-row .table-cell:nth-child(1){
+#all-rout-table > .table-row .table-cell:nth-child(1){
     width:10%;
     text-align: center;
 }
 
-.table-row .table-cell:nth-child(2){
+#all-rout-table > .table-row .table-cell:nth-child(2){
     width: 30%;
     text-align: center;
 }
 
-.table-row .table-cell:nth-child(3){
+#all-rout-table > .table-row .table-cell:nth-child(3){
     width: 100%;
     text-align: center;
     display: flex;
@@ -149,3 +149,84 @@ td, th {padding: 6px;}
     background-color: red !important;
 }
 
+#all-rout-points-table > tbody .table-head .table-cell:nth-child(1){
+    width: 5%;
+}
+
+#all-rout-points-table > tbody .table-head .table-cell:nth-child(2){
+    width: 10%;
+}
+
+#all-rout-points-table > tbody .table-head .table-cell:nth-child(3){
+    width: 20%;
+}
+
+#all-rout-points-table > tbody .table-head .table-cell:nth-child(4){
+    width: 15%;
+}
+
+#all-rout-points-table > tbody .table-head .table-cell:nth-child(5){
+    width: 15%;
+}
+
+#all-rout-points-table > tbody .table-head .table-cell:nth-child(6){
+    width: 25%;
+}
+
+#all-rout-points-table > tbody .table-head .table-cell:nth-child(7){
+    width: 25%;
+}
+
+#all-rout-points-table > tbody .table-head .table-cell:nth-child(8){
+    width: 15%;
+}
+
+#all-rout-points-table > .table-row .table-cell:nth-child(1){
+    width: 5%;
+}
+
+#all-rout-points-table > .table-row .table-cell:nth-child(2){
+    width: 10%;
+}
+
+#all-rout-points-table > .table-row .table-cell:nth-child(3){
+    width: 20%;
+}
+
+#all-rout-points-table > .table-row .table-cell:nth-child(4){
+    width: 15%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 15%;
+    overflow: hidden;
+}
+
+#all-rout-points-table > .table-row .table-cell:nth-child(5){
+    width: 15%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 15%;
+    overflow: hidden;
+}
+
+#all-rout-points-table > .table-row .table-cell:nth-child(6){
+    width: 25%;
+
+    max-width: 25%;
+    overflow: hidden;
+}
+
+#all-rout-points-table > .table-row .table-cell:nth-child(7){
+    width: 25%;
+
+    max-width: 25%;
+    overflow: hidden;
+}
+
+#all-rout-points-table > .table-row .table-cell:nth-child(8){
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
