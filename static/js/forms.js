@@ -27,6 +27,7 @@ $(document).ready(function(){
         e.preventDefault();
 
         const formData = new FormData();
+        let dataCollected = false;
 
         const rout_id =  $('#rout').find(":selected").val();
         const description = $('#rout-point-name').val();
@@ -37,20 +38,36 @@ $(document).ready(function(){
         const images = $('#rout-point-img').prop('files');
         const audio = $('#rout-point-audio').prop('files');
 
-        formData.append('audio', audio[0]);
-        for (var i =0; i<$('#rout-point-img')[0].files.length; i++) {
-            formData.append('images', $('#rout-point-img').prop('files')[i])
+
+
+
+
+        if (audio.length !== 0) {
+            formData.append('audio', audio[0]);
+            dataCollected = true
         }
+//        else {
+//            formData.append('audio', '')
+//        }
+
+        if (images.length !== 0) {
+            for (var i =0; i<$('#rout-point-img')[0].files.length; i++) {
+                formData.append('images', $('#rout-point-img').prop('files')[i])
+            }
+            dataCollected = true
+        }
+//        else {
+//            formData.append('images', '')
+//        }
 
         for (var pair of formData.entries()) {
             console.log(pair[0]+ ', ' + pair[1]);
         }
 
-
         $.ajax({
             url: `/rout_points/?rout_id=${rout_id}&description=${description}&lon=${lon}&lat=${lat}`,
             method: 'POST',
-            data: formData,
+            data:  dataCollected ? formData : null,
             processData: false,
             contentType: false,
             success: function(response, textStatus, xhr) {

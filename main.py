@@ -157,16 +157,16 @@ async def edit_rout(rout_id: int, rout_name: str) -> dict:
 @app.get("/rout-points/")
 async def get_routs_points(rout_id: int = None) -> list:
     if rout_id:
-        query = select(rout_points).where(rout_points.columns.rout_id == rout_id)
+        query = rout_points.select().where(rout_points.columns.rout_id == rout_id)
     else:
-        query = select(rout_points)
+        query = rout_points.select()
 
     return await database.fetch_all(query)
 
 #add specific point to the rout
 @app.post("/rout_points/")
 async def add_rout_point(rout_id: int, description: str = None, lon: float = None, lat: float = None,
-                         images: List[UploadFile] = File(None),
+                         images: List[Union[UploadFile, None]] = File(None),
                          # images: List[Annotated[UploadFile, File(description="Some description")]] = None,
                          # images: Optional[List[Union[UploadFile, str]]] = None,
                          # images: Annotated[Union[bytes, None], List[Annotated[UploadFile, File()]]] = None,
