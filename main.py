@@ -5,15 +5,16 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from typing import List, Optional, Union, Annotated
-from handlers import generate_hash_key, validate_key, validate_user_key
+from handlers import generate_hash_key, validate_key, validate_user_key, generate_promo
 
+from pydub import AudioSegment
 import asyncio
 
-from sqlalchemy.sql import select, update, delete
+from sqlalchemy.sql import select, update, delete, insert
 from datetime import datetime
 from settings import DEBUG, MEDIA_DIR
 
-from sql import database, users, routes, rout_points, admins, keys
+from sql import database, users, routes, rout_points, admins, keys, promo_codes
 
 import logging
 import sys
@@ -49,10 +50,8 @@ async def create_user(username: str, chat_id:int) -> dict:
     user_record = await database.fetch_one(query)
     if user_record:
         if user_record.access_granted:
-            # TODO отправка ответа, что пользователь известен, но не имеет подписку
             return {'user':'with access'}
         else:
-            # TODO отправка ответа, что пользователь уже известен боту и имеет подписку
             return {'user':'without access'}
     else:
         hash_key = await generate_hash_key(int(chat_id))
@@ -69,6 +68,7 @@ async def create_user(username: str, chat_id:int) -> dict:
             key=hash_key,
             used=False
         )
+
         await database.execute(query_key)
 
         last_record_id = await database.execute(query)
@@ -96,6 +96,31 @@ async def get_user(username: str) -> dict:
     if user_record:
         return user_record
     return None
+
+@app.get('/users/')
+async def get_users() -> dict:
+    async with database.transaction():
+        users_data = await database.fetch_all(
+            select(users)
+        )
+
+        return {'users': users_data}
+
+@app.post('/users-access/')
+async def grant_access(user_id: int):
+    async with database.transaction():
+        await database.execute(
+            update(users).values(access_granted = True).where(users.c.id == user_id)
+        )
+        return Response(status_code=200)
+
+@app.delete('/users-access/')
+async def revoke_access(user_id: int):
+    async with database.transaction():
+        await database.execute(
+            update(users).values(access_granted = False).where(users.c.id == user_id)
+        )
+        return Response(status_code=200)
 
 @app.post('/set-user-rout/{username}/{rout_id}')
 async def set_rout(username: str, rout_id: int) -> dict:
@@ -167,9 +192,6 @@ async def get_routs_points(rout_id: int = None) -> list:
 @app.post("/rout_points/")
 async def add_rout_point(rout_id: int, description: str = None, lon: float = None, lat: float = None,
                          images: List[Union[UploadFile, None]] = File(None),
-                         # images: List[Annotated[UploadFile, File(description="Some description")]] = None,
-                         # images: Optional[List[Union[UploadFile, str]]] = None,
-                         # images: Annotated[Union[bytes, None], List[Annotated[UploadFile, File()]]] = None,
                          audio: Optional[UploadFile] = File(None)):
     """
 
@@ -196,6 +218,108 @@ async def add_rout_point(rout_id: int, description: str = None, lon: float = Non
                     abstract_image_name = f"{int(time.time())}_{uuid.uuid4().hex}.jpg"
                     with open(MEDIA_DIR+'/images/'+abstract_image_name, 'wb+') as f_i:
                         f_i.write(contents_i)
+
+                    image.filename = abstract_image_name
+            if audio:
+                contents_a = audio.file.read()
+                abstract_audio_name = f"{int(time.time())}_{uuid.uuid4().hex}.mp3"
+                with open(MEDIA_DIR+'/audio/'+abstract_audio_name, 'wb+') as f_a:
+                    f_a.write(contents_a)
+                loop = asyncio.get_event_loop()
+                s = await loop.run_in_executor(None, AudioSegment.from_mp3, MEDIA_DIR + '/audio/' + abstract_audio_name)
+                low_rate_file = s.set_frame_rate(24000)
+                await loop.run_in_executor(None, func=lambda: low_rate_file.export(out_f=MEDIA_DIR + '/audio/' + abstract_audio_name, bitrate="64k", format="mp3"))
+                audio.filename = abstract_audio_name
+        except Exception as e:
+            print(e)
+            return {"message": "Error while uploading files"}
+    else:
+        images = None
+        audio = None
+
+    async with database.transaction():
+        last_rout_point = await database.fetch_one(
+            select(rout_points.c.id)
+            .where(rout_points.c.rout_id == rout_id)
+            .order_by(rout_points.c.id.desc())
+            .limit(1)
+        )
+
+        previous_point_id = last_rout_point['id'] if last_rout_point else 0
+
+        coord = str([lon, lat])
+
+        current_point_id = await database.execute(
+            insert(rout_points)
+            .values(
+                rout_id=rout_id,
+                previous_point = previous_point_id,
+                next_point = None,
+                description = description,
+                map_point = coord,
+                images = str([image.filename if image != '' else None for image in images]) if images else None,
+                audio = audio.filename if audio else None
+            )
+        )
+
+        if previous_point_id:
+            await database.execute(
+                update(rout_points)
+                .values(next_point=current_point_id)
+                .where(rout_points.c.id == previous_point_id)
+            )
+
+        return {'record': 'done'}
+
+@app.delete('/rout-points/{rout_point_id}')
+async def delete_rout_point(rout_point_id: int):
+    async with database.transaction():
+        rout_point = await database.fetch_one(
+            select(rout_points.c.previous_point, rout_points.c.next_point)
+            .where(rout_points.c.id == rout_point_id)
+        )
+
+        previous_point_id = rout_point['previous_point']
+        next_point_id = rout_point['next_point']
+
+        if previous_point_id:
+            await database.execute(
+                update(rout_points)
+                .values(next_point=next_point_id)
+                .where(rout_points.c.id == previous_point_id)
+            )
+
+        if next_point_id:
+            await database.execute(
+                update(rout_points)
+                .values(previous_point=previous_point_id)
+                .where(rout_points.c.id == next_point_id)
+            )
+
+        await database.execute(
+            delete(rout_points)
+            .where(rout_points.c.id == rout_point_id)
+        )
+
+        return {'deleted': rout_point_id}
+
+@app.put("/rout_points/")
+async def edit_rout_point(rout_point_id: int, description: str = None, lon: float = None, lat: float = None,
+                            to_delete_imgs: Optional[str] = None,
+                            images: List[Union[UploadFile, None]] = File(None),
+                            audio: Optional[UploadFile] = File(None)):
+    # upload new images and audio to disk
+    if images or audio:
+        try:
+            if images:
+                if type(images) != list:
+                    images = [images]
+                for image in images:
+                    contents_i = image.file.read()
+                    abstract_image_name = f"{int(time.time())}_{uuid.uuid4().hex}.jpg"
+                    print(abstract_image_name)
+                    with open(MEDIA_DIR+'/images/'+abstract_image_name, 'wb+') as f_i:
+                        f_i.write(contents_i)
                     image.filename = abstract_image_name
             if audio:
                 contents_a = audio.file.read()
@@ -210,38 +334,43 @@ async def add_rout_point(rout_id: int, description: str = None, lon: float = Non
         images = None
         audio = None
 
-    # select last rout point in rout
-    r_query = select(rout_points).where(rout_points.columns.rout_id == rout_id).order_by(rout_points.columns.id.desc()).limit(1)
-    last_rout_point = await database.fetch_one(r_query)
+    async with database.transaction():
+        rout_point_media = await database.fetch_one(
+            select(rout_points.c.images, rout_points.c.audio)
+            .where(rout_points.c.id == rout_point_id)
+        )
+        print(rout_point_media)
 
-    # if current rout point is first in rout set previous id to 0 else to id of last point
-    if last_rout_point:
-        previous_point_id = last_rout_point.id
-    else:
-        previous_point_id = 0
+        if rout_point_media[0] != None:
+            rout_point_local_images = rout_point_media[0].strip('][').replace("'", "").split(', ')
+        else:
+            rout_point_local_images = []
+        print(rout_point_local_images)
+        # deleting requested images
 
-    # write current point into database with values gotten from API
-    coord = str([lon, lat])
-    w_query = rout_points.insert().values(
-        rout_id = rout_id,
-        previous_point = previous_point_id,
-        description = description,
-        map_point = coord,
-        images = str([image.filename if image != '' else None for image in images]) if images else None,
-        audio = audio.filename if audio else None
-    )
-    current_point_id = await database.execute(w_query)
+        if to_delete_imgs:
+            try:
+                to_delete_imgs = to_delete_imgs.split(',')
+            except:
+                to_delete_imgs = [to_delete_imgs]
+            print(to_delete_imgs)
+            for to_delete in to_delete_imgs:
+                print(to_delete)
+                rout_point_local_images.remove(to_delete)
 
-    # update previous point next_point filed with current point id
-    u_query = update(rout_points).values(next_point=current_point_id).where(rout_points.columns.id == previous_point_id)
-    await database.execute(u_query)
-    return {'record': 'done'}
+        if images:
+            for image in images:
+                rout_point_local_images.append(image.filename)
 
-@app.delete('/rout-points/{rout_point_id}')
-async def delete_rout_point(rout_point_id: int):
-    query = delete(rout_points).where(rout_points.columns.id == rout_point_id)
-    await database.execute(query)
-    return {'deleted': rout_point_id}
+        coord = str([lon, lat])
+
+        print(rout_point_local_images)
+        await database.execute(update(rout_points).values(
+            description=description,
+            map_point=coord,
+            images=str(rout_point_local_images) if rout_point_local_images else None,
+            audio=audio.filename if audio else rout_point_media[1]
+        ).where(rout_points.c.id == rout_point_id))
 
 # get starting point
 @app.get("/rout-points-first/{rout_id}/")
@@ -288,9 +417,80 @@ async def activate_user(username:str, key: Optional[str]) -> Response:
         return Response(status_code=403, content='Token not mathing user')
     return Response(status_code=403, content='Invalid Token or Token Taken')
 
+@app.post("/promo/")
+async def create_promo(name: str, phrase: Optional[str] = None, price: Optional[int] = None, percent: Optional[int] =None, counter: Optional[int] = None) -> Response:
+    if not phrase:
+        phrase = await generate_promo()
+    async with database.transaction():
+        new_promo = await database.execute(
+            insert(promo_codes).values(
+                name = name,
+                price = price if price else 0,
+                is_percent = True if price is None and percent is not None else False,
+                percent = percent if percent else 0,
+                is_counter = True if counter is not None else False,
+                counter = counter if counter else -1,
+                promocode = phrase
+            )
+        )
+        return Response(status_code=200, content='Created')
+    return Response(status_code=403, content='Error')
+
+@app.get("/promo/")
+async def get_promo(source: str, phrase: Optional[str] = None, promo_id: Optional[int] = None) -> Response:
+    async with database.transaction():
+        if source == 'admin':
+            if promo_id:
+                data = await database.fetch_one(
+                    select(promo_codes).where(promo_codes.c.id == promo_id)
+                )
+            else:
+                data = await database.fetch_all(
+                    select(promo_codes)
+                )
+            return {'promos': data}
+        elif source == 'bot':
+            data = await database.fetch_one(
+                select(promo_codes).where(promo_codes.c.promocode == phrase)
+            )
+            if data:
+                if data.is_counter:
+                    if data.counter > 0:
+                        await database.execute(
+                            update(promo_codes).values(
+                                counter = data.counter - 1
+                            ).where(promo_codes.c.id == data.id)
+                        )
+                        return data
+                    return Response(status_code=403, content='У этого промокода истек срок')
+                return data
+            return Response(status_code=403, content='Промокод не найден')
+
+@app.put("/promo/{promo_id}")
+async def edit_promo(promo_id: int, name: Optional[str], phrase: Optional[str], price: Optional[int], percent: Optional[int], counter: Optional[int]) -> Response:
+    async with database.transaction():
+        edited_promo = await database.execute(
+            update(promo_codes).value(
+                name=name,
+                price=price if price else 0,
+                is_percent=True if price is None and percent is not None else False,
+                percent=percent if percent else 0,
+                is_counter=True if counter is not None else False,
+                counter=counter if counter else -1,
+                promocode=phrase
+            ).where(promo_codes.c.id == promo_id)
+        )
+        return Response(status_code=200, content='Created')
+
+@app.delete("/promo/{promo_id}")
+async def delete_promo(promo_id: int) -> Response:
+    async with database.transaction():
+        await database.execute(
+            delete(promo_codes).where(promo_codes.c.id == promo_id)
+        )
+        return Response(status_code=201, content='Deleted')
 
 # HTML TEMPLATES
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/media", StaticFiles(directory="media"), name="media")
 

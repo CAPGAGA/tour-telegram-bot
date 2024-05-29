@@ -84,6 +84,7 @@
     min-width: 50%;
     max-width: 100%;
     font-family: sans-serif;
+    background: white;
 }
 
 .tall{
@@ -210,15 +211,17 @@ td, th {padding: 6px;}
 }
 
 #all-rout-points-table > .table-row .table-cell:nth-child(6){
-    width: 25%;
-
-    max-width: 25%;
+    width: 100%;
+    max-width: 100%;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
 }
 
 #all-rout-points-table > .table-row .table-cell:nth-child(7){
     width: 25%;
-
     max-width: 25%;
     overflow: hidden;
 }
@@ -229,4 +232,44 @@ td, th {padding: 6px;}
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.table-del-btn{
+    position: absolute;
+    right: 0;
+    background-color: red;
+    border: 1px solid var(--platinum);
+    line-height: 20px;
+    padding: 0px;
+    cursor: pointer;
+    display: none;
+}
+
+#all-users-table > .table-head .table-cell:nth-child(1){
+    width: 10%;
+}
+
+#all-users-table > .table-head .table-cell:nth-child(2){
+    width: 20%;
+}
+
+
+#all-users-table > .table-head .table-cell:nth-child(3){
+    width: 10%;
+}
+
+
+#all-users-table > .table-row .table-cell:nth-child(1){
+    text-align: center;
+    width: 10%;
+}
+
+#all-users-table > .table-row .table-cell:nth-child(2){
+    text-align: center;
+    width: 20%;
+}
+
+#all-users-table > .table-row .table-cell:nth-child(3){
+    text-align: center;
+    width: 10%;
 }

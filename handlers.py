@@ -1,8 +1,11 @@
 import hashlib
+import string
+
 from sql import database, keys, users
 import requests
 from settings import BASE_URL
 import asyncio
+import random
 
 from sqlalchemy.sql import select
 
@@ -14,8 +17,11 @@ def get_id_of_rout(routs: list[dict], rout: str) -> int:
 
 # generate key for user
 async def generate_hash_key(chat_id):
-    key = hashlib.sha256(bytes(chat_id)).hexdigest()
+    key = hashlib.sha256(str(chat_id).encode()).hexdigest()
     return str(key)
+
+async def generate_promo():
+    return ''.join(random.choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(8))
 
 # validate key
 async def validate_key(key):

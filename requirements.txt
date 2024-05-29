@@ -2,7 +2,7 @@ fastapi
 uvicorn
 python-telegram-bot
 pydantic==1.10.7
-sqlalchemy
+sqlalchemy==1.4.48
 databases
 aiosqlite
 requests
@@ -10,3 +10,4 @@ python-multipart
 yookassa
 jinja2
 python-dotenv
+pydub

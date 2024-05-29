@@ -32,6 +32,21 @@
             Управление точками
           </button>
         </li>
+        <li class="aside-list-item">
+          <button class="basic-aside-btn" id="show-users-btn">
+            Пользователи
+          </button>
+        </li>
+        <li class="aside-list-item">
+          <button class="basic-aside-btn" id="add-promo-btn">
+            Добавить промокод
+          </button>
+        </li>
+        <li class="aside-list-item">
+          <button class="basic-aside-btn" id="show-promo-btn">
+            Управление промокодами
+          </button>
+        </li>
       </ul>
     </aside>
     <section class="main-controls">
@@ -61,10 +76,10 @@
           </select>
           <label for="rout-name" class="form-label">Описание</label>
           <input type="text" class="form-input" name="description" id="rout-point-name" placeholder="Точка на улице X.Y">
-          <label for="rout-point-long" class="form-label">Долгота (первое число координат)</label>
-          <input type="number" step="0.000000001" class="form-input" name="lon" id="rout-point-long" placeholder="44.123">
-          <label for="rout-point-lat" class="form-label">Широта (второе число координат)</label>
+          <label for="rout-point-lat" class="form-label">Широта (первое число координат)</label>
           <input type="number" step="0.000000001" class="form-input" name="lat" id="rout-point-lat" placeholder="20.123">
+          <label for="rout-point-long" class="form-label">Долгота (второе число координат)</label>
+          <input type="number" step="0.000000001" class="form-input" name="lon" id="rout-point-long" placeholder="44.123">
           <label for="rout-point-img" class="form-label">Изображения</label>
           <input type="file" multiple class="form-input tall" name="images" id="rout-point-img" placeholder="">
           <label for="rout-point-audio" class="form-label">Аудио</label>
@@ -88,6 +103,75 @@
           <tr class="table-row data">
             <td class="table-cell data">1</td>
             <td class="table-cell data">1</td>
+            <td class="table-cell data">1</td>
+            <td class="table-cell data">1</td>
+            <td class="table-cell data">1</td>
+            <td class="table-cell data">1</td>
+            <td class="table-cell data">1</td>
+            <td class="table-cell data">
+              <div>1</div>
+              <div>1</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="form-wrapper" id="all-users-wrapper">
+        <h1 class="control-tag">Пользователи</h1>
+        <table id="all-users-table" class="basic-table">
+          <tr class="table-head">
+            <th class="table-cell head">ID</th>
+            <th class="table-cell head">Юзернейм</th>
+            <th class="table-cell head">Есть доступ</th>
+            <th class="table-cell head">Управление пользователем</th>
+          </tr>
+          <tr class="table-row data">
+            <td class="table-cell data">1</td>
+            <td class="table-cell data">1</td>
+            <td class="table-cell data">1</td>
+            <td class="table-cell data">
+              <div>1</div>
+              <div>1</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="form-wrapper" id="add-promo-wrapper">
+        <h1 class="control-tag">Добавление промокода</h1>
+        <form class="base-form" id="add-promo">
+          <label for="promo-name" class="form-label">Название промокода</label>
+          <input class="form-input" name="promo_name" id="promo-name" placeholder="Промокод на старт">
+          <label for="promo-type" class="form-label">Тип промокода</label>
+          <select class="form-input tall" id="promo-type">
+            <option class="form-input" value="1">С фиксированной ценой</option>
+            <option class="form-input" value="2">Процент скидки</option>
+          </select>
+          <div id="percent-wrapper">
+            <label for="promo-percent" class="form-label">Процент скидки</label>
+            <input class="form-input" name="promo_percent" id="promo-percent" placeholder="50">%
+          </div>
+          <div id="price-wrapper">
+            <label for="promo-price" class="form-label">Цена по промокоду</label>
+            <input class="form-input" name="price" id="promo-price" placeholder="800">руб.
+          </div>
+          <label for="promo-phrase" class="form-label">Фраза промокода (оставить поле пустым для автогенерации)</label>
+          <input class="form-input" name="counter" id="promo-phrase" placeholder="START50">
+          <label for="promo-counter" class="form-label">Количество использований</label>
+          <input class="form-input" name="counter" id="promo-counter" placeholder="10">
+          <input class="base-btn" type="submit" id="add-promo-submit" value="Добавить">
+        </form>
+      </div>
+      <div class="form-wrapper" id="all-promo-wrapper">
+        <h1 class="control-tag">Промокоды</h1>
+        <table id="all-promo-table" class="basic-table">
+          <tr class="table-head">
+            <th class="table-cell head">ID</th>
+            <th class="table-cell head">Название</th>
+            <th class="table-cell head">Акция</th>
+            <th class="table-cell head">Осталось использований</th>
+            <th class="table-cell head">Фраза</th>
+            <th class="table-cell head">Управление промокодом</th>
+          </tr>
+          <tr class="table-row data">
             <td class="table-cell data">1</td>
             <td class="table-cell data">1</td>
             <td class="table-cell data">1</td>
