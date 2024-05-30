@@ -68,6 +68,14 @@ promo_codes = sqlalchemy.Table(
     sqlalchemy.Column('promocode', sqlalchemy.String, unique=True)
 )
 
+subscriptions_keys = sqlalchemy.Table(
+    "subscription_keys",
+    metadata,
+    sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True, autoincrement=True),
+    sqlalchemy.Column('key', sqlalchemy.String, unique=True),
+    sqlalchemy.Column('used', sqlalchemy.Boolean)
+)
+
 
 engine = sqlalchemy.create_engine(
     DATABASE_URL, connect_args={"check_same_thread": False}

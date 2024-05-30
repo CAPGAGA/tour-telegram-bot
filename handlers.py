@@ -6,6 +6,7 @@ import requests
 from settings import BASE_URL
 import asyncio
 import random
+from datetime import datetime
 
 from sqlalchemy.sql import select
 
@@ -21,7 +22,22 @@ async def generate_hash_key(chat_id):
     return str(key)
 
 async def generate_promo():
+
     return ''.join(random.choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(8))
+
+async def generate_access_key():
+
+    chars = string.ascii_uppercase + string.digits
+    seed = datetime.now().strftime("%Y%m%d%H%M%S%f")
+
+    random.seed(seed)
+
+    key = ''.join(random.choice(chars) for _ in range(16))
+
+    formatted_key = '-'.join([key[i:i+4] for i in range(0, len(key), 4)])
+
+    return formatted_key
+
 
 # validate key
 async def validate_key(key):

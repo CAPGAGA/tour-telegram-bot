@@ -1,12 +1,15 @@
 import telegram
 from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, Bot, Invoice, LabeledPrice, InputMediaPhoto
 from telegram.ext import ContextTypes, Application, CommandHandler, MessageHandler, filters, ConversationHandler, CallbackQueryHandler, PicklePersistence, PreCheckoutQueryHandler
+from telegram.constants import ParseMode
 import requests
 import re
 import json
 from settings import MEDIA_DIR, DEBUG, TELEGRAM_TOKEN, BASE_URL, PAYMENT_TOKEN
-from handlers import get_id_of_rout, generate_hash_key, delete_msg
+from handlers import get_id_of_rout, generate_hash_key, delete_msg, generate_access_key
 import logging
+
+from decimal import Decimal
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -36,7 +39,12 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     # user without access
     elif r.json().get('user', None) == 'without access':
 
-        buttons = [[InlineKeyboardButton('Хочу подписку', callback_data='get_subscription')]]
+        buttons = [
+        [InlineKeyboardButton('Хочу подписку', callback_data='get_subscription')],
+        [InlineKeyboardButton('У меня есть промокод', callback_data='get_promo_subscription')],
+        [InlineKeyboardButton('У меня есть подарочный промокод', callback_data='get_subscription_from_friend')],
+        [InlineKeyboardButton('Купить подписку в подарок', callback_data='get_subscription_friend')]
+               ]
         markup = InlineKeyboardMarkup(buttons)
 
         await update.message.reply_text(f'Добро пожаловать снова! \n'
@@ -85,7 +93,13 @@ async def check_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE)
         rout_choose = await update.message.reply_text('У тебя активирована подписка и есть доступ ко всем моим экскурсиям', reply_markup=markup)
         context.user_data['to_delete'] = [rout_choose.id]
         return
-    buttons = [[InlineKeyboardButton('Хочу подписку', callback_data='get_subscription')]]
+
+    buttons = [
+        [InlineKeyboardButton('Хочу подписку', callback_data='get_subscription')],
+        [InlineKeyboardButton('У меня есть промокод', callback_data='get_promo_subscription')],
+        [InlineKeyboardButton('У меня есть подарочный промокод', callback_data='get_subscription_from_friend')],
+        [InlineKeyboardButton('Купить подписку в подарок', callback_data='get_subscription_friend')]
+               ]
     markup = InlineKeyboardMarkup(buttons)
 
     return await update.message.reply_text('Похоже у тебя ещё нет подписки, ты можешь получить её нажав на кнопку ниже!', reply_markup=markup)
@@ -102,8 +116,8 @@ async def send_request_to_admins(update: Update, context:ContextTypes.DEFAULT_TY
         invoice_desc = await update.callback_query.message.reply_text('Для доступа к моим экскурсиям оплати доступ к боту нажав кнопку ниже \n\n'
                                                        'После оплаты ты получишь доступ к закрытому телеграм-боту с маршрутом по городу, в который входят отмеченные на карте точки и аудио- и фотоматериалы к каждой из них.')
 
-        print(str(PAYMENT_TOKEN))
         invoice = await update.callback_query.message.reply_invoice(
+
             title='Доступ к боту',
             description='Доступ к закрытому телеграм-боту с маршрутом по городу, в который входят отмеченные на карте точки и аудио- и фотоматериалы к каждой из них.',
             payload='Custom-Payload',
@@ -112,14 +126,37 @@ async def send_request_to_admins(update: Update, context:ContextTypes.DEFAULT_TY
             need_name=False,
             need_phone_number=False,
             need_email=True,
-            # need_shipping_address=False,
             is_flexible=False,
             provider_token=str(PAYMENT_TOKEN),
-            # provider_token='381764678:TEST:82486',
             send_email_to_provider=True,
 
         )
         context.user_data['to_delete'] = [invoice_desc.id, invoice.id]
+        context.user_data['buying'] = 'self'
+
+async def get_subscription_for_friend(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    await update.callback_query.message.reply_text('После оплаты по кнопке снизу, я пришлю тебе одноразовый ключ, '
+                                                   'а так же инструкцию по его активации')
+
+    invoice = await update.callback_query.message.reply_invoice(
+
+        title='Доступ к боту для друга',
+        description='Доступ к закрытому телеграм-боту с маршрутом по городу, в который входят отмеченные на карте точки и аудио- и фотоматериалы к каждой из них.',
+        payload='Custom-Payload',
+        currency='RUB',
+        prices=[LabeledPrice('Доступ к боту', 1000 * 100)],
+        need_name=False,
+        need_phone_number=False,
+        need_email=True,
+        is_flexible=False,
+        provider_token=str(PAYMENT_TOKEN),
+        send_email_to_provider=True,
+
+    )
+    context.user_data['buying'] = 'friend'
 
 async def precheckout_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Answers the PreQecheckoutQuery"""
@@ -131,25 +168,108 @@ async def precheckout_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     else:
         await query.answer(ok=True)
 
-
-
 async def process_success_payment(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    username = update.message.from_user.username
-    r = requests.post(f'{BASE_URL}users/activate/{username}')
+    if context.user_data.get('buying') == 'self':
+        username = update.message.from_user.username
+        r = requests.post(f'{BASE_URL}users/activate/{username}')
 
-    if r.status_code == 403 or r.status_code == 500:
-        await update.message.reply_text(f'Похоже произошла ошибка: {r.content}')
-        return
-    await delete_msg(update, context, context.user_data['to_delete'])
-    routs = requests.get(url=f'{BASE_URL}routs/')
-    buttons = []
-    for rout in routs.json():
-        buttons.append([InlineKeyboardButton(text=rout.get('rout_name'),
-                                             callback_data=f'rout_{rout.get("id")}')])
-        # callback_data=1)])
-    markup = InlineKeyboardMarkup(buttons)
-    await update.message.reply_text('Спасибо за покупку доступа к боту!\n\n'
-                                    'Ниже я перечислил все доступные на данный момент маршруты', reply_markup=markup, parse_mode='HTML')
+        if r.status_code == 403 or r.status_code == 500:
+            await update.message.reply_text(f'Похоже произошла ошибка: {r.content}')
+            return
+        await delete_msg(update, context, context.user_data['to_delete'])
+        routs = requests.get(url=f'{BASE_URL}routs/')
+        buttons = []
+        for rout in routs.json():
+            buttons.append([InlineKeyboardButton(text=rout.get('rout_name'),
+                                                 callback_data=f'rout_{rout.get("id")}')])
+        markup = InlineKeyboardMarkup(buttons)
+        await update.message.reply_text('Спасибо за покупку доступа к боту!\n\n'
+                                        'Ниже я перечислил все доступные на данный момент маршруты', reply_markup=markup, parse_mode='HTML')
+        del context.user_data['buying']
+    elif context.user_data.get('buying') == 'friend':
+        access_key = await generate_access_key()
+        r = requests.post(f'{BASE_URL}gift_keys/?key={access_key}')
+        if r.status_code == 200:
+            await update.message.reply_text(
+                f'Спасибо за покупку\n\n'
+                f'Это ключ который ты можешь отправить своему другу или подруге\n\n'
+                f'`{access_key}`\n\n'
+                f'Твой друг может активировать код сразу после отправки мне команды /start и нажав кнопку '
+                f'"У меня есть подарочный промокод"', parse_mode=ParseMode.MARKDOWN_V2
+            )
+
+
+async def check_promocode_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
+    if update.callback_query:
+        query = update.callback_query
+        await query.answer()
+
+        promo_start = await update.callback_query.message.reply_text("Введи промокод")
+        context.user_data['to_delete'] = [promo_start.id]
+        return 'next__check__promo'
+    else:
+        promo_start = await update.message.reply_text("Введи промокод")
+        context.user_data['to_delete'] = [promo_start.id]
+        return 'next__check__promo'
+
+async def check_promocode_end(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
+    r = requests.get(f'{BASE_URL}promo/?source=bot&phrase={update.message.text}')
+
+    if r.status_code != 403:
+        await update.message.reply_text('Промокод активирован!')
+        if r.json().get('is_percent'):
+            new_price = Decimal('1000') * (Decimal('1') - Decimal(f'0.{r.json().get("percent")}'))
+        else:
+            new_price = r.json().get('price')
+        invoice = await update.message.reply_invoice(
+
+            title='Доступ к боту(ПРОМО)',
+            description='Доступ к закрытому телеграм-боту с маршрутом по городу, в который входят отмеченные на карте точки и аудио- и фотоматериалы к каждой из них.',
+            payload='Custom-Payload',
+            currency='RUB',
+            prices=[LabeledPrice('Доступ к боту', int(new_price) * 100)],
+            need_name=False,
+            need_phone_number=False,
+            need_email=True,
+            is_flexible=False,
+            provider_token=str(PAYMENT_TOKEN),
+            send_email_to_provider=True,
+
+        )
+        context.user_data['buying'] = 'self'
+        return ConversationHandler.END
+
+    elif r.status_code == 403:
+        await update.message.reply_text(f'<b>{r.content.decode("UTF-8")}</b>\n\n'
+                                        f'Проверь правильность написания промокода и введи его снова', parse_mode='HTML')
+        return 'next__check__promo'
+
+async def check_friend_code(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.callback_query:
+        query = update.callback_query
+        await query.answer()
+
+        await update.callback_query.message.reply_text('Для активации ключа, отправь его мне в ответом сообщении')
+
+        return 'next__friend__key__confirmation'
+
+async def friend_key_confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    r = requests.get(f'{BASE_URL}gift_keys/?key={update.message.text}')
+
+    if r.status_code == 200:
+        activation = requests.post(f'{BASE_URL}users/activate/{update.message.from_user.username}')
+        if activation.status_code == 200:
+            await update.message.reply_text('Подписка активирована! Для доступа к маршрутам используй команду /routs')
+        return ConversationHandler.END
+    elif r.status_code == 404:
+        await update.message.reply_text('Похоже такого ключа не существует или он был использован, проверь правильность'
+                                        ' написания и пришли мне его снова')
+        return 'next__friend__key__confirmation'
+
+async def promo_check_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    await update.message.reply_text('Отмена')
+    return ConversationHandler.END
 
 async def register_admin(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     username = update.message.from_user.username
@@ -294,6 +414,23 @@ if __name__ == '__main__':
         fallbacks=[CommandHandler('end', end_rout)]
     )
 
+    promo_conv = ConversationHandler(
+        entry_points=[CallbackQueryHandler(check_promocode_start, pattern=r'^get_promo_subscription$')
+        ],
+        states= {
+            'next__check__promo': [MessageHandler(filters.TEXT & ~filters.COMMAND, check_promocode_end)]
+        },
+        fallbacks=[CommandHandler('cancel', promo_check_cancel)]
+    )
+
+    access_activation_conv = ConversationHandler(
+        entry_points=[CallbackQueryHandler(check_friend_code, pattern='get_subscription_from_friend')],
+        states={
+            'next__friend__key__confirmation': [MessageHandler(filters.TEXT & ~filters.COMMAND, friend_key_confirmation)]
+        },
+        fallbacks=[CommandHandler('cancel', promo_check_cancel)]
+    )
+
     # Commands
     app.add_handler(CommandHandler('start', start_command))
     app.add_handler(CommandHandler('help', help_command))
@@ -301,14 +438,20 @@ if __name__ == '__main__':
     app.add_handler(CommandHandler('check', check_subscription))
     app.add_handler(CommandHandler('routs', check_subscription))
     app.add_handler(CommandHandler('reg1q2w3e4r5t6y', register_admin))
+
+
     app.add_handler(CallbackQueryHandler(send_request_to_admins, pattern=r'^get_subscription$'))
-    app.add_handler(MessageHandler(filters.Regex(r'^\b[a-fA-F0-9]{64}\b$') & ~filters.COMMAND, activate_subscription))
+    # app.add_handler(MessageHandler(filters.Regex(r'^\b[a-fA-F0-9]{64}\b$') & ~filters.COMMAND, activate_subscription))
 
     # Payments
+    app.add_handler(CommandHandler('buy', send_request_to_admins))
+    app.add_handler(CallbackQueryHandler(get_subscription_for_friend, pattern='get_subscription_friend'))
     app.add_handler(PreCheckoutQueryHandler(precheckout_callback))
     app.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT & ~filters.COMMAND, process_success_payment))
 
+    app.add_handler(promo_conv)
     app.add_handler(conv)
+    app.add_handler(access_activation_conv)
 
     print('starting polling')
     app.run_polling()

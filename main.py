@@ -14,7 +14,7 @@ from sqlalchemy.sql import select, update, delete, insert
 from datetime import datetime
 from settings import DEBUG, MEDIA_DIR
 
-from sql import database, users, routes, rout_points, admins, keys, promo_codes
+from sql import database, users, routes, rout_points, admins, keys, promo_codes, subscriptions_keys
 
 import logging
 import sys
@@ -462,7 +462,7 @@ async def get_promo(source: str, phrase: Optional[str] = None, promo_id: Optiona
                             ).where(promo_codes.c.id == data.id)
                         )
                         return data
-                    return Response(status_code=403, content='У этого промокода истек срок')
+                    return Response(status_code=403, content='У этого промокода истек срок действия')
                 return data
             return Response(status_code=403, content='Промокод не найден')
 
@@ -470,7 +470,7 @@ async def get_promo(source: str, phrase: Optional[str] = None, promo_id: Optiona
 async def edit_promo(promo_id: int, name: Optional[str], phrase: Optional[str], price: Optional[int], percent: Optional[int], counter: Optional[int]) -> Response:
     async with database.transaction():
         edited_promo = await database.execute(
-            update(promo_codes).value(
+            update(promo_codes).values(
                 name=name,
                 price=price if price else 0,
                 is_percent=True if price is None and percent is not None else False,
@@ -489,6 +489,32 @@ async def delete_promo(promo_id: int) -> Response:
             delete(promo_codes).where(promo_codes.c.id == promo_id)
         )
         return Response(status_code=201, content='Deleted')
+
+@app.post("/gift_keys/")
+async def create_key(key: str):
+    async with database.transaction():
+        await database.execute(
+            insert(subscriptions_keys).values(
+                key=key,
+                used=False
+            )
+        )
+        return Response(status_code=200)
+
+@app.get("/gift_keys/")
+async def check_key(key: str):
+    async with database.transaction():
+        data = await database.fetch_one(
+            select(subscriptions_keys).where(subscriptions_keys.c.key==key,
+                                             subscriptions_keys.c.used==False)
+        )
+        if data:
+            await database.execute(
+                update(subscriptions_keys).values(used=True).where(subscriptions_keys.c.id == data.id)
+            )
+            return Response(status_code=200)
+        return Response(status_code=404)
+
 
 # HTML TEMPLATES
 app.mount("/static", StaticFiles(directory="static"), name="static")
