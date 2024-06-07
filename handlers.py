@@ -25,12 +25,12 @@ async def generate_promo():
 
     return ''.join(random.choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(8))
 
-async def generate_access_key():
+async def generate_access_key(username):
 
     chars = string.ascii_uppercase + string.digits
-    seed = datetime.now().strftime("%Y%m%d%H%M%S%f")
+    seed_slat = datetime.now().strftime("%Y%m%d%H%M%S%f")
 
-    random.seed(seed)
+    random.seed(username+seed_slat)
 
     key = ''.join(random.choice(chars) for _ in range(16))
 

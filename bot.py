@@ -125,10 +125,27 @@ async def send_request_to_admins(update: Update, context:ContextTypes.DEFAULT_TY
             prices=[LabeledPrice('Доступ к боту', 1000 * 100)],
             need_name=False,
             need_phone_number=False,
-            need_email=True,
             is_flexible=False,
             provider_token=str(PAYMENT_TOKEN),
+            need_email=True,
             send_email_to_provider=True,
+            provider_data={
+                "receipt":{
+                    "items": [
+                        {
+                            "description": 'Доступ к боту дашины маршруты',
+                            "quantity": "1.00",
+                            "amount":
+                                {
+                                    "value": "1000.00",
+                                    "currency": "RUB"
+                                },
+                            "vat_code": 1
+                        }
+
+                    ]
+                }
+            }
 
         )
         context.user_data['to_delete'] = [invoice_desc.id, invoice.id]
@@ -154,6 +171,23 @@ async def get_subscription_for_friend(update: Update, context: ContextTypes.DEFA
         is_flexible=False,
         provider_token=str(PAYMENT_TOKEN),
         send_email_to_provider=True,
+        provider_data= {
+            "receipt": {
+                "items": [
+                    {
+                        "description": 'Доступ к боту "дашины маршруты" для друга',
+                        "quantity": "1.00",
+                        "amount" :
+                            {
+                                "value": "1000.00",
+                                "currency": "RUB"
+                            },
+                        "vat_code" : 1
+                    }
+
+                ]
+            }
+        }
 
     )
     context.user_data['buying'] = 'friend'
@@ -187,7 +221,7 @@ async def process_success_payment(update: Update, context: ContextTypes.DEFAULT_
                                         'Ниже я перечислил все доступные на данный момент маршруты', reply_markup=markup, parse_mode='HTML')
         del context.user_data['buying']
     elif context.user_data.get('buying') == 'friend':
-        access_key = await generate_access_key()
+        access_key = await generate_access_key(update.message.from_user.username)
         r = requests.post(f'{BASE_URL}gift_keys/?key={access_key}')
         if r.status_code == 200:
             await update.message.reply_text(
@@ -234,6 +268,23 @@ async def check_promocode_end(update: Update, context: ContextTypes.DEFAULT_TYPE
             is_flexible=False,
             provider_token=str(PAYMENT_TOKEN),
             send_email_to_provider=True,
+            provider_data={
+                "receipt": {
+                    "items": [
+                        {
+                            "description": 'Доступ к боту "дашины маршруты" (ПРОМО)',
+                            "quantity": "1.00",
+                            "amount":
+                                {
+                                    "value": f'{int(new_price)}.00',
+                                    "currency": "RUB"
+                                },
+                            "vat_code": 1
+                        }
+
+                    ]
+                }
+            }
 
         )
         context.user_data['buying'] = 'self'
