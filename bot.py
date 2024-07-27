@@ -30,7 +30,7 @@ from handlers import (
     generate_hash_key
 )
 
-from python_example import generate_payment_link
+from prodamus import generate_payment_link
 
 from defaults import zemun_path
 
