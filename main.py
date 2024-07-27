@@ -1,25 +1,32 @@
 import json
-
-from fastapi import FastAPI, File, UploadFile, Response, Request, Form
+from fastapi import FastAPI, File, UploadFile, Response, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from typing import List, Optional, Union, Annotated
+from starlette.responses import JSONResponse
 from handlers import generate_hash_key, validate_key, validate_user_key, generate_promo
 
 from pydub import AudioSegment
 import asyncio
 
-from sqlalchemy.sql import select, update, delete, insert
-from datetime import datetime
-from settings import DEBUG, MEDIA_DIR
-
-from sql import database, users, routes, rout_points, admins, keys, promo_codes, subscriptions_keys
-
 import logging
 import sys
 import uuid
 import time
+
+import hmac
+import hashlib
+
+from telegram import Bot
+
+from sqlalchemy.sql import select, update, delete, insert
+from datetime import datetime
+from settings import DEBUG, MEDIA_DIR, PRODAMUS_TOKEN
+
+from sql import database, users, routes, rout_points, admins, keys, promo_codes, subscriptions_keys
+
+from settings import TELEGRAM_TOKEN
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -113,6 +120,71 @@ async def grant_access(user_id: int):
             update(users).values(access_granted = True).where(users.c.id == user_id)
         )
         return Response(status_code=200)
+
+def verify_hmac(data: bytes, secret_key: str, signature: str) -> bool:
+    hmac_obj = hmac.new(secret_key.encode(), data, hashlib.sha256)
+    generate_signature = hmac_obj.hexdigest()
+    return hmac.compare_digest(generate_signature, signature)
+
+@app.post('/prodamus-succes/')
+async def validate_prodamus_payment(request: Request):
+    try:
+        headers = request.headers
+        data = await request.body()
+
+        if not data:
+            raise HTTPException(status_code=400, detail="POST data is empty")
+
+        signature = headers.get("Sign")
+        if not signature:
+            raise HTTPException(status_code=403, detail="Signature not found")
+
+        if not verify_hmac(data, PRODAMUS_TOKEN, signature):
+            raise HTTPException(status_code=403, detail="Signature incorrect")
+
+        return JSONResponse(content={"message":"success"}, status_code=200)
+
+    except HTTPException as e:
+        raise e
+
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=400)
+
+@app.get('/prodamus-success/{chat_id}/{secure_hash}', response_class=HTMLResponse)
+async def give_access_prodamus(chat_id, secure_hash):
+    print(await generate_hash_key(chat_id))
+    if await generate_hash_key(chat_id) == secure_hash:
+        html_body = """
+                <html>
+                    <head>
+                        <script type="text/javascript">
+                            window.open("", "_self");
+                            window.close();
+                        </script>            
+                    </head>
+                    <body>
+                        <p>Operation succcessful. You can safely close this window.</p>
+                    </body>
+                </html>
+
+            """
+        print(f'sending msg to {chat_id}')
+        await Bot(token=TELEGRAM_TOKEN).send_message(chat_id=int(chat_id), text="Оплата прошла успешно! "
+                                                                           "Используй /routs для получения списка маршрутов")
+        return html_body
+    html_body = """
+                    <html>
+                        <head>          
+                        </head>
+                        <body>
+                            <p>Error!</p>
+                        </body>
+                    </html>
+
+                """
+    await Bot(token=TELEGRAM_TOKEN).send_message(chat_id=int(chat_id), text="Не удалось провести оплату... "
+                                                                            "Для уточнения, пожалуйста, обратись на dashroutesbot@gmail.com")
+    return html_body
 
 @app.delete('/users-access/')
 async def revoke_access(user_id: int):

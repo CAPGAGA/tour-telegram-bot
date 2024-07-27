@@ -1,4 +1,5 @@
 import hashlib
+import hmac
 import string
 
 from sql import database, keys, users
@@ -7,8 +8,11 @@ from settings import BASE_URL
 import asyncio
 import random
 from datetime import datetime
+from urllib.parse import urlencode, quote
 
 from sqlalchemy.sql import select
+
+from settings import PRODAMUS_TOKEN
 
 def get_id_of_rout(routs: list[dict], rout: str) -> int:
     for rout_dict in routs:
@@ -66,12 +70,3 @@ async def delete_msg(update, context, msgs):
                                          message_id=msg)
         except:
             Exception("Msg wasn't rendered on time of deletion... Skipping...")
-
-
-# # check key for user
-# async def activate_user(username, key):
-#     if await validate_key(key):
-#         if await validate_user_key(username, key):
-#             pass
-#         return -1
-#     return -2

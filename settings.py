@@ -18,3 +18,5 @@ MEDIA_DIR = os.path.join(Path(__file__).resolve().parent, 'media')
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 PAYMENT_TOKEN = os.getenv("PAYMENT_TOKEN")
+
+PRODAMUS_TOKEN = os.getenv("PRODAMUS_TOKEN")
