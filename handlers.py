@@ -22,8 +22,13 @@ def get_id_of_rout(routs: list[dict], rout: str) -> int:
 
 # generate key for user
 async def generate_hash_key(chat_id):
-    key = hashlib.sha256(str(chat_id).encode()).hexdigest()
-    return str(key)
+    # Ensure chat_id is a string and strip unnecessary spaces to avoid discrepancies
+    chat_id_str = str(chat_id).strip()
+
+    # Explicitly specify the hashing algorithm and encoding (SHA-256, UTF-8)
+    sha256_hash = hashlib.sha256(chat_id_str.encode('utf-8')).hexdigest()
+
+    return sha256_hash
 
 async def generate_promo():
 

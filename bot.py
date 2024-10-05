@@ -17,9 +17,12 @@ from telegram.ext import (
     CallbackQueryHandler,
     PicklePersistence,
     PreCheckoutQueryHandler)
+
 from telegram.constants import ParseMode
 import requests
 import logging
+
+import copy
 
 from decimal import Decimal
 
@@ -34,234 +37,186 @@ from prodamus import generate_payment_link
 
 from defaults import zemun_path
 
+from paymnet.invoice_handler import prepare_payment_invoice
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
-# command handlers
-async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    r = requests.post(f'{BASE_URL}register-user/{update.message.from_user["username"]}/?chat_id={update.message.chat.id}')
-    routs = requests.get(url=f'{BASE_URL}routs')
+# Helper function to generate route buttons
+def generate_route_buttons(routs_data):
+    buttons = [
+        [InlineKeyboardButton(text=rout.get('rout_name'), callback_data=f'rout_{rout.get("id")}')]
+        for rout in routs_data
+    ]
+    return buttons
 
-    # user with access
-    if r.json().get('user', None) == 'with access':
-        buttons = []
-        for rout in routs.json():
-            buttons.append([InlineKeyboardButton(text=rout.get('rout_name'), callback_data=f'rout_{rout.get("id")}')])
-        rout_choose = await update.message.reply_text(
-            f'Добро пожаловать снова! У тебя уже есть доступ'
-            f'\n\n'
-            f'Доступные маршруты:',
-            reply_markup=InlineKeyboardMarkup(buttons))
-        context.user_data['to_delete'] = [rout_choose.id]
-
-    # user without access
-    elif r.json().get('user', None) == 'without access':
-
-        buttons = [
+# Helper function to send subscription options
+async def send_subscription_options(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    buttons = [
         [InlineKeyboardButton('Хочу оплатить', callback_data='get_subscription')],
         [InlineKeyboardButton('У меня есть промокод', callback_data='get_promo_subscription')],
         [InlineKeyboardButton('У меня есть подарочный сертификат', callback_data='get_subscription_from_friend')],
         [InlineKeyboardButton('Хочу купить подарочный сертификат', callback_data='get_subscription_friend')]
-               ]
-        markup = InlineKeyboardMarkup(buttons)
+    ]
+    markup = InlineKeyboardMarkup(buttons)
+    await update.message.reply_text(
+        'Похоже у тебя ещё нет доступа, ты можешь получить её нажав на кнопку ниже!',
+        reply_markup=markup
+    )
 
-        await update.message.reply_text(f'Добро пожаловать снова! \n'
-                                        f'К сожалению, ты не оплатил(-а) доступ к боту в прошлый раз, ты можешь сделать это '
-                                        f'по кнопке снизу!👇',
-                                        parse_mode='HTML',
-                                        reply_markup=markup)
-    # new user
-    elif r.json().get('id'):
-        buttons = [[InlineKeyboardButton('Хочу оплатить', callback_data='get_subscription')]]
-        markup = InlineKeyboardMarkup(buttons)
-        await update.message.reply_text(f'Добро пожаловать в бот «дашины маршруты»! \n'
-                                        f'Чтобы получить доступ к маршруту по Земуну, нажми кнопку «Хочу оплатить». '
-                                        f'Если у тебя есть промокод или подарочный сертификат, '
-                                        f'нажимай соответствующую кнопку.',
-                                        parse_mode= 'HTML',
-                                        reply_markup=markup)
+async def generate_payment_buttons(query):
 
+    buttons = [
+        [InlineKeyboardButton("Оплата российской картой", callback_data="ru_card")],
+        [InlineKeyboardButton("Оплата зарубежной картой", callback_data="noru_card")],
+    ]
+    await query.message.reply_text("Какой картой будет проводиться оплата?", reply_markup=InlineKeyboardMarkup(buttons))
+
+async def generate_payment_buttons_u(update):
+    buttons = [
+        [InlineKeyboardButton("Оплата российской картой", callback_data="ru_card")],
+        [InlineKeyboardButton("Оплата зарубежной картой", callback_data="noru_card")],
+    ]
+    await update.message.reply_text("Какой картой будет проводиться оплата?", reply_markup=InlineKeyboardMarkup(buttons))
+
+# command handlers
+# /start command handler
+async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    r = requests.post(f'{BASE_URL}register-user/{update.message.from_user["username"]}/?chat_id={update.message.chat.id}')
+    routs = requests.get(url=f'{BASE_URL}routs')
+
+    if r.json().get('user') == 'with access':
+        buttons = generate_route_buttons(routs.json())
+        rout_choose = await update.message.reply_text(
+            'Добро пожаловать снова! У тебя уже есть доступ\n\nДоступные маршруты:',
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+        context.user_data['to_delete'] = [rout_choose.id]
+
+    elif r.json().get('user') == 'without access':
+        await send_subscription_options(update, context)
+
+
+# Function to activate subscription and return available routes
 async def activate_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    key = update.message.text
     username = update.message.from_user.username
+    key = update.message.text
     r = requests.post(f'{BASE_URL}users/activate/{username}/{key}')
-    if r.status_code == 403 or r.status_code == 500:
+
+    if r.status_code in [403, 500]:
         return await update.message.reply_text(f'Похоже произошла ошибка: {r.content}')
 
     routs = requests.get(url=f'{BASE_URL}routs')
-    buttons = []
-    for rout in routs.json():
-        buttons.append([InlineKeyboardButton(text=rout.get('rout_name'), callback_data=f'rout_{rout.get("id")}')])
+    buttons = generate_route_buttons(routs.json())
+    return await update.message.reply_text('Твой аккаунт успешно активирован!',
+                                           reply_markup=InlineKeyboardMarkup(buttons))
 
-    markup = InlineKeyboardMarkup(buttons)
 
-    return await update.message.reply_text('Твой аккаунт успешно активирован!', reply_markup=markup)
-
+# Function to check subscription status and send options accordingly
 async def check_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     r = requests.get(f'{BASE_URL}get-user/{update.message.from_user.username}')
     user = r.json()
 
     if user.get('access_granted'):
         routs = requests.get(url=f'{BASE_URL}routs/')
-        buttons = []
-        for rout in routs.json():
-            buttons.append([InlineKeyboardButton(text=rout.get('rout_name'),
-                                                 callback_data=f'rout_{rout.get("id")}')])
-
-        markup = InlineKeyboardMarkup(buttons)
+        buttons = generate_route_buttons(routs.json())
         rout_choose = await update.message.reply_text(
-            'У тебя уже есть доступ и есть доступ ко всем моим экскурсиям',
-            reply_markup=markup
+            'У тебя уже есть доступ ко всем моим экскурсиям',
+            reply_markup=InlineKeyboardMarkup(buttons)
         )
         context.user_data['to_delete'] = [rout_choose.id]
         return
 
-    buttons = [
-        [InlineKeyboardButton('Хочу оплатить', callback_data='get_subscription')],
-        [InlineKeyboardButton('У меня есть промокод', callback_data='get_promo_subscription')],
-        [InlineKeyboardButton('У меня есть подарочный сертификат', callback_data='get_subscription_from_friend')],
-        [InlineKeyboardButton('Хочу купить подарочный сертификат', callback_data='get_subscription_friend')]
-               ]
-    markup = InlineKeyboardMarkup(buttons)
+    await send_subscription_options(update, context)
 
-    return await update.message.reply_text('Похоже у тебя ещё нет доступа, ты можешь получить её нажав на кнопку ниже!'
-                                           , reply_markup=markup)
-
-async def send_request_to_admins(update: Update, context:ContextTypes.DEFAULT_TYPE):
+# Send payment request to admins
+async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    r = requests.get(f'{BASE_URL}check_access/{update.callback_query.message.chat.username}/')
-    if r.status_code != 500:
-        if r.json().get('user') == 'with access':
-            return await update.callback_query.message.reply_text(
-                'У тебя уже есть доступ! Используй команду /routs чтобы получить список маршрутов'
-            )
+
+    r = requests.get(f'{BASE_URL}check_access/{query.message.chat.username}/')
+    if r.status_code != 500 and r.json().get('user') == 'with access':
+        return await query.message.reply_text('У тебя уже есть доступ! Используй команду /routs для просмотра маршрутов.')
 
     if query.data == 'get_subscription':
-        buttons = [
-            [InlineKeyboardButton("Оплата российской картой", callback_data="ru_card")],
-            [InlineKeyboardButton("Оплата зарубежной картой", callback_data="noru_card")],
-        ]
-        markup = InlineKeyboardMarkup(buttons)
-
-        return await update.callback_query.message.reply_text("Какой картой будет проводиться оплата?",
-                                               reply_markup=markup)
+        context.user_data['buying'] = 'self'
+        await generate_payment_buttons(query)
 
 
+# Payment handler for Russian cards
 async def ru_pay(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    if query.data == "ru_card":
-        invoice_desc = await update.callback_query.message.reply_text(
-            'Ты получишь доступ к маршруту, оплатив его по кнопке ниже. '
-            'После оплаты тебя ждут отмеченные на карте точки остановок, '
-            'аудиорассказы о том, что тебя будет окружать и дополнительные '
-            'материалы для более глубокого погружения в тему.\n\n'
-            'Uživaj!'
-        )
 
-        invoice = await update.callback_query.message.reply_invoice(
+    invoice = await prepare_payment_invoice(
+        payment_type="ru_card",
+        payment_reason=context.user_data.get('buying'),
+        discount_type=context.user_data.get('discount_type'),
+        discount=context.user_data.get('discount')
+    )
 
-            title='Доступ к боту',
-            description='Доступ к закрытому телеграм-боту с маршрутом по городу, в который входят отмеченные на карте точки и аудио- и фотоматериалы к каждой из них.',
-            payload='Custom-Payload',
-            currency='RUB',
-            prices=[LabeledPrice('Доступ к боту', 1400 * 100)],
-            need_name=False,
-            need_phone_number=False,
-            is_flexible=False,
-            provider_token=str(PAYMENT_TOKEN),
-            need_email=True,
-            send_email_to_provider=True,
-            provider_data={
-                "receipt":{
-                    "items": [
-                        {
-                            "description": 'Доступ к боту дашины маршруты',
-                            "quantity": "1.00",
-                            "amount":
-                                {
-                                    "value": "1400.00",
-                                    "currency": "RUB"
-                                },
-                            "vat_code": 1
-                        }
+    invoice_desc = await query.message.reply_text(
+        'Ты получишь доступ к маршруту, оплатив его по кнопке ниже. '
+        'После оплаты тебя ждут отмеченные на карте точки остановок, аудио- и фотоматериалы для погружения в тему.\n\nUživaj!'
+    )
+    invoice = await query.message.reply_invoice(**invoice)
 
-                    ]
-                }
-            }
 
-        )
-        context.user_data['to_delete'] = [invoice_desc.id, invoice.id]
-        context.user_data['buying'] = 'self'
-
+# Payment handler for non-Russian cards
 async def noru_pay(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    if query.data == "noru_card":
-        chat_id = str(update.callback_query.message.chat.id)
-        secure_hash = str(await generate_hash_key(chat_id))
+
+    invoice = await prepare_payment_invoice(
+        payment_type="noru_card",
+        payment_reason=context.user_data.get('buying'),
+        discount_type=context.user_data.get('discount_type'),
+        discount=context.user_data.get('discount')
+    )
+
+    chat_id = str(query.message.chat.id)
+    secure_hash = str(await generate_hash_key(chat_id))
+    if context.user_data.get('buying') == 'self':
         notification_link = f'http://49.13.167.190/prodamus-success/{chat_id}/{secure_hash}'
-        data = zemun_path
-        data['urlNotification'] = notification_link
-        print(data)
-        payment_link = generate_payment_link(data=data)
-        print(payment_link)
-        buttons = [
-            [InlineKeyboardButton("Оплата зарубежной картой",
-                                         web_app=WebAppInfo(url= payment_link
-                                         )
-                                  )
-             ]
-        ]
-        reply_markup = InlineKeyboardMarkup(buttons)
-        await update.callback_query.message.reply_text("Для оплаты иностранными картами, нажми на кнопку ниже",
-                                                        reply_markup=reply_markup
-                                                       )
+    elif context.user_data.get('buying') == 'friend':
+        notification_link = f'http://49.13.167.190/prodamus-friend/{chat_id}/{secure_hash}'
+
+    invoice.update({
+        'urlSuccess': notification_link,
+        'urlNotification': notification_link
+    })
+
+    payment_link = generate_payment_link(data=invoice)
+
+    buttons = [[InlineKeyboardButton("Оплата зарубежной картой", web_app=WebAppInfo(url=payment_link))]]
+    if context.user_data.get('discount_type', None):
+        await query.message.reply_text("Для оплаты иностранными картами, нажми на кнопку ниже. \n\n"
+                                       "<b>Цена указана в тенге и примерно эквивалента 1400 рублей + скидка.</b>",
+                                       reply_markup=InlineKeyboardMarkup(buttons),
+                                       parse_mode=ParseMode.HTML)
+    else:
+        await query.message.reply_text("Для оплаты иностранными картами, нажми на кнопку ниже. \n\n"
+                                       "<b>Цена указана в тенге и примерно эквивалента 1400 рублей.</b>",
+                                       reply_markup=InlineKeyboardMarkup(buttons),
+                                       parse_mode=ParseMode.HTML)
 
 
+    del context.user_data['buying']
+    if context.user_data.get('discount_type'):
+        del context.user_data['discount_type']
+    if context.user_data.get('discount'):
+        del context.user_data['discount']
+
+
+
+# Function to handle friend gift purchase
 async def get_subscription_for_friend(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-
-    await update.callback_query.message.reply_text('После оплаты по кнопке снизу, я пришлю тебе одноразовый ключ, '
-                                                   'а так же инструкцию по его активации')
-
-    invoice = await update.callback_query.message.reply_invoice(
-
-        title='Доступ к боту для друга',
-        description='Доступ к закрытому телеграм-боту с маршрутом по городу, в который входят отмеченные на карте точки и аудио- и фотоматериалы к каждой из них.',
-        payload='Custom-Payload',
-        currency='RUB',
-        prices=[LabeledPrice('Доступ к боту', 1400 * 100)],
-        need_name=False,
-        need_phone_number=False,
-        need_email=True,
-        is_flexible=False,
-        provider_token=str(PAYMENT_TOKEN),
-        send_email_to_provider=True,
-        provider_data= {
-            "receipt": {
-                "items": [
-                    {
-                        "description": 'Доступ к боту "дашины маршруты" для друга',
-                        "quantity": "1.00",
-                        "amount" :
-                            {
-                                "value": "1400.00",
-                                "currency": "RUB"
-                            },
-                        "vat_code" : 1
-                    }
-
-                ]
-            }
-        }
-
-    )
     context.user_data['buying'] = 'friend'
+    await generate_payment_buttons(query)
 
 async def precheckout_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Answers the PreQecheckoutQuery"""
@@ -275,6 +230,7 @@ async def precheckout_callback(update: Update, context: ContextTypes.DEFAULT_TYP
 
 async def process_success_payment(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await delete_msg(update, context, context.user_data["to_delete"])
+
     if context.user_data.get('buying') == 'self':
         username = update.message.from_user.username
         r = requests.post(f'{BASE_URL}users/activate/{username}')
@@ -292,6 +248,10 @@ async def process_success_payment(update: Update, context: ContextTypes.DEFAULT_
         await update.message.reply_text('Спасибо за покупку доступа к боту!\n\n'
                                         'Ниже я перечислил все доступные на данный момент маршруты', reply_markup=markup, parse_mode='HTML')
         del context.user_data['buying']
+        if context.user_data.get('discount_type'):
+            del context.user_data['discount_type']
+        if context.user_data.get('discount'):
+            del context.user_data['discount']
     elif context.user_data.get('buying') == 'friend':
         access_key = await generate_access_key(update.message.from_user.username)
         r = requests.post(f'{BASE_URL}gift_keys/?key={access_key}')
@@ -304,6 +264,10 @@ async def process_success_payment(update: Update, context: ContextTypes.DEFAULT_
                 f'"У меня есть код от друга"', parse_mode=ParseMode.MARKDOWN_V2
             )
         del context.user_data['buying']
+        if context.user_data.get('discount_type'):
+            del context.user_data['discount_type']
+        if context.user_data.get('discount'):
+            del context.user_data['discount']
 
 
 async def check_promocode_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
@@ -321,47 +285,27 @@ async def check_promocode_start(update: Update, context: ContextTypes.DEFAULT_TY
 
 async def check_promocode_end(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
     r = requests.get(f'{BASE_URL}promo/?source=bot&phrase={update.message.text}')
-
+    print(r.text)
     if r.status_code != 403:
         await update.message.reply_text('Промокод активирован!')
+
         if r.json().get('is_percent'):
-            new_price = Decimal('1400') * (Decimal('1') - Decimal(f'0.{r.json().get("percent")}'))
+            context.user_data['discount_type'] = 'is_percent'
+            context.user_data['discount'] = r.json().get('percent')
         else:
-            new_price = r.json().get('price')
-        invoice = await update.message.reply_invoice(
+            context.user_data['discount_type'] = 'not_percent'
+            context.user_data['discount'] = r.json().get('price')
 
-            title='Доступ к боту(ПРОМО)',
-            description='Доступ к закрытому телеграм-боту с маршрутом по городу, в который входят отмеченные на карте точки и аудио- и фотоматериалы к каждой из них.',
-            payload='Custom-Payload',
-            currency='RUB',
-            prices=[LabeledPrice('Доступ к боту', int(new_price) * 100)],
-            need_name=False,
-            need_phone_number=False,
-            need_email=True,
-            is_flexible=False,
-            provider_token=str(PAYMENT_TOKEN),
-            send_email_to_provider=True,
-            provider_data={
-                "receipt": {
-                    "items": [
-                        {
-                            "description": 'Доступ к боту "дашины маршруты" (ПРОМО)',
-                            "quantity": "1.00",
-                            "amount":
-                                {
-                                    "value": f'{int(new_price)}.00',
-                                    "currency": "RUB"
-                                },
-                            "vat_code": 1
-                        }
-
-                    ]
-                }
-            }
-
-        )
         context.user_data['buying'] = 'self'
-        return ConversationHandler.END
+        await generate_payment_buttons_u(update)
+
+        # if r.json().get('is_percent'):
+        #     new_price = Decimal('1400') * (Decimal('1') - Decimal(f'0.{r.json().get("percent")}'))
+        # else:
+        #     new_price = r.json().get('price')
+
+
+        # return ConversationHandler.END
 
     elif r.status_code == 403:
         await update.message.reply_text(f'<b>{r.content.decode("UTF-8")}</b>\n\n'
@@ -587,15 +531,12 @@ if __name__ == '__main__':
     app.add_handler(CommandHandler('routs', check_subscription))
     app.add_handler(CommandHandler('reg1q2w3e4r5t6y', register_admin))
 
-
-    app.add_handler(CallbackQueryHandler(send_request_to_admins, pattern=r'^get_subscription$'))
+    # Payments
+    app.add_handler(CallbackQueryHandler(buy_subscription, pattern=r'^get_subscription$'))
     app.add_handler(CallbackQueryHandler(ru_pay, pattern=r"^ru_card$"))
     app.add_handler(CallbackQueryHandler(noru_pay, pattern=r"noru_card"))
 
-    # app.add_handler(MessageHandler(filters.Regex(r'^\b[a-fA-F0-9]{64}\b$') & ~filters.COMMAND, activate_subscription))
-
-    # Payments
-    app.add_handler(CommandHandler('buy', send_request_to_admins))
+    app.add_handler(CommandHandler('buy', buy_subscription))
     app.add_handler(CallbackQueryHandler(get_subscription_for_friend, pattern='get_subscription_friend'))
     app.add_handler(PreCheckoutQueryHandler(precheckout_callback))
     app.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT & ~filters.COMMAND, process_success_payment))

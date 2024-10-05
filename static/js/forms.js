@@ -133,4 +133,24 @@ $(document).ready(function(){
         });
     })
 
+
+    const sendMassAlert = $('#alert-msg-submit')
+    console.log(sendMassAlert)
+    sendMassAlert.on('click', function(e){
+        e.preventDefault();
+        let massMsg = $('#alert-msg').val();
+        console.log(massMsg)
+        $.ajax({
+            url: `/mass-alert/?msg=${massMsg}`,
+            method: 'POST',
+            success: function(data) {
+             alert('Отправлено!')
+            },
+            error: function(error){
+              console.log(error)
+              alert('Ошибка')
+            }
+        });
+    });
+
 })

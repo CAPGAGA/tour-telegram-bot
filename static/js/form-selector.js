@@ -6,6 +6,7 @@ $(document).ready(function(){
     const allUsersBtn = $('#show-users-btn');
     const addPromoBtn = $('#add-promo-btn');
     const allPromosBtn = $('#show-promo-btn');
+    const massAlertBtn = $('#show-mass-alert-btn');
 
     $('.form-wrapper').hide();
 
@@ -457,6 +458,13 @@ $(document).ready(function(){
         })
 
         $('#all-promo-wrapper').show();
+
+    })
+
+    massAlertBtn.on('click', function(){
+        $('.form-wrapper').hide();
+
+        $('#mass-alert-wrapper').show()
 
     })
 

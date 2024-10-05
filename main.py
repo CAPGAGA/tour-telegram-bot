@@ -1,11 +1,13 @@
 import json
+
+import requests
 from fastapi import FastAPI, File, UploadFile, Response, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from typing import List, Optional, Union, Annotated
 from starlette.responses import JSONResponse
-from handlers import generate_hash_key, validate_key, validate_user_key, generate_promo
+from handlers import generate_hash_key, validate_key, validate_user_key, generate_promo, generate_access_key
 
 from pydub import AudioSegment
 import asyncio
@@ -19,10 +21,11 @@ import hmac
 import hashlib
 
 from telegram import Bot
+from telegram.constants import ParseMode
 
 from sqlalchemy.sql import select, update, delete, insert
 from datetime import datetime
-from settings import DEBUG, MEDIA_DIR, PRODAMUS_TOKEN
+from settings import DEBUG, MEDIA_DIR, PRODAMUS_TOKEN, BASE_URL
 
 from sql import database, users, routes, rout_points, admins, keys, promo_codes, subscriptions_keys
 
@@ -153,7 +156,7 @@ async def validate_prodamus_payment(request: Request):
 @app.get('/prodamus-success/{chat_id}/{secure_hash}', response_class=HTMLResponse)
 async def give_access_prodamus(chat_id, secure_hash):
     print(await generate_hash_key(chat_id))
-    if await generate_hash_key(chat_id) == secure_hash:
+    if await generate_hash_key(chat_id) == str(secure_hash):
         html_body = """
                 <html>
                     <head>
@@ -171,6 +174,56 @@ async def give_access_prodamus(chat_id, secure_hash):
         print(f'sending msg to {chat_id}')
         await Bot(token=TELEGRAM_TOKEN).send_message(chat_id=int(chat_id), text="Оплата прошла успешно! "
                                                                            "Используй /routs для получения списка маршрутов")
+        return html_body
+    html_body = """
+                    <html>
+                        <head>          
+                        </head>
+                        <body>
+                            <p>Error!</p>
+                        </body>
+                    </html>
+
+                """
+    await Bot(token=TELEGRAM_TOKEN).send_message(chat_id=int(chat_id), text="Не удалось провести оплату... "
+                                                                            "Для уточнения, пожалуйста, обратись на dashroutesbot@gmail.com")
+    return html_body
+
+@app.get('/prodamus-friend/{chat_id}/{secure_hash}', response_class=HTMLResponse)
+async def give_cert_prodamus(chat_id, secure_hash):
+    print(await generate_hash_key(int(chat_id)))
+    if await generate_hash_key(chat_id) == str(secure_hash):
+        html_body = """
+                <html>
+                    <head>
+                        <script type="text/javascript">
+                            window.open("", "_self");
+                            window.close();
+                        </script>            
+                    </head>
+                    <body>
+                        <p>Operation succcessful. You can safely close this window.</p>
+                    </body>
+                </html>
+
+            """
+        print(f'sending msg to {chat_id}')
+        access_key = await generate_access_key(chat_id)
+        async with database.transaction():
+            await database.execute(
+                insert(subscriptions_keys).values(
+                    key=access_key,
+                    used=False
+                )
+            )
+
+        await Bot(token=TELEGRAM_TOKEN).send_message(chat_id=int(chat_id),
+                        text="Оплата прошла успешно\! \n\n "
+                        f'Спасибо за покупку\n\n'
+                        f'Это ключ который ты можешь отправить своему другу или подруге\n\n'
+                        f'`{access_key}`\n\n'
+                        f'Твой друг может активировать код сразу после отправки мне команды /start и нажав кнопку '
+                        f'"У меня есть код от друга"', parse_mode=ParseMode.MARKDOWN_V2)
         return html_body
     html_body = """
                     <html>
@@ -624,3 +677,18 @@ async def cabinet(request: Request):
     return templates.TemplateResponse(
         name='cabinet.html', context={'request': request}
     )
+
+
+@app.post('/mass-alert/')
+async def mass_alert(msg: str):
+    async with database.transaction():
+        users_data = await database.fetch_all(
+            select(users)
+        )
+        bot = Bot(token=TELEGRAM_TOKEN)
+        if users_data:
+            for user in users_data:
+                try:
+                    await bot.send_message(chat_id=int(user.chat_id), text=msg, parse_mode=ParseMode.HTML)
+                except Exception as e:
+                    print(e, user.chat_id)

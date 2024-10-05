@@ -2,7 +2,7 @@ zemun_path = {
     'products': [
         {
             'name': 'Доступ к материалам бота',
-            'price': '17',
+            'price': '7069',
             'quantity': '1',
             'tax': {
                 'tax_type': 0,
@@ -11,8 +11,7 @@ zemun_path = {
     ],
     'do': 'pay',
     "sys": "bakeshop",
-    # 'discount_value': 0.00,
     'paid_content': 'Спасибо!',
-    'currency': 'usd',
+    'currency': 'kzt',
     'payments_limit': 1,
 }

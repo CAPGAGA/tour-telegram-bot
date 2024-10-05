@@ -1,3 +1,5 @@
+import copy
+
 from collections.abc import MutableMapping
 from urllib.parse import urlencode
 from settings import PRODAMUS_TOKEN
@@ -7,12 +9,13 @@ def generate_payment_link(
         secret_key: str = PRODAMUS_TOKEN,
         linktoform: str = "https://dashroutesbot.payform.ru/"
 ):
+    data_copy = copy.deepcopy(data)
 
     # подписываем с помощью кастомной функции sign (см ниже)
-    data['signature'] = sign(data, secret_key)
+    data_copy['signature'] = sign(data_copy, secret_key)
 
     # компануем ссылку с помощью кастомной функции http_build_query (см ниже)
-    link = linktoform + '?' + urlencode(http_build_query(data))
+    link = linktoform + '?' + urlencode(http_build_query(data_copy))
 
     return link
 

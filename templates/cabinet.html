@@ -47,6 +47,11 @@
             Управление промокодами
           </button>
         </li>
+        <li class="aside-list-item">
+          <button class="basic-aside-btn" id="show-mass-alert-btn">
+            Mass Alert
+          </button>
+        </li>
       </ul>
     </aside>
     <section class="main-controls">
@@ -183,6 +188,14 @@
             </td>
           </tr>
         </table>
+      </div>
+      <div class="form-wrapper" id="mass-alert-wrapper">
+        <h1 class="control-tag">Mass Alert</h1>
+        <form class="base-form" id="send-mass-alert">
+          <label for="rout-name" class="form-label">Сообщение</label>
+          <input class="form-input" name="rout_name" id="alert-msg" placeholder="Мне нужно вам сказать, что мне нечего вам сказать">
+          <input class="base-btn" type="submit" id="alert-msg-submit" value="Отправить">
+        </form>
       </div>
     </section>
   </div>
