@@ -1,11 +1,12 @@
 import json
 
 import requests
-from fastapi import FastAPI, File, UploadFile, Response, Request, Form, HTTPException
+from fastapi import FastAPI, File, UploadFile, Response, Request, Form, HTTPException, BackgroundTasks
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from typing import List, Optional, Union, Annotated
+
 from starlette.responses import JSONResponse
 from handlers import generate_hash_key, validate_key, validate_user_key, generate_promo, generate_access_key
 
@@ -153,7 +154,7 @@ async def validate_prodamus_payment(request: Request):
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=400)
 
-@app.get('/prodamus-success/{chat_id}/{secure_hash}', response_class=HTMLResponse)
+@app.post('/prodamus-success/{chat_id}/{secure_hash}', response_class=HTMLResponse)
 async def give_access_prodamus(chat_id, secure_hash):
     print(await generate_hash_key(chat_id))
     if await generate_hash_key(chat_id) == str(secure_hash):
@@ -172,6 +173,12 @@ async def give_access_prodamus(chat_id, secure_hash):
 
             """
         print(f'sending msg to {chat_id}')
+        async with database.transaction():
+            await database.execute(
+                update(users).where(users.c.chat_id==chat_id).values(
+                    access_granted=True
+                )
+            )
         await Bot(token=TELEGRAM_TOKEN).send_message(chat_id=int(chat_id), text="Оплата прошла успешно! "
                                                                            "Используй /routs для получения списка маршрутов")
         return html_body
@@ -680,15 +687,32 @@ async def cabinet(request: Request):
 
 
 @app.post('/mass-alert/')
-async def mass_alert(msg: str):
+async def mass_alert(msg: str, background_tasks: BackgroundTasks):
+    # Start the background task for mass alerting
+    background_tasks.add_task(send_mass_alerts, msg)
+    return {"message": "Mass alert task started"}
+
+async def send_mass_alerts(msg: str):
     async with database.transaction():
-        users_data = await database.fetch_all(
-            select(users)
-        )
+        users_data = await database.fetch_all(select(users))
         bot = Bot(token=TELEGRAM_TOKEN)
-        if users_data:
-            for user in users_data:
-                try:
-                    await bot.send_message(chat_id=int(user.chat_id), text=msg, parse_mode=ParseMode.HTML)
-                except Exception as e:
-                    print(e, user.chat_id)
+
+        if not users_data:
+            raise HTTPException(status_code=404, detail="No users found")
+
+        # Process users in manageable batches
+        for batch_start in range(0, len(users_data), 30):
+            user_batch = users_data[batch_start:batch_start + 30]
+            tasks = []
+            for user in user_batch:
+                tasks.append(send_message_to_user(bot, user.chat_id, msg))
+            # Run batch of tasks concurrently and wait
+            await asyncio.gather(*tasks)
+            await asyncio.sleep(2)  # Allow some time to avoid rate limiting
+
+async def send_message_to_user(bot, chat_id, msg: str):
+    try:
+        await bot.send_message(chat_id=int(chat_id), text=msg, parse_mode=ParseMode.HTML)
+    except Exception as e:
+        # Handle or log errors here if needed
+        print(f"Error sending to {chat_id}: {e}")

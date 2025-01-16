@@ -91,7 +91,7 @@ async def prepare_payment_invoice(
                     raise ValueError(f"Unknown discount type: {discount_type}")
                 # update provider data
                 provider_data_with_discount = copy.deepcopy(default_provider_data)
-                provider_data_with_discount["receipt"]["items"][0]["amount"]["value"] = f"{discounted_price}.00"
+                provider_data_with_discount["receipt"]["items"][0]["amount"]["value"] = f"{discounted_price}"
                 # update telegram invoice data
                 new_tg_invoice = copy.deepcopy(tg_invoice)
                 new_tg_invoice["title"] = "Доступ к боту (ПРОМО)"
@@ -107,7 +107,6 @@ async def prepare_payment_invoice(
                 new_tg_invoice["title"] = "Доступ к боту"
                 new_tg_invoice["provider_data"] = provider_data_no_discount
                 new_tg_invoice["prices"] = [LabeledPrice('Доступ к боту', 1400 * 100)]
-
                 return new_tg_invoice
         elif payment_reason == "friend":
             # preparing invoice for certificate
@@ -135,9 +134,11 @@ async def prepare_payment_invoice(
                 # update prodamus invoice data
                 prodamus_invoice_with_discount = copy.deepcopy(default_prodamus_invoice)
                 prodamus_invoice_with_discount["products"][0]['price'] = discounted_price
+
                 return prodamus_invoice_with_discount
             else:
                 prodamus_invoice_no_discount = copy.deepcopy(default_prodamus_invoice)
+
                 return prodamus_invoice_no_discount
         elif payment_reason == "friend":
             # preparing invoice for certificate
@@ -153,9 +154,11 @@ async def prepare_payment_invoice(
                 # update prodamus invoice data
                 prodamus_invoice_with_discount = copy.deepcopy(default_prodamus_invoice)
                 prodamus_invoice_with_discount["products"][0]['price'] = discounted_price
+
                 return prodamus_invoice_with_discount
             else:
                 prodamus_invoice_no_discount = copy.deepcopy(default_prodamus_invoice)
+
                 return prodamus_invoice_no_discount
     else:
         raise ValueError(f"Unknown payment method: {payment_type}")
