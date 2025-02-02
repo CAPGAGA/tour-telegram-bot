@@ -1,4 +1,3 @@
-import sqlalchemy
 import databases
 import sqlalchemy
 from settings import DATABASE_URL
@@ -56,8 +55,31 @@ rout_points = sqlalchemy.Table(
     sqlalchemy.Column('audio', sqlalchemy.String) # filename to audio file on local machine
 )
 
+promo_codes = sqlalchemy.Table(
+    "promo_codes",
+    metadata,
+    sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True, autoincrement=True),
+    sqlalchemy.Column('name', sqlalchemy.String),
+    sqlalchemy.Column('price', sqlalchemy.Integer),
+    sqlalchemy.Column('is_percent', sqlalchemy.Boolean),
+    sqlalchemy.Column('percent', sqlalchemy.Integer),
+    sqlalchemy.Column('is_counter', sqlalchemy.Boolean),
+    sqlalchemy.Column('counter', sqlalchemy.Integer),
+    sqlalchemy.Column('promocode', sqlalchemy.String, unique=True)
+)
+
+subscriptions_keys = sqlalchemy.Table(
+    "subscription_keys",
+    metadata,
+    sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True, autoincrement=True),
+    sqlalchemy.Column('key', sqlalchemy.String, unique=True),
+    sqlalchemy.Column('used', sqlalchemy.Boolean)
+)
+
 
 engine = sqlalchemy.create_engine(
     DATABASE_URL, connect_args={"check_same_thread": False}
 )
+
 metadata.create_all(engine)
+

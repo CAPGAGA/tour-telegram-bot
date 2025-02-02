@@ -1,160 +1,324 @@
-import telegram
-from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, Bot, Invoice, LabeledPrice
-from telegram.ext import ContextTypes, Application, CommandHandler, MessageHandler, filters, ConversationHandler, CallbackQueryHandler, PicklePersistence, PreCheckoutQueryHandler
-import requests
-import re
+import asyncio
+import html
 import json
-from settings import MEDIA_DIR, DEBUG, TELEGRAM_TOKEN, BASE_URL
-from handlers import get_id_of_rout, generate_hash_key, delete_msg
+import traceback
+
+import httpx
+
+import threading
+import time
+from datetime import datetime
+
+import telegram
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    LabeledPrice,
+    InputMediaPhoto,
+    WebAppInfo, Bot
+)
+from telegram.ext import (
+    ContextTypes,
+    Application,
+    CommandHandler,
+    MessageHandler,
+    filters,
+    ConversationHandler,
+    CallbackQueryHandler,
+    PicklePersistence,
+    PreCheckoutQueryHandler
+)
+from telegram.error import BadRequest
+from telegram.constants import ParseMode
+import requests
 import logging
 
-from yookassa import Configuration, Payment
+import copy
 
-Configuration.account_id = 506751
-Configuration.secret_key = 538350
+from decimal import Decimal
 
+from settings import MEDIA_DIR, TELEGRAM_TOKEN, BASE_URL, PAYMENT_TOKEN
+from handlers import (
+    delete_msg,
+    generate_access_key,
+    generate_hash_key
+)
 
+from prodamus import generate_payment_link
+
+from defaults import zemun_path
+
+from paymnet.invoice_handler import prepare_payment_invoice
+# logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
-logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
+filter_logger = logging.getLogger("filter_logger")
 
+# Global variable to track the last time 'getUpdates' was logged
+last_getupdates_time = datetime.now()
 
+# # Function to log activity and update last request time if 'getUpdates' is found
+# class GetUpdatesFilter(logging.Filter):
+#     def filter(self, record):
+#         global last_getupdates_time
+#         message = record.getMessage()
+#         # Check specifically for 'getUpdates' in the log message
+#         if "getUpdates" in message:
+#             last_getupdates_time = datetime.now()
+#             filter_logger.info(f"Updated last_getupdates_time to {last_getupdates_time} after detecting 'getUpdates'")
+#         return True
+#
+# # Add custom filter to logger
+# get_updates_filter = GetUpdatesFilter()
+# logger.addFilter(get_updates_filter)
+#
+# # Async function to send the alert message
+# async def send_alert_async():
+#     filter_logger.warning("Inactivity alert: No 'getUpdates' log in the last 5 minutes!")
+#     alert_bot = Bot(token=TELEGRAM_TOKEN)
+#     try:
+#         await alert_bot.send_message(chat_id=295055548, text="Inactivity alert: No 'getUpdates' requests in the last 5 minutes!")
+#     except Exception as e:
+#         logger.error(f"Failed to send alert: {e}")
+#
+# # Wrapper function to run the async alert in a synchronous context
+# def send_alert():
+#     asyncio.run(send_alert_async())
+#
+# # Background function to monitor inactivity
+# def monitor_inactivity():
+#     global last_getupdates_time
+#     while True:
+#         time.sleep(60)  # Check every minute
+#         time_since_last_update = (datetime.now() - last_getupdates_time).total_seconds()
+#         if time_since_last_update > 5 * 60:  # 5 minutes
+#             send_alert()
+#
+# # Start the monitoring thread
+# monitor_thread = threading.Thread(target=monitor_inactivity, daemon=True)
+# monitor_thread.start()
 
-# check if in DEBUG mode
-print('running debug' if DEBUG else 'running prod')
+# Function to schedule message deletion
+async def delete_message_later(context: ContextTypes.DEFAULT_TYPE, chat_id: int, message_id: int, delay: int = 3600):
+    await asyncio.sleep(delay)
+    try:
+        await context.bot.delete_message(chat_id=chat_id, message_id=message_id)
+    except Exception as e:
+        logger.warning(f"Failed to delete message {message_id}: {e}")
 
-# TODO move some api calls to global space
+# Helper function to generate route buttons
+def generate_route_buttons(routs_data):
+    buttons = [
+        [InlineKeyboardButton(text=rout.get('rout_name'), callback_data=f'rout_{rout.get("id")}')]
+        for rout in routs_data
+    ]
+    return buttons
+
+# Helper function to send subscription options
+async def send_subscription_options(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    buttons = [
+        [InlineKeyboardButton('Хочу оплатить', callback_data='get_subscription')],
+        [InlineKeyboardButton('У меня есть промокод', callback_data='get_promo_subscription')],
+        [InlineKeyboardButton('У меня есть подарочный сертификат', callback_data='get_subscription_from_friend')],
+        [InlineKeyboardButton('Хочу купить подарочный сертификат', callback_data='get_subscription_friend')]
+    ]
+    markup = InlineKeyboardMarkup(buttons)
+    await update.message.reply_text(
+        'Похоже у тебя ещё нет доступа, ты можешь получить её нажав на кнопку ниже!',
+        reply_markup=markup
+    )
+
+async def generate_payment_buttons(query):
+
+    buttons = [
+        [InlineKeyboardButton("Оплата российской картой", callback_data="ru_card")],
+        [InlineKeyboardButton("Оплата зарубежной картой", callback_data="noru_card")],
+    ]
+    await query.message.reply_text("Какой картой будет проводиться оплата?", reply_markup=InlineKeyboardMarkup(buttons))
+
+async def generate_payment_buttons_u(update):
+    buttons = [
+        [InlineKeyboardButton("Оплата российской картой", callback_data="ru_card")],
+        [InlineKeyboardButton("Оплата зарубежной картой", callback_data="noru_card")],
+    ]
+    await update.message.reply_text("Какой картой будет проводиться оплата?", reply_markup=InlineKeyboardMarkup(buttons))
 
 # command handlers
+# /start command handler
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    r = requests.post(f'{BASE_URL}register-user/{update.message.from_user["username"]}/?chat_id={update.message.chat.id}')
-    routs = requests.get(url=f'{BASE_URL}routs')
-    # user with access
-    if r.json().get('user', None) == 'with access':
-        buttons = []
-        for rout in routs.json():
-            buttons.append([InlineKeyboardButton(text=rout.get('rout_name'), callback_data=f'rout_{rout.get("id")}')])
-        rout_choose = await update.message.reply_text(f'Добро пожаловать снова! Ваша подписка активна и вам открыт доступ ко всему '
-                                        f'каталогу экскурсий!\n\n'
-                                        f'Доступные маршруты:',
-                                        reply_markup=InlineKeyboardMarkup(buttons))
-        context.user_data['to_delete'] = [rout_choose.id]
-    # user without access
-    elif r.json().get('user', None) == 'without access':
-        if DEBUG:
-            buttons = [[InlineKeyboardButton('Хочу подписку', callback_data='get_subscription')]]
-            markup = InlineKeyboardMarkup(buttons)
-        else:
-            buttons = [[InlineKeyboardButton('Хочу подписку', callback_data='get_subscription')]]
-            markup = InlineKeyboardMarkup(buttons)
-        await update.message.reply_text(f'Добро пожаловать снова! \n'
-                                        f'К сожалению, ты не приобрел(-а) подписку в прошлый раз, ты можешь сделать это '
-                                        f'оставив заявку по кнопке снизу!👇',
-                                        parse_mode='HTML',
-                                        reply_markup=markup)
-    # new user
-    elif r.json().get('id'):
-        buttons = [[InlineKeyboardButton('Хочу подписку', callback_data='get_subscription')]]
-        markup = InlineKeyboardMarkup(buttons)
-        await update.message.reply_text(f'Добро пожаловать в дашины маршруты! \n'
-                                        f'Для открытия полного функционала, пожалуйста оставь заявку по кнопке ниже.\n'
-                                        f'Я постараюсь связаться с тобой как можно быстрее',
-                                        parse_mode= 'HTML',
-                                        reply_markup=markup)
+    async with httpx.AsyncClient() as client:
+        r = await client.post(
+            f'{BASE_URL}register-user/{update.message.from_user["username"]}/?chat_id={update.message.chat.id}',
+            timeout=10, follow_redirects=True
+        )
+        routs = await client.get(
+            url=f'{BASE_URL}routs',
+            timeout=10, follow_redirects=True
+        )
 
+    if r.json().get('user') == 'with access':
+        buttons = generate_route_buttons(routs.json())
+        rout_choose = await update.message.reply_text(
+            'Добро пожаловать снова! У тебя уже есть доступ\n\nДоступные маршруты:',
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+        context.user_data['to_delete'] = [rout_choose.id]
+
+    elif r.json().get('user') == 'without access':
+        await send_subscription_options(update, context)
+
+
+# Function to activate subscription and return available routes
 async def activate_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    key = update.message.text
     username = update.message.from_user.username
-    r = requests.post(f'{BASE_URL}users/activate/{username}/{key}')
-    if r.status_code == 403 or r.status_code == 500:
-        return await update.message.reply_text(f'Похоже произошла ошибка: {r.content}')
+    key = update.message.text
+    async with httpx.AsyncClient() as client:
+        r = await client.post(f'{BASE_URL}users/activate/{username}/{key}', follow_redirects=True)
+
+        if r.status_code in [403, 500]:
+            return await update.message.reply_text(f'Похоже произошла ошибка: {r.content}')
 
     routs = requests.get(url=f'{BASE_URL}routs')
-    buttons = []
-    for rout in routs.json():
-        buttons.append([InlineKeyboardButton(text=rout.get('rout_name'), callback_data=f'rout_{rout.get("id")}')])
+    buttons = generate_route_buttons(routs.json())
+    return await update.message.reply_text('Твой аккаунт успешно активирован!',
+                                           reply_markup=InlineKeyboardMarkup(buttons))
 
-    markup = InlineKeyboardMarkup(buttons)
 
-    return await update.message.reply_text('Твой аккаунт успешно активирован!', reply_markup=markup)
-
+# Function to check subscription status and send options accordingly
 async def check_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    r = requests.get(f'{BASE_URL}get-user/{update.message.from_user.username}')
-    user = r.json()
+    async with httpx.AsyncClient() as client:
+        r = await client.get(f'{BASE_URL}get-user/{update.message.from_user.username}', follow_redirects=True)
+        user = r.json()
 
-    if user.get('access_granted'):
-        routs = requests.get(url=f'{BASE_URL}routs/')
-        buttons = []
-        for rout in routs.json():
-            buttons.append([InlineKeyboardButton(text=rout.get('rout_name'),
-                                                 callback_data=f'rout_{rout.get("id")}')])
-                                                 # callback_data=1)])
-        markup = InlineKeyboardMarkup(buttons)
-        rout_choose = await update.message.reply_text('У тебя активирована подписка и есть доступ ко всем моим экскурсиям', reply_markup=markup)
-        context.user_data['to_delete'] = [rout_choose.id]
-        return
-    buttons = [[InlineKeyboardButton('Хочу подписку', callback_data='get_subscription')]]
-    markup = InlineKeyboardMarkup(buttons)
+        if user.get('access_granted'):
+            async with httpx.AsyncClient() as client:
+                routs = await client.get(url=f'{BASE_URL}routs/', follow_redirects=True)
+            buttons = generate_route_buttons(routs.json())
+            rout_choose = await update.message.reply_text(
+                'У тебя уже есть доступ ко всем моим экскурсиям',
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
+            context.user_data['to_delete'] = [rout_choose.id]
+            return
 
-    return await update.message.reply_text('Похоже у тебя ещё нет подписки, оставь заявку по кнопке снизу, и  я свяжусь с тобой как можно быстрее', reply_markup=markup)
+    await send_subscription_options(update, context)
 
-async def send_request_to_admins(update: Update, context:ContextTypes.DEFAULT_TYPE):
+# Send payment request to admins
+async def buy_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.callback_query:
+        query = update.callback_query
+        await query.answer()
+        async with httpx.AsyncClient() as client:
+            r = await client.get(f'{BASE_URL}check_access/{query.message.chat.username}/', follow_redirects=True)
+            if r.status_code != 500 and r.json().get('user') == 'with access':
+                return await query.message.reply_text('У тебя уже есть доступ! Используй команду /routs для просмотра маршрутов.')
+
+        if query.data == 'get_subscription':
+            context.user_data['buying'] = 'self'
+            await generate_payment_buttons(query)
+    else:
+        async with httpx.AsyncClient() as client:
+            r = await client.get(f'{BASE_URL}check_access/{update.message.chat.username}/', follow_redirects=True)
+            if r.status_code != 500 and r.json().get('user') == 'with access':
+                return await update.message.reply_text(
+                    'У тебя уже есть доступ! Используй команду /routs для просмотра маршрутов.')
+
+        await generate_payment_buttons_u(update)
+
+
+# Payment handler for Russian cards
+async def ru_pay(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    # print(update.callback_query.message.chat.username)
-    r = requests.get(f'{BASE_URL}check_access/{update.callback_query.message.chat.username}/')
-    # print(r)
-    if r.status_code != 500:
-        if r.json().get('user') == 'with access':
-            return await update.callback_query.message.reply_text('У тебя уже есть подписка! Используй команду /routs чтобы получить список маршрутов')
-    # key = await generate_hash_key(update.callback_query.message.chat.id)
-    # if query.data == 'get_subscription':
-    #     username = update.callback_query.message.chat.username
-    #     r = requests.get(f'{BASE_URL}admins/')
-    #     data = r.json()
-    #     bot = Bot(TELEGRAM_TOKEN)
-    #     for admin in data:
-    #         chat_id = admin.get('chat_id', None)
-    #         text = f'Новая заявка от @{username}!\nКлюч для регистрации: <b>{key}</b>'
-    #         await bot.send_message(chat_id=chat_id, text=text,  parse_mode = 'HTML', disable_web_page_preview=True)
-    #     await update.callback_query.message.reply_text('Заявка отправлена. Я свяжусь с тобой в ближайшее время.')
-    if query.data == 'get_subscription':
-        invoice_desc = await update.callback_query.message.reply_text('Для доступа к моим экскурсиям оплати доступ к боту нажав кнопку ниже \n\n'
-                                                       'После оплаты ты получишь доступ к закрытому телеграм-боту с маршрутом по городу, в который входят отмеченные на карте точки и аудио- и фотоматериалы к каждой из них.')
 
-        invoice = await update.callback_query.message.reply_invoice(
-            title='Доступ к боту',
-            description='Доступ к закрытому телеграм-боту с маршрутом по городу, в который входят отмеченные на карте точки и аудио- и фотоматериалы к каждой из них.',
-            payload='Custom-Payload',
-            currency='RUB',
-            prices=[LabeledPrice('Доступ к боту', 850 * 100)],
-            need_name=False,
-            need_phone_number=False,
-            need_email=True,
-            # need_shipping_address=False,
-            is_flexible=False,
-            provider_token='381764678:TEST:82691',
-            # provider_token='381764678:TEST:82486',
-            send_email_to_provider=True,
-            # provider_data= {
-            #     "receipt": {
-            #         "items": [
-            #             {
-            #                 'description': 'Доступ к боту',
-            #                 'quantity': "1.00",
-            #                 "amount": {
-            #                     "value": "850.00",
-            #                     "currency": "RUB"
-            #                 },
-            #                 "vat_code": 1
-            #             }
-            #         ]
-            #     }
-            # }
-        )
-        context.user_data['to_delete'] = [invoice_desc, invoice]
+    # Prepare the invoice
+    invoice = await prepare_payment_invoice(
+        payment_type="ru_card",
+        payment_reason=context.user_data.get('buying'),
+        discount_type=context.user_data.get('discount_type', None),
+        discount=context.user_data.get('discount', None)
+    )
+
+    # Check if invoice is None before proceeding
+    if invoice is None:
+        await query.message.reply_text("Произошла ошибка при создании счета. Перезапусти бота командой /start и попробуй снова")
+        return
+
+    # Send the invoice
+    invoice_desc = await query.message.reply_text(
+        'Ты получишь доступ к маршруту, оплатив его по кнопке ниже. '
+        'После оплаты тебя ждут отмеченные на карте точки остановок, аудио- и фотоматериалы для погружения в тему.\n\nUživaj!'
+    )
+    invoice_body = await query.message.reply_invoice(**invoice)
+
+    asyncio.create_task(delete_message_later(context, update.effective_chat.id, invoice_desc.id, 3600))
+
+# Payment handler for non-Russian cards
+async def noru_pay(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    invoice = await prepare_payment_invoice(
+        payment_type="noru_card",
+        payment_reason=context.user_data.get('buying'),
+        discount_type=context.user_data.get('discount_type', None),
+        discount=context.user_data.get('discount', None)
+    )
+
+    chat_id = str(query.message.chat.id)
+    secure_hash = str(await generate_hash_key(chat_id))
+
+    if context.user_data.get('buying') == 'self':
+        notification_link = f'http://49.13.167.190/prodamus-success/{chat_id}/{secure_hash}'
+    elif context.user_data.get('buying') == 'friend':
+        notification_link = f'http://49.13.167.190/prodamus-friend/{chat_id}/{secure_hash}'
+
+    # Check if invoice is None before proceeding
+    if invoice is None:
+        await query.message.reply_text("Произошла ошибка при создании счета. Перезапусти бота командой /start и попробуй снова")
+        return
+
+
+    invoice.update({
+        'urlSuccess': notification_link,
+        'urlNotification': notification_link
+    })
+
+
+
+    payment_link = generate_payment_link(data=invoice)
+
+    buttons = [[InlineKeyboardButton("Оплата зарубежной картой", web_app=WebAppInfo(url=payment_link))]]
+    if context.user_data.get('discount_type', None):
+        invoice_body = await query.message.reply_text("Для оплаты иностранными картами, нажми на кнопку ниже. \n\n"
+                                       "<b>Цена указана в тенге и примерно эквивалента 1400 рублей + скидка.</b>",
+                                       reply_markup=InlineKeyboardMarkup(buttons),
+                                       parse_mode=ParseMode.HTML)
+    else:
+        invoice_body = await query.message.reply_text("Для оплаты иностранными картами, нажми на кнопку ниже. \n\n"
+                                       "<b>Цена указана в тенге и примерно эквивалента 1400 рублей.</b>",
+                                       reply_markup=InlineKeyboardMarkup(buttons),
+                                       parse_mode=ParseMode.HTML)
+
+    # delete after one hour
+    asyncio.create_task(delete_message_later(context, update.effective_chat.id, invoice_body.id, 10))
+    del context.user_data['buying']
+    if context.user_data.get('discount_type'):
+        del context.user_data['discount_type']
+    if context.user_data.get('discount'):
+        del context.user_data['discount']
+
+
+
+# Function to handle friend gift purchase
+async def get_subscription_for_friend(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    context.user_data['buying'] = 'friend'
+    await generate_payment_buttons(query)
 
 async def precheckout_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Answers the PreQecheckoutQuery"""
@@ -166,33 +330,118 @@ async def precheckout_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     else:
         await query.answer(ok=True)
 
-
 async def process_success_payment(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    username = update.message.from_user.username
-    r = requests.post(f'{BASE_URL}users/activate/{username}')
+    if context.user_data.get('buying') == 'self':
+        username = update.message.from_user.username
+        async with httpx.AsyncClient() as client:
+            r = await client.post(f'{BASE_URL}users/activate/{username}', follow_redirects=True)
 
-    if r.status_code == 403 or r.status_code == 500:
-        await update.message.reply_text(f'Похоже произошла ошибка: {r.content}')
-        return
+            if r.status_code == 403 or r.status_code == 500:
+                await update.message.reply_text(f'Похоже произошла ошибка: {r.content}')
+                return
+        async with httpx.AsyncClient() as client:
+            routs = await client.get(url=f'{BASE_URL}routs/', follow_redirects=True)
+        buttons = []
+        for rout in routs.json():
+            buttons.append([InlineKeyboardButton(text=rout.get('rout_name'),
+                                                 callback_data=f'rout_{rout.get("id")}')])
+        markup = InlineKeyboardMarkup(buttons)
+        await update.message.reply_text('Спасибо за покупку доступа к боту!\n\n'
+                                        'Ниже я перечислил все доступные на данный момент маршруты', reply_markup=markup, parse_mode='HTML')
+        del context.user_data['buying']
+        if context.user_data.get('discount_type'):
+            del context.user_data['discount_type']
+        if context.user_data.get('discount'):
+            del context.user_data['discount']
+    elif context.user_data.get('buying') == 'friend':
+        access_key = await generate_access_key(update.message.from_user.username)
+        async with httpx.AsyncClient() as client:
+            r = await client.post(f'{BASE_URL}gift_keys/?key={access_key}', follow_redirects=True)
+            if r.status_code == 200:
+                await update.message.reply_text(
+                    f'Спасибо за покупку\n\n'
+                    f'Это ключ который ты можешь отправить своему другу или подруге\n\n'
+                    f'`{access_key}`\n\n'
+                    f'Твой друг может активировать код сразу после отправки мне команды /start и нажав кнопку '
+                    f'"У меня есть код от друга"', parse_mode=ParseMode.MARKDOWN_V2
+                )
+        del context.user_data['buying']
+        if context.user_data.get('discount_type'):
+            del context.user_data['discount_type']
+        if context.user_data.get('discount'):
+            del context.user_data['discount']
 
-    routs = requests.get(url=f'{BASE_URL}routs/')
-    buttons = []
-    for rout in routs.json():
-        buttons.append([InlineKeyboardButton(text=rout.get('rout_name'),
-                                             callback_data=f'rout_{rout.get("id")}')])
-        # callback_data=1)])
-    markup = InlineKeyboardMarkup(buttons)
-    await update.message.reply_text('Спасибо за покупку доступа к боту!\n\n'
-                                    'Ниже я перечислил все доступные на данный момент маршруты', reply_markup=markup, parse_mode='HTML')
+
+async def check_promocode_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
+    if update.callback_query:
+        query = update.callback_query
+        await query.answer()
+
+        promo_start = await update.callback_query.message.reply_text("Введи промокод")
+        context.user_data['to_delete'] = [promo_start.id]
+        return 'next__check__promo'
+    else:
+        promo_start = await update.message.reply_text("Введи промокод")
+        context.user_data['to_delete'] = [promo_start.id]
+        return 'next__check__promo'
+
+async def check_promocode_end(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
+    async with httpx.AsyncClient() as client:
+        r = await client.get(f'{BASE_URL}promo/?source=bot&phrase={update.message.text}', follow_redirects=True)
+        if r.status_code != 403:
+            await update.message.reply_text('Промокод активирован!')
+
+            if r.json().get('is_percent'):
+                context.user_data['discount_type'] = 'is_percent'
+                context.user_data['discount'] = r.json().get('percent')
+            else:
+                context.user_data['discount_type'] = 'not_percent'
+                context.user_data['discount'] = r.json().get('price')
+
+            context.user_data['buying'] = 'self'
+            await generate_payment_buttons_u(update)
+
+        elif r.status_code == 403:
+            await update.message.reply_text(f'<b>{r.content.decode("UTF-8")}</b>\n\n'
+                                            f'Проверь правильность написания промокода и введи его снова', parse_mode='HTML')
+            return 'next__check__promo'
+
+async def check_friend_code(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.callback_query:
+        query = update.callback_query
+        await query.answer()
+
+        await update.callback_query.message.reply_text('Для активации ключа, отправь его мне в ответном сообщении')
+
+        return 'next__friend__key__confirmation'
+
+async def friend_key_confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async with httpx.AsyncClient() as client:
+        r = await client.get(f'{BASE_URL}gift_keys/?key={update.message.text}', follow_redirects=True)
+
+        if r.status_code == 200:
+            activation = requests.post(f'{BASE_URL}users/activate/{update.message.from_user.username}')
+            if activation.status_code == 200:
+                await update.message.reply_text('Доступ активирован! Для доступа к маршрутам используй команду /routs')
+            return ConversationHandler.END
+        elif r.status_code == 404:
+            await update.message.reply_text('Похоже такого ключа не существует или он был использован, проверь правильность '
+                                            'написания и пришли мне его снова')
+            return 'next__friend__key__confirmation'
+
+async def promo_check_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    await update.message.reply_text('Отмена')
+    return ConversationHandler.END
 
 async def register_admin(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     username = update.message.from_user.username
     chat_id = update.message.chat_id
-    r = requests.post(f'{BASE_URL}admins/?chat_id={chat_id}&username={username}')
-    if r.status_code == 200:
-        await update.message.reply_text(f'@{username}, теперь ты админ и будешь получать заявки! Для логина в интерфейс: {chat_id}')
-    else:
-        await update.message.reply_text('Ошибка регистрации')
+    async with httpx.AsyncClient() as client:
+        r = await client.post(f'{BASE_URL}admins/?chat_id={chat_id}&username={username}', follow_redirects=True)
+        if r.status_code == 200:
+            await update.message.reply_text(f'@{username}, теперь ты админ и будешь получать заявки! Для логина в интерфейс: {chat_id}')
+        else:
+            await update.message.reply_text('Ошибка регистрации')
 
 async def help_command(update: Update, context:ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(f'Для того чтобы сделать это, нажмите на это \n'
@@ -202,200 +451,52 @@ async def about_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f'Привет! '
                                     f'Это бот «дашины маршруты». Вместе со мной ты сможешь прогуляться по'
                                     f'предложенному маршруту и услышать рассказ о том, что встретишь на пути. В любой'
-                                    f'момент можешь взять паузу и вернуться к маршруту позже или в другой день.'
+                                    f'момент можешь взять паузу и вернуться к маршруту позже или в другой день.🥰'
                                     f'\n'
-                                    f'В данный момент у меня нет возможности принимать оплату картой, поэтому, пожалуйста напиши "сюда" или подожди, пока я сама тебе напишу🥰\n'
+                                    f'\n'
                                     f'Данный бот был создан при поддержке команды <a href="https://www.quadevents.me">quadevents.me</a>',
                                     parse_mode='HTML')
 
-# async def test_audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     await update.message.reply_text('Testing audio')
-#     await update.message.reply_voice(open(MEDIA_DIR+'/file_example_MP3_1MG.mp3', 'rb+'))
-#
-# # message handlers
-# async def access_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     if "Проверить подписку" in update.message.text:
-#         r = requests.get(f'{BASE_URL}check_access/{update.message.from_user["username"]}/')
-#         if r.json().get('user') == 'without access':
-#             buttons = [[KeyboardButton("Проверить подписку")]]
-#             await update.message.reply_text(f'Пока ваша подписка не активна 😔 \n'
-#                                             f'Возможно платеж ещё не прошёл, повторите подписку через 10 минут, если '
-#                                             f'проблема продолжиться, пожалуйста свяжитесь с нами',
-#                                             parse_mode='HTML',
-#                                             reply_markup=ReplyKeyboardMarkup(buttons, resize_keyboard=True))
-#         elif r.json().get('user') == 'with access':
-#             rr = requests.get(f'{BASE_URL}routs/')
-#             buttons = [[]]
-#             for rout in rr.json():
-#                 buttons[0].append(KeyboardButton(text=rout.get('rout_name')))
-#             # buttons = [[KeyboardButton("Экскурсия 1"), KeyboardButton("Экскурсия 2")]]
-#             await update.message.reply_text(f'Ваша подписка активна 😎\n'
-#                                             f'Большое спасибо, что выбрали нас 🥰\n'
-#                                             f'Теперь вам доступны все наши экскурсии, снизу вы можете выбрать любую '
-#                                             f'из них!',
-#                                             parse_mode='HTML',
-#                                             reply_markup=ReplyKeyboardMarkup(buttons, resize_keyboard=True))
-#
-#     # activate test subscription !!! only accessible in DEBUG mode !!!
-#     if DEBUG:
-#         if 'Активация подписки' in update.message.text:
-#             r = requests.post(f'{BASE_URL}test_access/{update.message.from_user["username"]}')
-#             await update.message.reply_text('Тестовая подписка активна!')
-#
-# async def rout_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     routs = requests.get(url=f'{BASE_URL}routs')
-#     rout_id = get_id_of_rout(routs=routs.json(), rout=update.message.text)
-#     requests.post(url=f'{BASE_URL}set-user-rout/{update.message.from_user["username"]}/{rout_id}')
-#     buttons = [[KeyboardButton('Начинаем!')]]
-#     await update.message.reply_text(f'Выбрана экскурсия "{update.message.text}"',
-#                                     parse_mode= 'HTML',
-#                                     reply_markup=ReplyKeyboardMarkup(buttons, resize_keyboard=True)
-#                                     )
-#     await update.message.reply_voice(open(MEDIA_DIR+'/audio/'+'greeting.m4a', 'rb+'))
-#
-# async def start_rout(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     user = requests.get(url=f'{BASE_URL}get-user/{update.message.from_user["username"]}')
-#     rout_points = requests.get(url=f'{BASE_URL}routs/{user.json().get("current_rout")}')
-#     user_rout = user.json().get('current_rout')
-#
-#     # get first point of rout and set it us user current point
-#     user_current_rout_point = rout_points.json()[0].get('id')
-#     r = requests.post(url=f'{BASE_URL}set-user-rout-point/{update.message.from_user["username"]}/{user_current_rout_point}')
-#     coords = json.loads(rout_points.json()[0].get('map_point'))
-#
-#     buttons = [[KeyboardButton('Материалы')]]
-#
-#     await update.message.reply_text(f'Отлично! Сейчас я пришлю тебе точку на карте. \n'
-#                                     f'Как доберешься до нужного места - нажми на кнопку "Материалы" \n'
-#                                     f'Я отправлю тебе все материалы \n'
-#                                     f'\n'
-#                                     f'Если захочешь закончить экскурсию и перейти к другой воспользуйся командой /end',
-#                                     parse_mode='HTML',
-#                                     reply_markup=ReplyKeyboardMarkup(buttons, resize_keyboard=True))
-#     await update.message.reply_location(longitude=coords[1], latitude=coords[0])
-#
-# async def next_point(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     user = requests.get(url=f'{BASE_URL}get-user/{update.message.from_user["username"]}')
-#     # switch of user point
-#     current_point = requests.get(url=f'{BASE_URL}rout-points/{user.json().get("current_rout_point")}')
-#     next_point_id = current_point.json()[0].get('next_point')
-#     next_point = requests.get(url=f'{BASE_URL}rout-points/{next_point_id}')
-#     requests.post(url=f'{BASE_URL}set-user-rout-point/{update.message.from_user["username"]}/{next_point_id}')
-#
-#     coords = json.loads(next_point.json()[0].get('map_point'))
-#
-#     buttons = [[KeyboardButton('Материалы')]]
-#
-#     await update.message.reply_text(f'Карта следующей точки',
-#                                     parse_mode= 'HTML',
-#                                     reply_markup=ReplyKeyboardMarkup(buttons, resize_keyboard=True))
-#     await update.message.reply_location(longitude=coords[1], latitude=coords[0])
-#
-# async def previous_point(update: Update, context:ContextTypes.DEFAULT_TYPE) -> None:
-#     user = requests.get(url=f'{BASE_URL}get-user/{update.message.from_user["username"]}')
-#     # switch of user point
-#     current_point = requests.get(url=f'{BASE_URL}rout-points/{user.json().get("current_rout_point")}')
-#     previous_point_id = current_point.json()[0].get('previous_point')
-#     previous_point = requests.get(url=f'{BASE_URL}rout-points/{previous_point_id}')
-#     requests.post(url=f'{BASE_URL}set-user-rout-point/{update.message.from_user["username"]}/{previous_point_id}')
-#
-#     coords = json.loads(previous_point.json()[0].get('map_point'))
-#     buttons = [[KeyboardButton('Материалы')]]
-#
-#     await update.message.reply_text(f'Карта предыдущей точки',
-#                                     parse_mode='HTML',
-#                                     reply_markup=ReplyKeyboardMarkup(buttons, resize_keyboard=True))
-#     await update.message.reply_location(longitude=coords[1], latitude=coords[0])
-#
-# async def end_rout(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     user = requests.get(url=f'{BASE_URL}get-user/{update.message.from_user["username"]}')
-#
-#     # dropping rout and point of user to default -> 0
-#     requests.post(url=f'{BASE_URL}set-user-rout/{update.message.from_user["username"]}/0')
-#     requests.post(url=f'{BASE_URL}set-user-rout-point/{update.message.from_user["username"]}/0')
-#
-#     # send routs again
-#     rr = requests.get(f'{BASE_URL}routs/')
-#     buttons = [[]]
-#     for rout in rr.json():
-#         buttons[0].append(KeyboardButton(text=rout.get('rout_name')))
-#
-#     await update.message.reply_text(f'Вы закончили маршрут. Надеюсь вы получили только приятные впечатления '
-#                                     f'Ниже я вывел для тебя наши другие экскурсии',
-#                                     reply_markup=ReplyKeyboardMarkup(buttons, resize_keyboard=True))
-#
-#
-# async def render_materials(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     # get user instance and user rout and point
-#     user = requests.get(url=f'{BASE_URL}get-user/{update.message.from_user["username"]}')
-#     current_rout_point = user.json().get('current_rout_point')
-#     rout_point_materials = requests.get(url=f'{BASE_URL}rout-points/{current_rout_point}')
-#     json_materials = rout_point_materials.json()[0]
-#
-#     # check if point is last in the rout and render next/previous point or end rout
-#     buttons = [[]]
-#     if json_materials.get('next_point') and json_materials.get('previous_point'):
-#         buttons[0].append(KeyboardButton('Предыдущая точка'))
-#         buttons[0].append(KeyboardButton('Следующая точка'))
-#     elif json_materials.get('next_point'):
-#         buttons[0].append(KeyboardButton('Следующая точка'))
-#     else:
-#         buttons[0].append(KeyboardButton('Предыдущая точка'))
-#         buttons[0].append(KeyboardButton('Закончить экскурсию'))
-#
-#     # unpack single photo or list of photos
-#     try:
-#         photos = json_materials.get('images').strip("]['").split(', ')
-#     except:
-#         photos = json_materials.get('images')
-#
-#
-#     await update.message.reply_text(f'{json_materials.get("description")}',
-#                                     reply_markup=ReplyKeyboardMarkup(buttons, resize_keyboard=True))
-#
-#     # sending photos in list or single one
-#     try:
-#         for photo in photos:
-#             await update.message.reply_photo(photo=MEDIA_DIR+'/images/'+photo.strip("'"))
-#     except:
-#         await update.message.reply_photo(photo=MEDIA_DIR+'/images/'+json_materials.get('images'))
-#     await update.message.reply_voice(voice=MEDIA_DIR+'/audio/'+json_materials.get('audio'))
-
-
-
 # main loop for points of rout
-
 # greeting message
 async def greeting_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    await delete_msg(update, context, context.user_data['to_delete'])
+
     user_choice = query.data.split('_')[1]
 
-    routs = requests.get(f'{BASE_URL}routs')
+    async with httpx.AsyncClient() as client:
+        routs = await client.get(f'{BASE_URL}routs', follow_redirects=True)
 
-    rout = list(filter(lambda rout: rout.get('id') == int(user_choice), routs.json()))[0]
+        rout = list(filter(lambda rout: rout.get('id') == int(user_choice), routs.json()))[0]
 
-    context.user_data['rout_id'] = user_choice
-    first_point = requests.get(f'{BASE_URL}rout-points-first/{user_choice}')
-    context.user_data['rout_point_id'] = first_point.json()[0].get('id')
-    context.user_data['next_rout_point_id'] = first_point.json()[0].get('next_point', None)
+        context.user_data['rout_id'] = user_choice
+        first_point = await client.get(f'{BASE_URL}rout-points-first/{user_choice}', follow_redirects=True)
+        context.user_data['rout_point_id'] = first_point.json()[0].get('id')
+        context.user_data['next_rout_point_id'] = first_point.json()[0].get('next_point', None)
 
     markup = InlineKeyboardMarkup([[InlineKeyboardButton('Приступить', callback_data='next')]])
 
-    msg_instructions = await update.callback_query.message.reply_text(f'Начало экскурсии "{rout.get("rout_name")}"\n\n'
-                                                   f'Если это твоя первая экскурсия, пожалуйста, ознакомься '
-                                                   f'с форматом дальнейших сообщений\n\n'
-                                                   f'Первое сообщение будет приветствием от Даши, где она кратко пройдется '
-                                                   f'по тому, что тебя ожидает на экскурсии.\n\nКак только с ним ознакомишься '
-                                                   f'или решишь пропустить, нажми на кнопку <b>"Приступить"</b> это запустит экскурсию \n\n'
-                                                   f'После этого я скину тебя точку на карте прямо в чате, как доберешься до нее,'
-                                                   f'нажми на кнопку <b>"Я на месте"</b>, в ответ я скину Дашину лекцию, а так же фото материалы\n\n'
-                                                   f'Ты можешь прервать экскурсию в любой момент и вернуться к ней позже - '
-                                                   f'я запомню последнюю точку и тебе не придется меня перезапускать!\n\n'
-                                                   f'<i>Если всё же решишь закончить экскурсию совсем, напиши мне <b>/end</b> в любой момент </i>', parse_mode='HTML', reply_markup=markup)
-    msg_intro = await  update.callback_query.message.reply_text('К слову, Дашины сообщения-лекции выглядят так 😊')
-    msg_intro_voice = await update.callback_query.message.reply_voice(voice=MEDIA_DIR+'/audio/'+first_point.json()[0].get('audio'))
+    msg_instructions = await update.callback_query.message.reply_text(
+        f'Начало экскурсии "{rout.get("rout_name")}"\n\n'
+        'Привет!\n\n'
+        'Если это твоя первая экскурсия, пожалуйста, ознакомься с форматом дальнейших сообщений.\n\n'
+        'Первым сообщением будет приветствие от Даши, где она кратко пройдется по тому, что тебя ожидает на экскурсии.\n\n'
+        'Как только с ним ознакомишься или решишь пропустить, нажми на кнопку <b>"Приступить"</b> - это запустит экскурсию.\n\n'
+        'После этого я скину тебе точку на карте в чате, а так же все материалы.\n\n'
+        'Ты можешь прервать экскурсию в любой момент и вернуться к ней позже - я запомню последнюю точку и тебе не '
+        'придется меня перезапускать!\n\n'
+        '<i>Если всё же решишь закончить экскурсию совсем, напиши мне /end в любой момент.</i>',
+        parse_mode='HTML',
+        reply_markup=markup)
+
+    msg_intro = await update.callback_query.message.reply_text('К слову, Дашины сообщения-рассказы выглядят так 😊')
+
+    msg_intro_voice = await update.callback_query.message.reply_voice(
+        voice=MEDIA_DIR+'/audio/'+first_point.json()[0].get('audio'),
+        caption=first_point.json()[0].get('description', 'ошибочка'),
+        protect_content=True
+    )
     context.user_data['to_delete'] = [msg_instructions.id, msg_intro.id, msg_intro_voice.id]
     return 'map_point'
 
@@ -405,31 +506,116 @@ async def map_materials_point(update: Update, context: ContextTypes.DEFAULT_TYPE
     await query.answer()
 
     if query.data == 'next':
-        current_point = requests.get(f'{BASE_URL}rout-points/{context.user_data["rout_id"]}/{context.user_data["next_rout_point_id"]}')
+        async with httpx.AsyncClient() as client:
+            current_point = await client.get(f'{BASE_URL}rout-points/{context.user_data["rout_id"]}/{context.user_data["next_rout_point_id"]}', follow_redirects=True)
 
         point_data = current_point.json()
-        await delete_msg(update, context, context.user_data['to_delete'])
+        # await delete_msg(update, context, context.user_data['to_delete'])
+
         # set next point from prev step to current point
         context.user_data['rout_point_id'] = context.user_data["next_rout_point_id"]
+
         # set next point to next point from point data
         context.user_data["next_rout_point_id"] = point_data[0].get('next_point', None)
         cords = point_data[0].get('map_point').strip('][').split(', ')
-        text_map = await update.callback_query.message.reply_text('Карта следующей точки')
-        map_msg = await update.callback_query.message.reply_location(longitude=cords[0], latitude=cords[1])
 
+        # send map
+        text_map = await update.callback_query.message.reply_text('Карта следующей точки')
+        map_msg = await update.callback_query.message.reply_location(
+            longitude=cords[0],
+            latitude=cords[1],
+            protect_content=True
+        )
+
+        context.user_data['to_delete'] = [map_msg.id, text_map.id]
 
         if context.user_data['next_rout_point_id'] == None:
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton('Закончить экскурсию', callback_data='end')]])
+            markup = InlineKeyboardMarkup(
+                [
+                    [InlineKeyboardButton('Оставить отзыв', callback_data='next__report__start')],
+                    [InlineKeyboardButton('Закончить экскурсию', callback_data='end')]
+                ]
+            )
         else:
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton('Следующая точка', callback_data='next')]])
-        photo = point_data[0].get('images').strip("[]'")
-        voice_msg = await update.callback_query.message.reply_voice(
-            voice=MEDIA_DIR + '/audio/' + point_data[0].get('audio'))
-        img_msg = await update.callback_query.message.reply_photo(photo=open(MEDIA_DIR+'/images/'+photo, 'rb'), reply_markup=markup)
-        # next_point_msg = await update.callback_query.message.reply_text('Следующая точка', )
-        context.user_data['to_delete'] = [img_msg.id, voice_msg.id, map_msg.id, text_map.id]
+            markup = InlineKeyboardMarkup(
+                [
+                    [InlineKeyboardButton('Следующая точка', callback_data='next')]
+                ]
+            )
 
-        return 'map_point'
+        # photo or media group
+        photos = point_data[0].get('images').strip("[]").replace(" ", "").replace("'", "").split(',')
+        if len(photos) == 1:
+            img_msg = await update.callback_query.message.reply_photo(
+                photo=open(MEDIA_DIR + '/images/' + photos[0], 'rb'),
+                protect_content=True
+            )
+            context.user_data['to_delete'].append(img_msg)
+        elif len(photos) > 1:
+            medias = []
+            for photo in photos:
+                medias.append(InputMediaPhoto(media=open(MEDIA_DIR + '/images/' + photo, 'rb')))
+            img_msg = await update.callback_query.message.reply_media_group(media=medias,  protect_content=True)
+            for msg in img_msg:
+                context.user_data['to_delete'].append(msg)
+        # voice msg
+        voice_msg = await update.callback_query.message.reply_voice(
+            voice=MEDIA_DIR + '/audio/' + point_data[0].get('audio'),
+            reply_markup=markup,
+            caption=point_data[0].get('description', 'ошибочка'),
+            protect_content=True
+        )
+        context.user_data['to_delete'].append(voice_msg)
+
+        if point_data[0].get('next_point', None):
+            return 'map_point'
+    elif query.data == 'end':
+
+        await update.callback_query.message.reply_text('Большое спасибо за прослушивание')
+        await update.callback_query.message.reply_text('Для просмотра остальных экскурсий используй команду /routs')
+        return ConversationHandler.END
+
+    elif query.data == 'next__report__start':
+
+        markup = InlineKeyboardMarkup(
+            [
+                [InlineKeyboardButton('Закончить экскурсию без отзыва', callback_data='end')]
+            ]
+        )
+
+        await query.message.reply_text(
+            'Чтобы оставить отзыв отправь мне в ответ текстовое сообщение',
+            reply_markup=markup,
+        )
+
+        return 'next__save__report'
+    else:
+        raise ValueError('Unknown command')
+
+async def save_report(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    if update.callback_query:
+        query = update.callback_query
+        await query.answer()
+
+        await update.callback_query.message.reply_text('Большое спасибо за прослушивание')
+        await update.callback_query.message.reply_text('Для просмотра остальных экскурсий используй команду /routs')
+        return ConversationHandler.END
+
+    # form report for admin
+    report = update.message.text
+
+    report_full = (f'Новый отзыв от пользователя @{update.message.from_user.username}\n\n'
+                   f'{report}')
+
+    await context.bot.send_message(
+        chat_id=68848139,
+        text=report_full
+    )
+
+    await update.message.reply_text('Большое спасибо за прослушивание и за твой отзыв!')
+    await update.message.reply_text('Для просмотра остальных экскурсий используй команду /routs')
+
+    return ConversationHandler.END
 
 # async def audio_text_point(update: Update, context: ContextTypes.DEFAULT_TYPE):
 #     query = update.callback_query
@@ -445,22 +631,83 @@ async def map_materials_point(update: Update, context: ContextTypes.DEFAULT_TYPE
 #         return 'map_point'
 
 async def end_rout(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.callback_query:
+        query = update.callback_query
+        await query.answer()
+        await update.callback_query.message.reply_text('Большое спасибо за прослушивание')
+        await update.callback_query.message.reply_text('Для просмотра остальных экскурсий используй команду /routs')
+        return ConversationHandler.END
     await update.message.reply_text('Большое спасибо за прослушивание')
     await update.message.reply_text('Для просмотра остальных экскурсий используй команду /routs')
     return ConversationHandler.END
 
-if __name__ == '__main__':
+
+# error handler
+async def handle_error(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    # send data to developer
+    tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)
+    tb_string = "".join(tb_list)
+
+    # Build the message with some markup and additional information about what happened.
+    # You might need to add some logic to deal with messages longer than the 4096 character limit.
+    update_str = update.to_dict() if isinstance(update, Update) else str(update)
+    message = (
+        "An exception was raised while handling an update\n"
+        f"<pre>update = {html.escape(json.dumps(update_str, indent=2, ensure_ascii=False))}"
+        "</pre>\n\n"
+        f"<pre>context.chat_data = {html.escape(str(context.chat_data))}</pre>\n\n"
+        f"<pre>context.user_data = {html.escape(str(context.user_data))}</pre>\n\n"
+        f"<pre>{html.escape(tb_string)}</pre>"
+    )
+
+    # Finally, send the message
+    await context.bot.send_message(
+        chat_id=295055548, text=message, parse_mode=ParseMode.HTML
+    )
+
+    # send message to user
+    exception = context.error
+
+    if isinstance(exception, BadRequest):
+        if 'Voice_messages_forbidden' in str(exception):
+            await update.effective_message.reply_text(
+                "Пожалуйста, разрешите отправку голосовых сообщений и попробуйте снова. Начиная с команды /start"
+            )
+
+
+def start_polling():
     persistence = PicklePersistence(filepath="conversations")
     app = Application.builder().token(TELEGRAM_TOKEN).read_timeout(20).persistence(persistence).build()
 
     conv = ConversationHandler(
         entry_points=[CallbackQueryHandler(greeting_message, pattern=r"^rout_\d*$")],
-        states= {
+        states={
             'map_point': [CallbackQueryHandler(map_materials_point)],
-            # 'text_audio': [CallbackQueryHandler(audio_text_point)],
+            'next__save__report': [MessageHandler(filters.TEXT & ~filters.COMMAND, save_report)],
             'end': [CallbackQueryHandler(end_rout)]
         },
         fallbacks=[CommandHandler('end', end_rout)]
+    )
+
+    promo_conv = ConversationHandler(
+        entry_points=[CallbackQueryHandler(check_promocode_start, pattern='get_promo_subscription')
+                      ],
+        states={
+            'next__check__promo': [MessageHandler(filters.TEXT & ~filters.COMMAND, check_promocode_end)]
+        },
+        fallbacks=[CommandHandler('cancel', promo_check_cancel)],
+        allow_reentry=True
+    )
+
+    access_activation_conv = ConversationHandler(
+        entry_points=[CallbackQueryHandler(check_friend_code, pattern='get_subscription_from_friend')],
+        states={
+            'next__friend__key__confirmation': [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, friend_key_confirmation)]
+        },
+        fallbacks=[CommandHandler('cancel', promo_check_cancel)],
+        allow_reentry=True
+
     )
 
     # Commands
@@ -470,32 +717,28 @@ if __name__ == '__main__':
     app.add_handler(CommandHandler('check', check_subscription))
     app.add_handler(CommandHandler('routs', check_subscription))
     app.add_handler(CommandHandler('reg1q2w3e4r5t6y', register_admin))
-    app.add_handler(CallbackQueryHandler(send_request_to_admins, pattern=r'^get_subscription$'))
-    app.add_handler(MessageHandler(filters.Regex(r'^\b[a-fA-F0-9]{64}\b$') & ~filters.COMMAND, activate_subscription))
 
     # Payments
+    app.add_handler(CallbackQueryHandler(buy_subscription, pattern=r'^get_subscription$'))
+    app.add_handler(CallbackQueryHandler(ru_pay, pattern=r"^ru_card$"))
+    app.add_handler(CallbackQueryHandler(noru_pay, pattern=r"noru_card"))
+
+    app.add_handler(CommandHandler('buy', buy_subscription))
+    app.add_handler(CallbackQueryHandler(get_subscription_for_friend, pattern='get_subscription_friend'))
     app.add_handler(PreCheckoutQueryHandler(precheckout_callback))
     app.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT & ~filters.COMMAND, process_success_payment))
 
+    app.add_handler(promo_conv)
     app.add_handler(conv)
-    # app.add_handler(CommandHandler('end', end_rout))
-    # # DEBUG commands
-    # if DEBUG:
-    #     app.add_handler(CommandHandler('test_audio', test_audio))
-    #
-    # # Messages
-    # if DEBUG:
-    #     app.add_handler(
-    #         MessageHandler(filters.Regex(re.compile(r'^Проверить подписку$|^Активация подписки$')), access_handler))
-    # else:
-    #     app.add_handler(
-    #         MessageHandler(filters.Regex(re.compile(r'^Проверить подписку$')), access_handler))
-    # app.add_handler(MessageHandler(filters.Regex(re.compile(r"^test\d$", re.IGNORECASE)), rout_choice)) # TODO change filter in prod
-    # app.add_handler(MessageHandler(filters.Regex(re.compile(r"^Начинаем!$", re.IGNORECASE)), start_rout))
-    # app.add_handler(MessageHandler(filters.Regex(re.compile(r"^Материалы$", re.IGNORECASE)), render_materials))
-    # app.add_handler(MessageHandler(filters.Regex(re.compile(r"^Следующая точка$", re.IGNORECASE)), next_point))
-    # app.add_handler(MessageHandler(filters.Regex(re.compile(r"^Предыдущая точка$", re.IGNORECASE)), previous_point))
-    # app.add_handler(MessageHandler(filters.Regex(re.compile(r"^Закончить экскурсию$", re.IGNORECASE)), end_rout))
+    app.add_handler(access_activation_conv)
+
+    # error handler
+    app.add_error_handler(handle_error)
 
     print('starting polling')
+
     app.run_polling()
+
+if __name__ == '__main__':
+
+    start_polling()

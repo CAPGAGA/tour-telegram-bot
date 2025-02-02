@@ -1,0 +1,17 @@
+[Unit]
+Description=Main DashaTourBot telegram bot service
+After=network.target
+Requires=botapi.service
+
+[Service]
+Type=simple
+ExecStart=/home/freedom/dashabot/botenv/bin/python3.9 bot.py
+WorkingDirectory=/home/freedom/dashabot
+User=freedom
+Restart=on-failure
+RestartSec= 5
+TimeoutStartSec=60
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target

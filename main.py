@@ -1,22 +1,36 @@
 import json
 
-from fastapi import FastAPI, File, UploadFile, Response, Request, Form
+import requests
+from fastapi import FastAPI, File, UploadFile, Response, Request, Form, HTTPException, BackgroundTasks
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from typing import List, Optional, Union, Annotated
-from handlers import generate_hash_key, validate_key, validate_user_key
 
+from starlette.responses import JSONResponse
+from handlers import generate_hash_key, validate_key, validate_user_key, generate_promo, generate_access_key
+
+from pydub import AudioSegment
 import asyncio
-
-from sqlalchemy.sql import select, update, delete
-from datetime import datetime
-from settings import DEBUG, MEDIA_DIR
-
-from sql import database, users, routes, rout_points, admins, keys
 
 import logging
 import sys
+import uuid
+import time
+
+import hmac
+import hashlib
+
+from telegram import Bot
+from telegram.constants import ParseMode
+
+from sqlalchemy.sql import select, update, delete, insert
+from datetime import datetime
+from settings import DEBUG, MEDIA_DIR, PRODAMUS_TOKEN, BASE_URL
+
+from sql import database, users, routes, rout_points, admins, keys, promo_codes, subscriptions_keys
+
+from settings import TELEGRAM_TOKEN
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -47,10 +61,8 @@ async def create_user(username: str, chat_id:int) -> dict:
     user_record = await database.fetch_one(query)
     if user_record:
         if user_record.access_granted:
-            # TODO отправка ответа, что пользователь известен, но не имеет подписку
             return {'user':'with access'}
         else:
-            # TODO отправка ответа, что пользователь уже известен боту и имеет подписку
             return {'user':'without access'}
     else:
         hash_key = await generate_hash_key(int(chat_id))
@@ -67,6 +79,7 @@ async def create_user(username: str, chat_id:int) -> dict:
             key=hash_key,
             used=False
         )
+
         await database.execute(query_key)
 
         last_record_id = await database.execute(query)
@@ -94,6 +107,152 @@ async def get_user(username: str) -> dict:
     if user_record:
         return user_record
     return None
+
+@app.get('/users/')
+async def get_users() -> dict:
+    async with database.transaction():
+        users_data = await database.fetch_all(
+            select(users)
+        )
+
+        return {'users': users_data}
+
+@app.post('/users-access/')
+async def grant_access(user_id: int):
+    async with database.transaction():
+        await database.execute(
+            update(users).values(access_granted = True).where(users.c.id == user_id)
+        )
+        return Response(status_code=200)
+
+def verify_hmac(data: bytes, secret_key: str, signature: str) -> bool:
+    hmac_obj = hmac.new(secret_key.encode(), data, hashlib.sha256)
+    generate_signature = hmac_obj.hexdigest()
+    return hmac.compare_digest(generate_signature, signature)
+
+@app.post('/prodamus-succes/')
+async def validate_prodamus_payment(request: Request):
+    try:
+        headers = request.headers
+        data = await request.body()
+
+        if not data:
+            raise HTTPException(status_code=400, detail="POST data is empty")
+
+        signature = headers.get("Sign")
+        if not signature:
+            raise HTTPException(status_code=403, detail="Signature not found")
+
+        if not verify_hmac(data, PRODAMUS_TOKEN, signature):
+            raise HTTPException(status_code=403, detail="Signature incorrect")
+
+        return JSONResponse(content={"message":"success"}, status_code=200)
+
+    except HTTPException as e:
+        raise e
+
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=400)
+
+@app.post('/prodamus-success/{chat_id}/{secure_hash}', response_class=HTMLResponse)
+async def give_access_prodamus(chat_id, secure_hash):
+    print(await generate_hash_key(chat_id))
+    if await generate_hash_key(chat_id) == str(secure_hash):
+        html_body = """
+                <html>
+                    <head>
+                        <script type="text/javascript">
+                            window.open("", "_self");
+                            window.close();
+                        </script>            
+                    </head>
+                    <body>
+                        <p>Operation succcessful. You can safely close this window.</p>
+                    </body>
+                </html>
+
+            """
+        print(f'sending msg to {chat_id}')
+        async with database.transaction():
+            await database.execute(
+                update(users).where(users.c.chat_id==chat_id).values(
+                    access_granted=True
+                )
+            )
+        await Bot(token=TELEGRAM_TOKEN).send_message(chat_id=int(chat_id), text="Оплата прошла успешно! "
+                                                                           "Используй /routs для получения списка маршрутов")
+        return html_body
+    html_body = """
+                    <html>
+                        <head>          
+                        </head>
+                        <body>
+                            <p>Error!</p>
+                        </body>
+                    </html>
+
+                """
+    await Bot(token=TELEGRAM_TOKEN).send_message(chat_id=int(chat_id), text="Не удалось провести оплату... "
+                                                                            "Для уточнения, пожалуйста, обратись на dashroutesbot@gmail.com")
+    return html_body
+
+@app.get('/prodamus-friend/{chat_id}/{secure_hash}', response_class=HTMLResponse)
+async def give_cert_prodamus(chat_id, secure_hash):
+    print(await generate_hash_key(int(chat_id)))
+    if await generate_hash_key(chat_id) == str(secure_hash):
+        html_body = """
+                <html>
+                    <head>
+                        <script type="text/javascript">
+                            window.open("", "_self");
+                            window.close();
+                        </script>            
+                    </head>
+                    <body>
+                        <p>Operation succcessful. You can safely close this window.</p>
+                    </body>
+                </html>
+
+            """
+        print(f'sending msg to {chat_id}')
+        access_key = await generate_access_key(chat_id)
+        async with database.transaction():
+            await database.execute(
+                insert(subscriptions_keys).values(
+                    key=access_key,
+                    used=False
+                )
+            )
+
+        await Bot(token=TELEGRAM_TOKEN).send_message(chat_id=int(chat_id),
+                        text="Оплата прошла успешно\! \n\n "
+                        f'Спасибо за покупку\n\n'
+                        f'Это ключ который ты можешь отправить своему другу или подруге\n\n'
+                        f'`{access_key}`\n\n'
+                        f'Твой друг может активировать код сразу после отправки мне команды /start и нажав кнопку '
+                        f'"У меня есть код от друга"', parse_mode=ParseMode.MARKDOWN_V2)
+        return html_body
+    html_body = """
+                    <html>
+                        <head>          
+                        </head>
+                        <body>
+                            <p>Error!</p>
+                        </body>
+                    </html>
+
+                """
+    await Bot(token=TELEGRAM_TOKEN).send_message(chat_id=int(chat_id), text="Не удалось провести оплату... "
+                                                                            "Для уточнения, пожалуйста, обратись на dashroutesbot@gmail.com")
+    return html_body
+
+@app.delete('/users-access/')
+async def revoke_access(user_id: int):
+    async with database.transaction():
+        await database.execute(
+            update(users).values(access_granted = False).where(users.c.id == user_id)
+        )
+        return Response(status_code=200)
 
 @app.post('/set-user-rout/{username}/{rout_id}')
 async def set_rout(username: str, rout_id: int) -> dict:
@@ -152,36 +311,19 @@ async def edit_rout(rout_id: int, rout_name: str) -> dict:
     return {'updated': rout_name}
 
 # get all routs points in selected rout
-@app.get("/routs/{rout_id}")
-async def get_routs_points(rout_id: int) -> list:
-    query = select(rout_points).where(rout_points.columns.rout_id == rout_id)
+@app.get("/rout-points/")
+async def get_routs_points(rout_id: int = None) -> list:
+    if rout_id:
+        query = rout_points.select().where(rout_points.columns.rout_id == rout_id)
+    else:
+        query = rout_points.select()
+
     return await database.fetch_all(query)
-
-# class CustomUploadFile(UploadFile):
-#
-#     def __init__(
-#             self,
-#             filename: str,
-#             content_type: Optional[str] = None,
-#             file: Optional[Union[bytes, str]] = None
-#     ) -> None:
-#         # Check if filename is an empty string
-#         if filename == '':
-#             # If filename is empty, set it to None
-#             filename = None
-#
-#         # Call the constructor of the parent class with modified arguments
-#         super().__init__(filename=filename, content_type=content_type, file=file)
-
-# class CustomFormData(typing)
 
 #add specific point to the rout
 @app.post("/rout_points/")
 async def add_rout_point(rout_id: int, description: str = None, lon: float = None, lat: float = None,
-                         images: List[UploadFile] = File(None),
-                         # images: List[Annotated[UploadFile, File(description="Some description")]] = None,
-                         # images: Optional[List[Union[UploadFile, str]]] = None,
-                         # images: Annotated[Union[bytes, None], List[Annotated[UploadFile, File()]]] = None,
+                         images: List[Union[UploadFile, None]] = File(None),
                          audio: Optional[UploadFile] = File(None)):
     """
 
@@ -205,12 +347,21 @@ async def add_rout_point(rout_id: int, description: str = None, lon: float = Non
                     images = [images]
                 for image in images:
                     contents_i = image.file.read()
-                    with open(MEDIA_DIR+'/images/'+image.filename, 'wb+') as f_i:
+                    abstract_image_name = f"{int(time.time())}_{uuid.uuid4().hex}.jpg"
+                    with open(MEDIA_DIR+'/images/'+abstract_image_name, 'wb+') as f_i:
                         f_i.write(contents_i)
+
+                    image.filename = abstract_image_name
             if audio:
                 contents_a = audio.file.read()
-                with open(MEDIA_DIR+'/audio/'+audio.filename, 'wb+') as f_a:
+                abstract_audio_name = f"{int(time.time())}_{uuid.uuid4().hex}.mp3"
+                with open(MEDIA_DIR+'/audio/'+abstract_audio_name, 'wb+') as f_a:
                     f_a.write(contents_a)
+                loop = asyncio.get_event_loop()
+                s = await loop.run_in_executor(None, AudioSegment.from_mp3, MEDIA_DIR + '/audio/' + abstract_audio_name)
+                low_rate_file = s.set_frame_rate(24000)
+                await loop.run_in_executor(None, func=lambda: low_rate_file.export(out_f=MEDIA_DIR + '/audio/' + abstract_audio_name, bitrate="64k", format="mp3"))
+                audio.filename = abstract_audio_name
         except Exception as e:
             print(e)
             return {"message": "Error while uploading files"}
@@ -218,32 +369,140 @@ async def add_rout_point(rout_id: int, description: str = None, lon: float = Non
         images = None
         audio = None
 
-    # select last rout point in rout
-    r_query = select(rout_points).where(rout_points.columns.rout_id == rout_id).order_by(rout_points.columns.id.desc()).limit(1)
-    last_rout_point = await database.fetch_one(r_query)
+    async with database.transaction():
+        last_rout_point = await database.fetch_one(
+            select(rout_points.c.id)
+            .where(rout_points.c.rout_id == rout_id)
+            .order_by(rout_points.c.id.desc())
+            .limit(1)
+        )
 
-    # if current rout point is first in rout set previous id to 0 else to id of last point
-    if last_rout_point:
-        previous_point_id = last_rout_point.id
+        previous_point_id = last_rout_point['id'] if last_rout_point else 0
+
+        coord = str([lon, lat])
+
+        current_point_id = await database.execute(
+            insert(rout_points)
+            .values(
+                rout_id=rout_id,
+                previous_point = previous_point_id,
+                next_point = None,
+                description = description,
+                map_point = coord,
+                images = str([image.filename if image != '' else None for image in images]) if images else None,
+                audio = audio.filename if audio else None
+            )
+        )
+
+        if previous_point_id:
+            await database.execute(
+                update(rout_points)
+                .values(next_point=current_point_id)
+                .where(rout_points.c.id == previous_point_id)
+            )
+
+        return {'record': 'done'}
+
+@app.delete('/rout-points/{rout_point_id}')
+async def delete_rout_point(rout_point_id: int):
+    async with database.transaction():
+        rout_point = await database.fetch_one(
+            select(rout_points.c.previous_point, rout_points.c.next_point)
+            .where(rout_points.c.id == rout_point_id)
+        )
+
+        previous_point_id = rout_point['previous_point']
+        next_point_id = rout_point['next_point']
+
+        if previous_point_id:
+            await database.execute(
+                update(rout_points)
+                .values(next_point=next_point_id)
+                .where(rout_points.c.id == previous_point_id)
+            )
+
+        if next_point_id:
+            await database.execute(
+                update(rout_points)
+                .values(previous_point=previous_point_id)
+                .where(rout_points.c.id == next_point_id)
+            )
+
+        await database.execute(
+            delete(rout_points)
+            .where(rout_points.c.id == rout_point_id)
+        )
+
+        return {'deleted': rout_point_id}
+
+@app.put("/rout_points/")
+async def edit_rout_point(rout_point_id: int, description: str = None, lon: float = None, lat: float = None,
+                            to_delete_imgs: Optional[str] = None,
+                            images: List[Union[UploadFile, None]] = File(None),
+                            audio: Optional[UploadFile] = File(None)):
+    # upload new images and audio to disk
+    if images or audio:
+        try:
+            if images:
+                if type(images) != list:
+                    images = [images]
+                for image in images:
+                    contents_i = image.file.read()
+                    abstract_image_name = f"{int(time.time())}_{uuid.uuid4().hex}.jpg"
+                    print(abstract_image_name)
+                    with open(MEDIA_DIR+'/images/'+abstract_image_name, 'wb+') as f_i:
+                        f_i.write(contents_i)
+                    image.filename = abstract_image_name
+            if audio:
+                contents_a = audio.file.read()
+                abstract_audio_name = f"{int(time.time())}_{uuid.uuid4().hex}.mp3"
+                with open(MEDIA_DIR+'/audio/'+abstract_audio_name, 'wb+') as f_a:
+                    f_a.write(contents_a)
+                audio.filename = abstract_audio_name
+        except Exception as e:
+            print(e)
+            return {"message": "Error while uploading files"}
     else:
-        previous_point_id = 0
+        images = None
+        audio = None
 
-    # write current point into database with values gotten from API
-    coord = str([lon, lat])
-    w_query = rout_points.insert().values(
-        rout_id = rout_id,
-        previous_point = previous_point_id,
-        description = description,
-        map_point = coord,
-        images = str([image.filename if image != '' else None for image in images]) if images else None,
-        audio = audio.filename if audio else None
-    )
-    current_point_id = await database.execute(w_query)
+    async with database.transaction():
+        rout_point_media = await database.fetch_one(
+            select(rout_points.c.images, rout_points.c.audio)
+            .where(rout_points.c.id == rout_point_id)
+        )
+        print(rout_point_media)
 
-    # update previous point next_point filed with current point id
-    u_query = update(rout_points).values(next_point=current_point_id).where(rout_points.columns.id == previous_point_id)
-    await database.execute(u_query)
-    return {'record': 'done'}
+        if rout_point_media[0] != None:
+            rout_point_local_images = rout_point_media[0].strip('][').replace("'", "").split(', ')
+        else:
+            rout_point_local_images = []
+        print(rout_point_local_images)
+        # deleting requested images
+
+        if to_delete_imgs:
+            try:
+                to_delete_imgs = to_delete_imgs.split(',')
+            except:
+                to_delete_imgs = [to_delete_imgs]
+            print(to_delete_imgs)
+            for to_delete in to_delete_imgs:
+                print(to_delete)
+                rout_point_local_images.remove(to_delete)
+
+        if images:
+            for image in images:
+                rout_point_local_images.append(image.filename)
+
+        coord = str([lon, lat])
+
+        print(rout_point_local_images)
+        await database.execute(update(rout_points).values(
+            description=description,
+            map_point=coord,
+            images=str(rout_point_local_images) if rout_point_local_images else None,
+            audio=audio.filename if audio else rout_point_media[1]
+        ).where(rout_points.c.id == rout_point_id))
 
 # get starting point
 @app.get("/rout-points-first/{rout_id}/")
@@ -290,10 +549,108 @@ async def activate_user(username:str, key: Optional[str]) -> Response:
         return Response(status_code=403, content='Token not mathing user')
     return Response(status_code=403, content='Invalid Token or Token Taken')
 
+@app.post("/promo/")
+async def create_promo(name: str, phrase: Optional[str] = None, price: Optional[int] = None, percent: Optional[int] =None, counter: Optional[int] = None) -> Response:
+    if not phrase:
+        phrase = await generate_promo()
+    async with database.transaction():
+        new_promo = await database.execute(
+            insert(promo_codes).values(
+                name = name,
+                price = price if price else 0,
+                is_percent = True if price is None and percent is not None else False,
+                percent = percent if percent else 0,
+                is_counter = True if counter is not None else False,
+                counter = counter if counter else -1,
+                promocode = phrase
+            )
+        )
+        return Response(status_code=200, content='Created')
+    return Response(status_code=403, content='Error')
+
+@app.get("/promo/")
+async def get_promo(source: str, phrase: Optional[str] = None, promo_id: Optional[int] = None) -> Response:
+    async with database.transaction():
+        if source == 'admin':
+            if promo_id:
+                data = await database.fetch_one(
+                    select(promo_codes).where(promo_codes.c.id == promo_id)
+                )
+            else:
+                data = await database.fetch_all(
+                    select(promo_codes)
+                )
+            return {'promos': data}
+        elif source == 'bot':
+            data = await database.fetch_one(
+                select(promo_codes).where(promo_codes.c.promocode == phrase)
+            )
+            if data:
+                if data.is_counter:
+                    if data.counter > 0:
+                        await database.execute(
+                            update(promo_codes).values(
+                                counter = data.counter - 1
+                            ).where(promo_codes.c.id == data.id)
+                        )
+                        return data
+                    return Response(status_code=403, content='У этого промокода истек срок действия')
+                return data
+            return Response(status_code=403, content='Промокод не найден')
+
+@app.put("/promo/{promo_id}")
+async def edit_promo(promo_id: int, name: Optional[str], phrase: Optional[str], price: Optional[int], percent: Optional[int], counter: Optional[int]) -> Response:
+    async with database.transaction():
+        edited_promo = await database.execute(
+            update(promo_codes).values(
+                name=name,
+                price=price if price else 0,
+                is_percent=True if price is None and percent is not None else False,
+                percent=percent if percent else 0,
+                is_counter=True if counter is not None else False,
+                counter=counter if counter else -1,
+                promocode=phrase
+            ).where(promo_codes.c.id == promo_id)
+        )
+        return Response(status_code=200, content='Created')
+
+@app.delete("/promo/{promo_id}")
+async def delete_promo(promo_id: int) -> Response:
+    async with database.transaction():
+        await database.execute(
+            delete(promo_codes).where(promo_codes.c.id == promo_id)
+        )
+        return Response(status_code=201, content='Deleted')
+
+@app.post("/gift_keys/")
+async def create_key(key: str):
+    async with database.transaction():
+        await database.execute(
+            insert(subscriptions_keys).values(
+                key=key,
+                used=False
+            )
+        )
+        return Response(status_code=200)
+
+@app.get("/gift_keys/")
+async def check_key(key: str):
+    async with database.transaction():
+        data = await database.fetch_one(
+            select(subscriptions_keys).where(subscriptions_keys.c.key==key,
+                                             subscriptions_keys.c.used==False)
+        )
+        if data:
+            await database.execute(
+                update(subscriptions_keys).values(used=True).where(subscriptions_keys.c.id == data.id)
+            )
+            return Response(status_code=200)
+        return Response(status_code=404)
+
 
 # HTML TEMPLATES
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/media", StaticFiles(directory="media"), name="media")
 
 templates = Jinja2Templates(directory="templates")
 
@@ -327,3 +684,35 @@ async def cabinet(request: Request):
     return templates.TemplateResponse(
         name='cabinet.html', context={'request': request}
     )
+
+
+@app.post('/mass-alert/')
+async def mass_alert(msg: str, background_tasks: BackgroundTasks):
+    # Start the background task for mass alerting
+    background_tasks.add_task(send_mass_alerts, msg)
+    return {"message": "Mass alert task started"}
+
+async def send_mass_alerts(msg: str):
+    async with database.transaction():
+        users_data = await database.fetch_all(select(users))
+        bot = Bot(token=TELEGRAM_TOKEN)
+
+        if not users_data:
+            raise HTTPException(status_code=404, detail="No users found")
+
+        # Process users in manageable batches
+        for batch_start in range(0, len(users_data), 30):
+            user_batch = users_data[batch_start:batch_start + 30]
+            tasks = []
+            for user in user_batch:
+                tasks.append(send_message_to_user(bot, user.chat_id, msg))
+            # Run batch of tasks concurrently and wait
+            await asyncio.gather(*tasks)
+            await asyncio.sleep(2)  # Allow some time to avoid rate limiting
+
+async def send_message_to_user(bot, chat_id, msg: str):
+    try:
+        await bot.send_message(chat_id=int(chat_id), text=msg, parse_mode=ParseMode.HTML)
+    except Exception as e:
+        # Handle or log errors here if needed
+        print(f"Error sending to {chat_id}: {e}")
