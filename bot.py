@@ -5,10 +5,6 @@ import traceback
 
 import httpx
 
-import threading
-import time
-from datetime import datetime
-
 import telegram
 from telegram import (
     Update,
@@ -57,49 +53,7 @@ logger = logging.getLogger(__name__)
 
 filter_logger = logging.getLogger("filter_logger")
 
-# Global variable to track the last time 'getUpdates' was logged
-last_getupdates_time = datetime.now()
 
-# # Function to log activity and update last request time if 'getUpdates' is found
-# class GetUpdatesFilter(logging.Filter):
-#     def filter(self, record):
-#         global last_getupdates_time
-#         message = record.getMessage()
-#         # Check specifically for 'getUpdates' in the log message
-#         if "getUpdates" in message:
-#             last_getupdates_time = datetime.now()
-#             filter_logger.info(f"Updated last_getupdates_time to {last_getupdates_time} after detecting 'getUpdates'")
-#         return True
-#
-# # Add custom filter to logger
-# get_updates_filter = GetUpdatesFilter()
-# logger.addFilter(get_updates_filter)
-#
-# # Async function to send the alert message
-# async def send_alert_async():
-#     filter_logger.warning("Inactivity alert: No 'getUpdates' log in the last 5 minutes!")
-#     alert_bot = Bot(token=TELEGRAM_TOKEN)
-#     try:
-#         await alert_bot.send_message(chat_id=295055548, text="Inactivity alert: No 'getUpdates' requests in the last 5 minutes!")
-#     except Exception as e:
-#         logger.error(f"Failed to send alert: {e}")
-#
-# # Wrapper function to run the async alert in a synchronous context
-# def send_alert():
-#     asyncio.run(send_alert_async())
-#
-# # Background function to monitor inactivity
-# def monitor_inactivity():
-#     global last_getupdates_time
-#     while True:
-#         time.sleep(60)  # Check every minute
-#         time_since_last_update = (datetime.now() - last_getupdates_time).total_seconds()
-#         if time_since_last_update > 5 * 60:  # 5 minutes
-#             send_alert()
-#
-# # Start the monitoring thread
-# monitor_thread = threading.Thread(target=monitor_inactivity, daemon=True)
-# monitor_thread.start()
 
 # Function to schedule message deletion
 async def delete_message_later(context: ContextTypes.DEFAULT_TYPE, chat_id: int, message_id: int, delay: int = 3600):
