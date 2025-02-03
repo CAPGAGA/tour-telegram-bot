@@ -39,7 +39,7 @@ async def create_rout_point(
         rout_point: RoutPointCreate,
         session: AsyncSession = Depends(get_session)
 ):
-    new_rout_point = RoutPoint(**rout_point)
+    new_rout_point = RoutPoint(**rout_point.dict())
     session.add(new_rout_point)
     await session.commit()
     await session.refresh(new_rout_point)

@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from api.routs.auth import auth_router
 from api.routs.routs import rout_router
 from api.routs.rout_points import rout_points_router
+from api.routs.user_routs import user_routs_router
 
 from db.database import Base, engine
 
@@ -32,3 +33,4 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(auth_router, prefix='/apiV1')
 app.include_router(rout_router, prefix='/apiV1')
 app.include_router(rout_points_router, prefix='/apiV1')
+app.include_router(user_routs_router, prefix='/apiV1')
