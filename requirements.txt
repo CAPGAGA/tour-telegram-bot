@@ -11,3 +11,4 @@ yookassa
 jinja2
 python-dotenv
 pydub
+bcrypt

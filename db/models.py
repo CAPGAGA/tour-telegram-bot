@@ -33,6 +33,30 @@ class BaseTable(Base):
         server_onupdate=func.now()  # update timestamp on update
     )
 
+class Admin(BaseTable):
+    """
+        Table to store admins of telegram bot
+    """
+
+    __tablename__ = 'admin'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    username: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    password: Mapped[str] = mapped_column(String, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class AdminRout(BaseTable):
+    """
+        Table to store admins routs
+    """
+
+    __tablename__ = 'admin_rout'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    admin_id: Mapped[int] = mapped_column(ForeignKey('admin.id'))
+    rout_id: Mapped[int] = mapped_column(ForeignKey('rout.id'))
+
 
 class BaseUser(BaseTable):
 

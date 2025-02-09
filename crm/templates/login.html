@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Login</title>
+    <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/auth-page.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/revolver-msg.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <form id="login-form" class="login-form">
+            <h2>CRM Login</h2>
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter your username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit">Login</button>
+            <p class="forgot-password"><a href="#">Forgot password?</a></p>
+            <p class="back-to-login"><a href="/register">Need an account?</a></p>
+        </form>
+    </div>
+</body>
+<script type="module" src="{{ url_for('static', path='js/login.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/revolver.js') }}"></script>
+</html>
