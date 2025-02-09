@@ -19,6 +19,14 @@
     font-weight: bold;
     color: white;
     text-decoration: none;
+    height: 4rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.navbar-logo img {
+    height: 100%;
+    width: 100%;
 }
 
 .navbar-menu {

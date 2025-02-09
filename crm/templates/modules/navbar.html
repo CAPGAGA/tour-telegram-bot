@@ -1,10 +1,12 @@
 <nav class="navbar">
     <div class="navbar-container">
-        <a href="/" class="navbar-logo">Telegram Tour Admin</a>
+        <a href="/" class="navbar-logo">
+            <img src="{{ url_for('static', path='logo/main.webp') }}">
+        </a>
         <ul class="navbar-menu">
-            <li><button>Dashboard</button></li>
+            <li><button>Tours</button></li>
             <li><button>Clients</button></li>
-            <li><button>Reports</button></li>
+            <li><button>Admins</button></li>
             <li><button>Settings</button></li>
         </ul>
         <div class="navbar-user">
