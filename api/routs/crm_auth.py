@@ -1,8 +1,12 @@
+import os
+from datetime import timedelta, datetime
+
 import bcrypt
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+import jwt
 
 from db.database import get_session
 from db.models import Admin
@@ -12,18 +16,36 @@ admin_router = APIRouter(
     tags=["admin"],
 )
 
+SECRET_KEY = os.getenv('SECRET_KEY')
+ALGORITHM = "HS256"
+TOKEN_EXPIRATION_MINUTES = 60*24*30 #30 days
+
 class AdminCreate(BaseModel):
     username: str
     password: str
 
 class AdminResponse(BaseModel):
-    id: int
-    username: str
+    token: str
+    expires_in: timedelta
+
+    class Config:
+        orm_mode = True
+
 
 async def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
     hash_password = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hash_password.decode('utf-8')
+
+async def create_token(
+        data: dict,
+        expires_delta: timedelta
+) -> str:
+    to_encode = data.copy()
+    expire = datetime.utcnow() + expires_delta
+    to_encode.update({'exp': expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 @admin_router.post("/register", response_model=AdminResponse)
 async def create_admin(admin: AdminCreate, session: AsyncSession = Depends(get_session)):
@@ -48,7 +70,9 @@ async def create_admin(admin: AdminCreate, session: AsyncSession = Depends(get_s
     session.add(new_admin)
     await session.commit()
     await session.refresh(new_admin)
-    return new_admin
+    expires_delta = timedelta(minutes=TOKEN_EXPIRATION_MINUTES)
+    token = await create_token({"sub": new_admin.username}, expires_delta)
+    return {'token': token, 'expires_in': expires_delta}
 
 @admin_router.post('/crm-login', response_model=AdminResponse)
 async def login_admin(admin: AdminCreate, session: AsyncSession = Depends(get_session)):
@@ -71,4 +95,6 @@ async def login_admin(admin: AdminCreate, session: AsyncSession = Depends(get_se
     if not bcrypt.checkpw(admin.password.encode('utf-8'), password.encode('utf-8')):
         raise HTTPException(status_code=403, detail="Wrong password")
 
-    return admin_db
+    expires_delta = timedelta(minutes=TOKEN_EXPIRATION_MINUTES)
+    token = await create_token({"sub": admin_db.username}, expires_delta)
+    return {'token': token, 'expires_in': expires_delta}
