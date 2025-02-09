@@ -6,7 +6,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from api.handlers import get_auth_token
+from api.handlers import get_auth_token, get_current_admin
 from api.routs.auth import auth_router
 from api.routs.crm_auth import admin_router
 from api.routs.routs import rout_router
@@ -50,7 +50,7 @@ app.include_router(user_routs_router, prefix='/apiV1')
 async def index(auth_token: str = Depends(get_auth_token)):
     if not auth_token:
         return RedirectResponse(url="/login")
-    return RedirectResponse(url="/crm")
+    return RedirectResponse(url="/tour-admin")
 
 @app.get('/login', response_class=HTMLResponse)
 async def login_page(request: Request, auth_token: str = Depends(get_auth_token)):
@@ -58,6 +58,7 @@ async def login_page(request: Request, auth_token: str = Depends(get_auth_token)
         return templates.TemplateResponse(
             request=request, name='login.html'
         )
+    return RedirectResponse(url="/tour-admin")
 
 @app.get('/register', response_class=HTMLResponse)
 async def login_page(request: Request, auth_token: str = Depends(get_auth_token)):
@@ -65,3 +66,16 @@ async def login_page(request: Request, auth_token: str = Depends(get_auth_token)
         return templates.TemplateResponse(
             request=request, name='register.html'
         )
+    return RedirectResponse(url="/tour-admin")
+
+@app.get('/tour-admin', response_class=HTMLResponse)
+async def tour_admin(
+        request: Request,
+        auth_token: str = Depends(get_auth_token),
+        username: str = Depends(get_current_admin)
+):
+    if not auth_token:
+        return RedirectResponse(url="/login")
+    return templates.TemplateResponse(
+        context={'username': username}, request=request, name='tour_admin.html'
+    )

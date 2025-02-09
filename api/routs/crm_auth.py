@@ -8,6 +8,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 import jwt
 
+from api.settings import SECRET_KEY, ALGORITHM, TOKEN_EXPIRATION_MINUTES
+
 from db.database import get_session
 from db.models import Admin
 
@@ -16,9 +18,7 @@ admin_router = APIRouter(
     tags=["admin"],
 )
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-ALGORITHM = "HS256"
-TOKEN_EXPIRATION_MINUTES = 60*24*30 #30 days
+
 
 class AdminCreate(BaseModel):
     username: str
