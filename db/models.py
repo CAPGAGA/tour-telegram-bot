@@ -114,6 +114,16 @@ class RoutPoint(BaseTable):
     point_text: Mapped[str] = mapped_column(Text, nullable=True)
 
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'rout_id': self.rout_id,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'point_text': self.point_text
+        }
+
+
 class PointsAudio(BaseTable):
 
     """

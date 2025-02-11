@@ -1,5 +1,6 @@
 import { showMessage } from "./revolver.js";
-import { openTourDetailModal, openTourModal } from "./tours_modals.js"
+import { openTourModal } from "./tours_modals.js"
+import { openTourPointModal } from "./tour_points_modals.js"
 
 export function fetchTours() {
     const adminId = document.getElementById("username").getAttribute("data-admin-id");
@@ -12,7 +13,7 @@ export function fetchTours() {
             const addTourButton = document.createElement("button");
             addTourButton.className = "tour-card add-tour";
             addTourButton.id = "add-tour-button";
-            addTourButton.innerHTML = `<span class="plus">+</span><p>Add New Tour</p>`;
+            addTourButton.innerHTML = `<span class="plus">+</span><p>Add New Rout</p>`;
             addTourButton.addEventListener("click", openTourModal);
             toursGrid.appendChild(addTourButton);
 
@@ -20,7 +21,7 @@ export function fetchTours() {
             data.routs.forEach(tour => {
                 const tourCard = document.createElement("div");
                 tourCard.className = "tour-card";
-                tourCard.onclick = () => openTourDetailModal(tour.id);
+                tourCard.onclick = () => openTourPointModal(tour.id);
                 tourCard.innerHTML = `
                     <h3 class="tour-card-title">${tour.rout_name}</h3>
                     <p class="tour-card-description">${tour.rout_description.substring(0, 300)}...</p>
@@ -31,4 +32,33 @@ export function fetchTours() {
             });
         })
         .catch(error => showMessage(error.message, "error"));
+}
+
+export function fetchTourPoints(tourId) {
+    fetch(`/apiV1/rout/get-rout/${tourId}`)
+    .then(response => response.json())
+    .then(data => {
+        // base rout info
+        document.getElementById("tour-point-name").value = data.rout_name;
+        document.getElementById("tour-point-description").value = data.rout_description;
+        document.getElementById("tour-point-price").value = data.base_price;
+        document.getElementById("viz-toggle").checked = data.is_displayed ? true : false;
+
+    })
+    .catch(error => showMessage(error.message, "error"));
+    fetch(`/apiV1/rout-points/get-rout?rout_id=${tourId}`)
+    .then(response => {
+        if (response.ok) {
+            return response.json()
+        }
+        showMessage(response.statusText, "error")
+        throw new Error(response.statusText);
+    })
+    .then((responseJson) => {
+        // rout's points
+        console.log(responseJson)
+        const routLength = responseJson.length;
+
+    })
+    .catch(error => showMessage(error.message, "error"));
 }

@@ -74,7 +74,6 @@
     border-radius: 0.5rem;
     padding: 0.5rem;
     line-height: 1rem;
-    border: 1px solid black;
     z-index: 10;
 }
 
@@ -89,16 +88,13 @@
 
 .tour-settings {
     padding: 20px;
-    background: #fff;
-    border-radius: 10px;
-    position: absolute;
     left: 1rem;
     top: 1rem;
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     min-width: 15rem;
     min-height: 20rem;
-    font-family: 'Poppins';
 }
 
 .tour-settings h2, .tour-points-constructor h2 {
@@ -129,13 +125,39 @@
     resize: none;
 }
 
-.tour-points-constructor {
+.viz-settings{
+    min-width: 15rem;
+    left: 1rem;
+    top: calc(28rem + 0.5rem);
+    font-size: 1rem;
+    font-weight: bold;
+    display: flex;
+    padding: 20px;
+    justify-content: space-between;
+}
+
+.tour-points-window {
     position: absolute;
     background-color: #fff;
+    font-family: 'Poppins';
+    border-radius: 10px;
+}
+
+.tour-points-constructor {
     top: 1rem;
     left: 20rem;
     width: calc(100% - 15rem - 2rem - 1.5rem - 3rem);
-    font-family: 'Poppins';
+    height: calc(100vh - 6.5rem);
+}
+
+.tour-stats {
+    padding: 20px;
+    min-width: 15rem;
+    left: 1rem;
+    top: calc(0.5rem + 33rem);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .add-tour-point {
@@ -154,7 +176,7 @@
 }
 
 .tours-points-modal{
-    display: block;
+    display: none;
     position: absolute;
     top: 2rem;
     left: 28px;

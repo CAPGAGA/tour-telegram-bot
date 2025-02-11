@@ -32,6 +32,7 @@ class RoutResponse(BaseModel):
     rout_name: str
     rout_description: str
     base_price: int
+    is_displayed: bool
 
     class Config:
         orm_mode = True

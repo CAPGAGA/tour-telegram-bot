@@ -1,18 +1,28 @@
-<div class="tours-points-modal">
+<div class="tours-points-modal" id="tour-points-modal">
     <div class="tour-modal-layout">
-        <span class="close" onclick="closeTourPointModal()">&times;</span>
-        <div class="tour-settings">
-            <h2>Tour Settings</h2>
-            <label for="tour-point-name">Tour Name:</label>
+        <span class="close" id="close-tour-points-modal">&times;</span>
+        <form class="tour-points-window tour-settings">
+            <h2>Rout Settings</h2>
+            <label for="tour-point-name">Rout Name</label>
             <input type="text" id="tour-point-name" >
-            <label for="tour-point-description">Description:</label>
+            <label for="tour-point-description">Description</label>
             <textarea id="tour-point-description"></textarea>
-            <label for="tour-point-price">Base Price:</label>
+            <label for="tour-point-price">Base Price</label>
             <input type="number" id="tour-point-price">
             <button class="submit-button">Save</button>
+        </form>
+        <form class="tour-points-window viz-settings">
+            <label for="viz-toggle">Displayed:</label>
+            <label class="switch">
+                <input type="checkbox" id="viz-toggle">
+                <span class="slider"></span>
+            </label>
+        </form>
+        <div class="tour-points-window tour-stats">
+            <h4>Stats</h4>
         </div>
-        <div class="tour-points-constructor">
-            <h2>Tour Points</h2>
+        <div class="tour-points-window tour-points-constructor">
+            <h2>Rout Points</h2>
             <button class="add-tour-point">+ Add Point</button>
             <div id="tour-points-list"></div>
         </div>

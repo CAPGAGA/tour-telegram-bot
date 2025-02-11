@@ -2,13 +2,23 @@ import { fetchTours } from "./fetch_tours.js";
 import { showMessage } from "./revolver.js";
 
 export function openTourModal() {
-    document.getElementById("tour-modal").style.display = "block";
+    const modal = document.getElementById("tour-modal")
+    modal.style.display = "block";
+    modal.style.opacity = 0;
+    setTimeout(() => {
+        modal.style.opacity = 1;
+        modal.style.transition = "opacity 0.2s ease-in-out";
+    }, 50);
 }
 
 document.getElementById("add-tour-button").addEventListener("click", openTourModal);
 
 export function closeTourModal() {
-    document.getElementById("tour-modal").style.display = "none";
+    const modal =document.getElementById("tour-modal")
+    modal.style.opacity = 0;
+    setTimeout(() => {
+        modal.style.display = "none";
+    }, 700);
 
     document.getElementById("new-tour-form").reset();
 }
