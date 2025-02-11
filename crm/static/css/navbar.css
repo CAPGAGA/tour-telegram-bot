@@ -5,6 +5,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-family: Poppins;
 }
 
 .navbar-container {
@@ -51,9 +52,10 @@
     background: transparent;
 }
 
-.navbar-menu button:hover {
+.navbar-menu button:hover, .navbar-menu button.active {
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 5px;
+    cursor: pointer;
 }
 
 .navbar-user {

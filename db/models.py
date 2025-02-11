@@ -84,6 +84,7 @@ class Rout(BaseTable):
     rout_name: Mapped[str] = mapped_column(String, nullable=False)
     rout_description: Mapped[str] = mapped_column(String, nullable=False)
     base_price: Mapped[int] = mapped_column(nullable=False)
+    is_displayed: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
 class UserRout(BaseTable):

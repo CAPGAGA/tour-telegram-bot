@@ -1,0 +1,84 @@
+.tours-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.tour-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    position: relative;
+    aspect-ratio: 1 / 1;
+    font-family: Inconsolata;
+}
+
+.tour-card:hover {
+    transform: scale(1.05);
+}
+
+.add-tour {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #f8f9fa;
+    border: 2px dashed #007bff;
+}
+
+.add-tour .plus {
+    font-size: 40px;
+    color: #007bff;
+}
+
+.add-tour p {
+    margin-top: 0;
+    font-size: 1.3rem;
+}
+
+.tour-card-title {
+    text-transform: uppercase;
+    position: absolute;
+    top: .5rem;
+    text-align: left;
+    left: 0;
+    padding: 0 20px;
+    width: calc(100% - 40px);
+}
+
+.tour-card-description {
+    position: absolute;
+    top: 2.5rem;
+    text-align: left;
+    left: 0;
+    padding: 0 20px;
+    width: calc(100% - 40px);
+}
+
+.tour-card-price {
+    position: absolute;
+    bottom: .5rem;
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    line-height: 0;
+    letter-spacing: 2px;
+}
+
+.tour-card-displayed {
+    position: absolute;
+    right: 20px;
+    bottom: .5rem;
+    margin-bottom: 10px;
+    height: 1.5rem;
+}
+
+.tour-card-icon{
+    aspect-ratio: 1 / 1;
+    height: 1.5rem;
+}

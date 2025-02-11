@@ -24,6 +24,7 @@ class RoutEdit(BaseModel):
     rout_name: str
     rout_description: str
     base_price: int
+    is_displayed: bool
 
 class RoutResponse(BaseModel):
 

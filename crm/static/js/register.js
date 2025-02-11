@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (response.ok) {
                 document.cookie = `auth_token=${data.token}; path=/; max-age=${data.expires_in}`;
                 alert("User registered successfully! Redirecting...");
+                showMessage("Success: " + "Registered user successfully! Redirecting...)", "success");
                 window.location.href = "/tour-admin";
             } else if (response.status === 403) {
                 showMessage("Error: " + data.detail, "error");
@@ -38,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         } catch (error) {
             console.error("Error registering user:", error);
-            alert("An error occurred. Please try again later.");
+            showMessage("Error: " + "An error occurred. Please try again later.", "error");
         }
     });
 });

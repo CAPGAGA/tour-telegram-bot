@@ -7,6 +7,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
 from api.handlers import get_auth_token, get_current_admin
+from api.routs.admin_routs import admin_rout_router
 from api.routs.auth import auth_router
 from api.routs.crm_auth import admin_router
 from api.routs.routs import rout_router
@@ -40,6 +41,7 @@ templates = Jinja2Templates(directory="crm/templates")
 
 # base routs of api
 app.include_router(admin_router, prefix='/apiV1')
+app.include_router(admin_rout_router, prefix='/apiV1')
 app.include_router(auth_router, prefix='/apiV1')
 app.include_router(rout_router, prefix='/apiV1')
 app.include_router(rout_points_router, prefix='/apiV1')
@@ -72,10 +74,11 @@ async def login_page(request: Request, auth_token: str = Depends(get_auth_token)
 async def tour_admin(
         request: Request,
         auth_token: str = Depends(get_auth_token),
-        username: str = Depends(get_current_admin)
+        user: str = Depends(get_current_admin)
 ):
     if not auth_token:
         return RedirectResponse(url="/login")
+    username, user_id = user
     return templates.TemplateResponse(
-        context={'username': username}, request=request, name='tour_admin.html'
+        context={'username': username, 'user_id': user_id}, request=request, name='tour_admin.html'
     )

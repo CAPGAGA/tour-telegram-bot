@@ -2,7 +2,8 @@ import os
 from datetime import timedelta, datetime
 
 import bcrypt
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Response
+from starlette.responses import RedirectResponse
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -71,7 +72,7 @@ async def create_admin(admin: AdminCreate, session: AsyncSession = Depends(get_s
     await session.commit()
     await session.refresh(new_admin)
     expires_delta = timedelta(minutes=TOKEN_EXPIRATION_MINUTES)
-    token = await create_token({"sub": new_admin.username}, expires_delta)
+    token = await create_token({"sub": new_admin.username, "user_id": new_admin.id}, expires_delta)
     return {'token': token, 'expires_in': expires_delta}
 
 @admin_router.post('/crm-login', response_model=AdminResponse)
@@ -90,11 +91,15 @@ async def login_admin(admin: AdminCreate, session: AsyncSession = Depends(get_se
     if not admin_db.is_active:
         raise HTTPException(status_code=400, detail="Username is not active. Contact an administrator for permission")
 
-    password = await hash_password(admin.password)
-
-    if not bcrypt.checkpw(admin.password.encode('utf-8'), password.encode('utf-8')):
+    if not bcrypt.checkpw(hashed_password=admin_db.password.encode('utf-8'), password=admin.password.encode('utf-8')):
         raise HTTPException(status_code=403, detail="Wrong password")
 
     expires_delta = timedelta(minutes=TOKEN_EXPIRATION_MINUTES)
-    token = await create_token({"sub": admin_db.username}, expires_delta)
+    token = await create_token({"sub": admin_db.username, "user_id": admin_db.id}, expires_delta)
     return {'token': token, 'expires_in': expires_delta}
+
+
+@admin_router.get('/logout')
+async def logout_admin(response: Response):
+    response.delete_cookie("auth_token")
+    return

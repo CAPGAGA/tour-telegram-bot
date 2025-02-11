@@ -1,17 +1,17 @@
 <nav class="navbar">
     <div class="navbar-container">
         <a href="/" class="navbar-logo">
-            <img src="{{ url_for('static', path='logo/main.webp') }}">
+            <img src="{{ url_for('static', path='logo/main.png') }}">
         </a>
         <ul class="navbar-menu">
-            <li><button>Tours</button></li>
-            <li><button>Clients</button></li>
-            <li><button>Admins</button></li>
-            <li><button>Settings</button></li>
+            <li><button class="nav-button" id="tours">Tours</button></li>
+            <li><button class="nav-button active" id="clients">Clients</button></li>
+            <li><button class="nav-button" id="admins">Admins</button></li>
+            <li><button class="nav-button" id="settings">Settings</button></li>
         </ul>
         <div class="navbar-user">
-            <span id="username">{{ username }}</span>
-            <a href="/logout" class="logout-button">Logout</a>
+            <span id="username" data-admin-id="{{ user_id }}">{{ username }}</span>
+            <button class="logout-button" id="logout">Logout</button>
         </div>
     </div>
 </nav>
