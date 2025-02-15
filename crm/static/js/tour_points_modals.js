@@ -290,7 +290,6 @@ export function openTourPointModal(tourId) {
     fetchTourPoints(tourId).then(points => {
         if (points) {
             points.forEach(point => {
-                console.log(point)
                 if (!routePoints.some(p => p.latitude === point.latitude && p.longitude === point.longitude)) {
                     routePoints.push(point);
                     L.marker([point.latitude, point.longitude]).addTo(map)
@@ -326,67 +325,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector("#close-tour-points-modal").addEventListener("click", closeTourPointModal);
 });
 
-// main function to work with points
-function saveTourPoint(point) {
-    let command = 'create'
 
-    if (point.id) {
-        command = 'edit'
-    }
-
-    try {
-        // Validate the point data
-        if (!point.latitude || !point.longitude ) {
-            throw new Error("Point must have coordinates");
-        }
-
-        // Send the base tour point data
-        const pointResponse = fetch("/apiV1/rout-points/create_rout_point", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                latitude: point.latitude,
-                longitude: point.longitude,
-                point_text: point.point_text
-            })
-        });
-
-        if (!pointResponse.ok) {
-            throw new Error("Failed to create route point");
-        }
-        const pointData = pointResponse.json();
-
-        // Upload images if available
-        if (point.images && point.images.length) {
-            for (const image of point.images) {
-                const formData = new FormData();
-                formData.append("image", image);
-                formData.append("point_id", pointData.id);
-                fetch("/apiV1/point-media/add-image", {
-                    method: "POST",
-                    body: formData
-                });
-            }
-        }
-
-        // Upload audios if available
-        if (point.audios && point.audios.length) {
-            for (const audio of point.audios) {
-                const formData = new FormData();
-                formData.append("audio", audio);
-                formData.append("point_id", pointData.id);
-                fetch("/apiV1/point-media/add-audio", {
-                    method: "POST",
-                    body: formData
-                });
-            }
-        }
-
-        console.log("Tour point saved successfully");
-    } catch (error) {
-        console.error("Error saving tour point:", error.message);
-    }
-}
 
 function deleteTourPoint(pointId) {
 
