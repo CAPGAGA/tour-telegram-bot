@@ -23,7 +23,7 @@ class RoutPointCreate(BaseModel):
 
 
 class RoutPointEdit(BaseModel):
-    rout_id: int
+
     latitude: float
     longitude: float
     point_text: str
@@ -87,7 +87,7 @@ async def get_rout(
         raise HTTPException(status_code=404, detail="Rout is empty")
     return [r.to_dict() for r in rout_points]
 
-@rout_points_router.put('edit-rout-point)', response_model=RoutPointResponse)
+@rout_points_router.put('/edit-rout-point', response_model=RoutPointResponse)
 async def edit_rout_point(
         rout_point_id: int,
         rout_point: RoutPointEdit,

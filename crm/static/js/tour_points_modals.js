@@ -1,4 +1,5 @@
 import { showMessage } from "./revolver.js";
+import {autoResizeTextarea } from "./utils.js"
 import { fetchTour, fetchTourPoints } from "./fetch_tours.js"
 
 let map;
@@ -61,6 +62,11 @@ export function updateRouteList() {
         const pointDescription = document.createElement("textarea");
         pointDescription.className = "point-description";
         pointDescription.value = point.point_text;
+
+        pointDescription.addEventListener("input", function () {
+            autoResizeTextarea(this);
+        });
+        autoResizeTextarea(pointDescription);
 
         const pointMedia = document.createElement("div");
         pointMedia.className = "point-media";
