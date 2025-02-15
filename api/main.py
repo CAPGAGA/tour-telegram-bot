@@ -7,12 +7,12 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
 from api.handlers import get_auth_token, get_current_admin
-from api.routs.admin_routs import admin_rout_router
+from api.routs.admins import admin_rout_router
 from api.routs.auth import auth_router
 from api.routs.crm_auth import admin_router
 from api.routs.routs import rout_router
 from api.routs.rout_points import rout_points_router
-from api.routs.user_routs import user_routs_router
+from api.routs.users import user_routs_router
 
 from db.database import Base, engine
 

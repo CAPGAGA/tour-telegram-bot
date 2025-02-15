@@ -14,7 +14,6 @@ export function initMap() {
     }).addTo(map);
 
     map.on('click', function(e) {
-        console.log('adding point');
         addRoutePoint(e.latlng);
     });
 }
@@ -29,7 +28,8 @@ export function addRoutePoint(latlng) {
         audio: null
     };
     routePoints.push(newPoint);
-    L.marker([newPoint.latitude, newPoint.longitude]).addTo(map);
+    L.marker([newPoint.latitude, newPoint.longitude]).addTo(map)
+        .bindPopup(`${routePoints.length}: ${newPoint.point_text}`).openPopup();
     updateRouteList();
 }
 
@@ -71,28 +71,74 @@ export function updateRouteList() {
         const pointMedia = document.createElement("div");
         pointMedia.className = "point-media";
 
+        const pointImageContainer = document.createElement("div");
+        pointImageContainer.className = "point-image-container";
+
         const pointImage = document.createElement("div");
-        pointImage.className = "point-image";
+        // image gallery for point
+        pointImage.className = "point-media-card point-image";
         if (point.image) {
             pointImage.style.backgroundImage = `url(${point.image})`;
             pointImage.style.backgroundSize = "cover";
         }
-
+        // add image button
+        const imageInput = document.createElement("input");
+        imageInput.className = "point-media-image-input";
+        imageInput.type = "file";
+        imageInput.accept = "image/*";
+        imageInput.multiple = true;
+        imageInput.addEventListener("change", function(event) {
+            Array.from(event.target.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    point.images = point.images || [];
+                    point.images.push(e.target.result);
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.className = "point-media-card point-image";
+                    pointImageContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+        // audio gallery for point
         const pointAudio = document.createElement("div");
-        pointAudio.className = "point-audio";
+        pointAudio.className = "point-media-card point-audio";
         if (point.audio) {
             pointAudio.innerHTML = `<audio controls><source src="${point.audio}" type="audio/mpeg"></audio>`;
         }
-
-        pointMedia.appendChild(pointImage);
+        // add audio button
+        const audioInput = document.createElement("input");
+        audioInput.className = "point-media-audio-input";
+        audioInput.type = "file";
+        audioInput.accept = "audio/*";
+        audioInput.addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    point.audio = e.target.result;
+                    pointAudio.innerHTML = `<audio controls><source src="${e.target.result}" type="audio/mpeg"></audio>`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        // media
+        pointMedia.appendChild(pointImageContainer);
+        pointMedia.appendChild(imageInput);
         pointMedia.appendChild(pointAudio);
+        pointMedia.appendChild(audioInput);
+
+        // body of card
         pointBody.appendChild(pointLabel);
         pointBody.appendChild(pointDescription);
         pointBody.appendChild(pointMedia);
 
+        // card constructor
         pointCard.appendChild(pointIndex);
         pointCard.appendChild(pointBody);
 
+        // add card to list
         list.appendChild(pointCard);
     });
 }
@@ -110,7 +156,7 @@ export function openTourPointModal(tourId) {
                 if (!routePoints.some(p => p.latitude === point.latitude && p.longitude === point.longitude)) {
                     routePoints.push(point);
                     L.marker([point.latitude, point.longitude]).addTo(map)
-                        .bindPopup(`Point ${routePoints.length}: ${point.point_text}`).openPopup();
+                        .bindPopup(`${routePoints.length}: ${point.point_text}`).openPopup();
                 }
             });
             updateRouteList();
@@ -141,4 +187,60 @@ export function closeTourPointModal() {
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelector("#close-tour-points-modal").addEventListener("click", closeTourPointModal);
 });
+
+// main function to work with points
+function saveTourPoint(point) {
+    try {
+        // Validate the point data
+        if (!point.latitude || !point.longitude ) {
+            throw new Error("Point must have coordinates");
+        }
+
+        // Send the base tour point data
+        const pointResponse = await fetch("/rout-points/create_rout_point", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                latitude: point.latitude,
+                longitude: point.longitude,
+                point_text: point.point_text
+            })
+        });
+
+        if (!pointResponse.ok) {
+            throw new Error("Failed to create route point");
+        }
+        const pointData = await pointResponse.json();
+
+        // Upload images if available
+        if (point.images && point.images.length) {
+            for (const image of point.images) {
+                const formData = new FormData();
+                formData.append("image", image);
+                formData.append("point_id", pointData.id);
+                await fetch("/point-media/add-image", {
+                    method: "POST",
+                    body: formData
+                });
+            }
+        }
+
+        // Upload audios if available
+        if (point.audios && point.audios.length) {
+            for (const audio of point.audios) {
+                const formData = new FormData();
+                formData.append("audio", audio);
+                formData.append("point_id", pointData.id);
+                await fetch("/point-media/add-audio", {
+                    method: "POST",
+                    body: formData
+                });
+            }
+        }
+
+        console.log("Tour point saved successfully");
+    } catch (error) {
+        console.error("Error saving tour point:", error.message);
+    }
+}
 
