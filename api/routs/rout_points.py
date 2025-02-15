@@ -114,7 +114,6 @@ async def get_rout(
                  "audio": []})
 
     for row in rows:
-        print(row)
         point: RoutPoint = row[0]
         point_id = point.id
         if not point_map[point_id]["id"]:
@@ -127,15 +126,14 @@ async def get_rout(
                     "point_text": point.point_text
                 }
             )
-
-        if row[1]:  # Image
+        # recombine media and audio data into lists
+        if row[1] and f'media/audio/{row[1]}' not in point_map[point_id]["image"]:  # Image
             point_map[point_id]["image"].append(f'media/images/{row[1]}')
 
-        if row[2]:  # Audio
-            point_map[point_id]["audio"].append(f'media/images/{row[2]}')
+        if row[2] and f'media/audio/{row[2]}' not in point_map[point_id]["audio"]:  # Audio
+            point_map[point_id]["audio"].append(f'media/audio/{row[2]}')
 
     rout_points = list(point_map.values())
-    print(rout_points)
     if not rout_points:
         raise HTTPException(status_code=404, detail="Rout is empty")
     return rout_points

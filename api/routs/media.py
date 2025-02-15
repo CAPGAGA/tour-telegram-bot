@@ -1,3 +1,5 @@
+import os
+
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
 from pydantic import BaseModel
 from sqlalchemy import select, delete
@@ -5,12 +7,19 @@ from  sqlalchemy.ext.asyncio import AsyncSession
 
 from db.database import get_session
 from db.models import PointMedia, PointsAudio
+from api.handlers import generate_hashed_filename
 
 
 point_media_router = APIRouter(
     prefix="/point-media",
     tags=["point-media"],
 )
+
+UPLOAD_IMAGE_DIR = "crm/media/images"
+UPLOAD_AUDIO_DIR = "crm/media/audio"
+
+os.makedirs(UPLOAD_IMAGE_DIR, exist_ok=True)
+os.makedirs(UPLOAD_AUDIO_DIR, exist_ok=True)
 
 class MediaCreate(BaseModel):
 
@@ -28,10 +37,15 @@ async def add_image(
     session: AsyncSession = Depends(get_session)
 ):
     try:
-        new_image = PointMedia(rout_point_id=rout_point_id, media_name=image.filename)
+        hashed_filename = generate_hashed_filename(image.filename)
+        file_path = os.path.join(UPLOAD_IMAGE_DIR, hashed_filename)
+        with open(file_path, "wb") as buffer:
+            buffer.write(await image.read())
+
+        new_image = PointMedia(rout_point_id=rout_point_id, media_name=hashed_filename)
         session.add(new_image)
         await session.commit()
-        return {"message": "Image uploaded successfully", "id": new_image.id}
+        return {"message": "Image uploaded successfully", "id": new_image.id, "file": hashed_filename}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -42,10 +56,15 @@ async def add_audio(
     session: AsyncSession = Depends(get_session)
 ):
     try:
-        new_audio = PointsAudio(rout_point_id=rout_point_id, audio_name=audio.filename)
+        hashed_filename = generate_hashed_filename(audio.filename)
+        file_path = os.path.join(UPLOAD_AUDIO_DIR, hashed_filename)
+        with open(file_path, "wb") as buffer:
+            buffer.write(await audio.read())
+
+        new_audio = PointsAudio(rout_point_id=rout_point_id, audio_name=hashed_filename)
         session.add(new_audio)
         await session.commit()
-        return {"message": "Audio uploaded successfully", "id": new_audio.id}
+        return {"message": "Audio uploaded successfully", "id": new_audio.id, "file": hashed_filename}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

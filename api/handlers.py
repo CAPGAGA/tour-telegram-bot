@@ -1,3 +1,6 @@
+import hashlib
+import os
+
 import jwt
 from fastapi import Request
 
@@ -27,6 +30,11 @@ async def get_current_admin(request: Request):
         return username, user_id
     except jwt.PyJWTError:
         return None
+
+def generate_hashed_filename(filename: str) -> str:
+    hash_digest = hashlib.md5(filename.encode()).hexdigest()
+    ext = os.path.splitext(filename)[1]
+    return f"{hash_digest}{ext}"
 
 
 

@@ -75,13 +75,17 @@ export function updateRouteList() {
         const pointImageContainer = document.createElement("div");
         pointImageContainer.className = "point-image-container";
 
-        const pointImage = document.createElement("div");
-        // image gallery for point
-        pointImage.className = "point-media-card point-image";
+
         if (point.image) {
-            pointImage.style.backgroundImage = `url(${point.image})`;
-            pointImage.style.backgroundSize = "cover";
-            pointImageContainer.appendChild(pointImage);
+            point.image.forEach(imageName => {
+                // image gallery for point
+                const pointImage = document.createElement("div");
+                pointImage.className = "point-media-card point-image";
+                pointImage.style.backgroundImage = `url(${imageName})`;
+                pointImage.style.backgroundSize = "cover";
+                pointImageContainer.appendChild(pointImage);
+            })
+
         }
         // add image button
         const imageInput = document.createElement("input");

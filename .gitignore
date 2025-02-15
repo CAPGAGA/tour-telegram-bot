@@ -162,3 +162,5 @@ cython_debug/
 /media/
 /conversations
 /prod.db
+/crm/media/images/*
+/crm/media/audio/*
