@@ -1,6 +1,6 @@
 import { showMessage } from "./revolver.js";
 import { openTourModal } from "./tours_modals.js"
-import { openTourPointModal, populateMapAndList } from "./tour_points_modals.js"
+import { openTourPointModal } from "./tour_points_modals.js"
 
 export function fetchTours() {
     const adminId = document.getElementById("username").getAttribute("data-admin-id");
@@ -49,18 +49,20 @@ export function fetchTour(tourId) {
 }
 
 export function fetchTourPoints(tourId) {
-    fetch(`/apiV1/rout-points/get-rout?rout_id=${tourId}`)
-    .then(response => {
-        if (response.ok) {
-            return response.json()
-        }
-        showMessage(response.statusText, "error")
-        throw new Error(response.statusText);
-    })
-    .then((responseJson) => {
-        // rout's points
-        populateMapAndList(responseJson);
-        return responseJson;
-    })
-    .catch(error => showMessage(error.message, "error"));
+    return fetch(`/apiV1/rout-points/get-rout?rout_id=${tourId}`)
+        .then(response => {
+            if (!response.ok) {
+                if (response.status == 404) {
+                    showMessage("This rout is empty", "info");
+                    return []
+                }
+                showMessage(response.statusText, "error");
+                throw new Error(response.statusText);
+            }
+            return response.json();
+        })
+        .catch(error => {
+            showMessage(error.message, "error");
+            return [];
+        });
 }

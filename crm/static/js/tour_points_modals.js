@@ -4,6 +4,7 @@ import { fetchTour, fetchTourPoints } from "./fetch_tours.js"
 let map;
 let routePoints = [];
 
+// redner map
 export function initMap() {
     map = L.map('map').setView([44.81569, 20.45174], 13);
 
@@ -17,65 +18,30 @@ export function initMap() {
     });
 }
 
+// add new point to map, points list and point list in modal
 export function addRoutePoint(latlng) {
-    routePoints.push(latlng);
-    L.marker(latlng).addTo(map);
+    const newPoint = {
+        latitude: latlng.lat,
+        longitude: latlng.lng,
+        point_text: "",
+        image: null,
+        audio: null
+    };
+    routePoints.push(newPoint);
+    L.marker([newPoint.latitude, newPoint.longitude]).addTo(map);
     updateRouteList();
 }
 
+// adds point to modal list
 export function updateRouteList() {
     const list = document.getElementById("tour-points-list");
     list.innerHTML = "";
+
     routePoints.forEach((point, index) => {
-        const pointCard = document.createElement("div");
-        pointCard.className = "tour-point-card";
-
-        const pointIndex = document.createElement("div");
-        pointIndex.className = "point-index";
-        pointIndex.innerText = `${index + 1}`;
-
-        const pointBody = document.createElement("div");
-        pointBody.className = "point-body";
-
-        const pointLabel = document.createElement("label");
-        pointLabel.className = "point-label";
-        pointLabel.innerText = "Text for point (optional)";
-
-        const pointDescription = document.createElement("textarea");
-        pointDescription.className = "point-description";
-
-        const pointMedia = document.createElement("div");
-        pointMedia.className = "point-media";
-
-        const pointImage = document.createElement("div");
-        pointImage.className = "point-image";
-
-        const pointAudio = document.createElement("div");
-        pointAudio.className = "point-audio";
-
-        pointMedia.appendChild(pointImage);
-        pointMedia.appendChild(pointAudio);
-        pointBody.appendChild(pointLabel);
-        pointBody.appendChild(pointDescription);
-        pointBody.appendChild(pointMedia);
-
-        pointCard.appendChild(pointIndex);
-        pointCard.appendChild(pointBody);
-
-        list.appendChild(pointCard);
-    });
-}
-
-export function populateMapAndList(points) {
-    routePoints = points;
-
-    const list = document.getElementById("tour-points-list");
-    list.innerHTML = "";
-
-    points.forEach((point, index) => {
-        // Add marker to map
-        L.marker([point.latitude, point.longitude]).addTo(map)
-            .bindPopup(`Point ${index + 1}: ${point.point_text}`).openPopup();
+        if (!point.marker) {
+            point.marker = L.marker([point.latitude, point.longitude]).addTo(map)
+                .bindPopup(`Point ${index + 1}: ${point.point_text}`).openPopup();
+        }
 
         // Create point card
         const pointCard = document.createElement("div");
@@ -125,25 +91,25 @@ export function populateMapAndList(points) {
     });
 }
 
-
-
+// renders modal and all info
 export function openTourPointModal(tourId) {
     const modal = document.getElementById("tour-points-modal");
-    fetchTour(tourId);
-    let points = fetchTourPoints(tourId);
-    if (points) {
-        points.forEach(point => routePoints.push({
-            latitude: point.latitude,
-            longitude: point.longitude,
-            point_text: point.point_text,
-            image: point.image,
-            audio: point.audio
-        }))
-    }
-
     modal.style.display = "block";
     modal.style.opacity = 0;
     initMap();
+    fetchTour(tourId);
+    fetchTourPoints(tourId).then(points => {
+        if (points) {
+            points.forEach(point => {
+                if (!routePoints.some(p => p.latitude === point.latitude && p.longitude === point.longitude)) {
+                    routePoints.push(point);
+                    L.marker([point.latitude, point.longitude]).addTo(map)
+                        .bindPopup(`Point ${routePoints.length}: ${point.point_text}`).openPopup();
+                }
+            });
+            updateRouteList();
+        }
+    });
     setTimeout(() => {
         modal.style.opacity = 1;
         modal.style.transition = "opacity 0.2s ease-in-out";
