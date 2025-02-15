@@ -45,7 +45,7 @@ async def add_image(
         new_image = PointMedia(rout_point_id=rout_point_id, media_name=hashed_filename)
         session.add(new_image)
         await session.commit()
-        return {"message": "Image uploaded successfully", "id": new_image.id, "file": hashed_filename}
+        return {"message": "Image uploaded successfully", "id": new_image.id, "file": f'media/images/{hashed_filename}'}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -64,7 +64,7 @@ async def add_audio(
         new_audio = PointsAudio(rout_point_id=rout_point_id, audio_name=hashed_filename)
         session.add(new_audio)
         await session.commit()
-        return {"message": "Audio uploaded successfully", "id": new_audio.id, "file": hashed_filename}
+        return {"message": "Audio uploaded successfully", "id": new_audio.id, "file": f'media/audio/{hashed_filename}'}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -80,14 +80,14 @@ async def get_audios(rout_point_id: int, session: AsyncSession = Depends(get_ses
     audios = result.scalars().all()
     return audios
 
-@point_media_router.delete("/delete-image/{image_id}")
-async def delete_image(image_id: int, session: AsyncSession = Depends(get_session)):
-    await session.execute(delete(PointMedia).where(PointMedia.id == image_id))
+@point_media_router.delete("/delete-image/{file_name}")
+async def delete_image(file_name: str, session: AsyncSession = Depends(get_session)):
+    await session.execute(delete(PointMedia).where(PointMedia.media_name == file_name))
     await session.commit()
     return {"message": "Image deleted successfully"}
 
-@point_media_router.delete("/delete-audio/{audio_id}")
-async def delete_audio(audio_id: int, session: AsyncSession = Depends(get_session)):
-    await session.execute(delete(PointsAudio).where(PointsAudio.id == audio_id))
+@point_media_router.delete("/delete-audio/{file_name}")
+async def delete_audio(file_name: str, session: AsyncSession = Depends(get_session)):
+    await session.execute(delete(PointsAudio).where(PointsAudio.audio_name == file_name))
     await session.commit()
     return {"message": "Audio deleted successfully"}

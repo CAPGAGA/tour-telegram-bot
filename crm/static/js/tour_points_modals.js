@@ -7,6 +7,7 @@ let routePoints = [];
 
 // redner map
 export function initMap() {
+    // For now set to Belgrade cords
     map = L.map('map').setView([44.81569, 20.45174], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -101,15 +102,15 @@ function createImageContainer(point) {
 
     const imageLabel = document.createElement("label");
     imageLabel.className = "upload-label";
-    imageLabel.innerText = "Images (Limit: 5)";
+    imageLabel.innerText = `Images (${point.image.length}/5)`;
     imageContainer.appendChild(imageLabel);
 
     const imageGallery = document.createElement("div");
     imageGallery.className = "image-gallery";
 
     if (point.image && point.image.length > 0) {
-        point.image.forEach(imageName => {
-            imageGallery.appendChild(createMediaElement(imageName, "image", point));
+        point.image.forEach(imageData => {
+            imageGallery.appendChild(createMediaElement(imageData, "image", point));
         });
     }
 
@@ -165,49 +166,55 @@ function handleMediaUpload(event, point, type, gallery, label = null) {
         point[type] = [];
     }
 
-    if (type === "image" && point.image.length >= 5) {
+    // Count preloaded images/audio
+    let currentMediaCount = point[type].length;
+
+    console.log(currentMediaCount)
+
+    // Prevent uploading if already at limit
+    if (type === "image" && currentMediaCount >= 5) {
         showMessage("Image limit reached.", "error");
         return;
     }
 
     Array.from(event.target.files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            point[type].push(e.target.result); // Add to UI immediately
+        if (currentMediaCount >= 5) {
+            showMessage("You can only upload up to 5 images.", "error");
+            return;
+        }
 
-            const mediaElement = createMediaElement(e.target.result, type, point);
-            gallery.appendChild(mediaElement);
-
-            if (label) {
-                label.innerText = `Images (${point.image.length}/5)`;
-            }
-        };
-        reader.readAsDataURL(file);
-
-        // *** DISABLED UPLOAD TO SERVER FOR UI TESTING ***
-        /*
         const formData = new FormData();
         formData.append("rout_point_id", point.id);
         formData.append(type, file);
-
-        fetch(`/point-media/add-${type}`, {
+        // DISABLE THIS FOR UI TEST
+        fetch(`/apiV1/point-media/add-${type}?rout_point_id=${point.id}`, {
             method: "POST",
-            body: formData
+            body: formData,
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Upload failed: ${response.statusText}`);
+            }
+
+            return response.json();
+        })
         .then(data => {
-            if (data.file) {
-                point[type].push(data.file);
-                const mediaElement = createMediaElement(data.file, type, point);
+            if (data.id && data.file) {
+                console.log(data)
+                const mediaData = data.file;
+                point[type].push(mediaData);
+                currentMediaCount++; // Update count
+
+                const mediaElement = createMediaElement(mediaData, type, point);
                 gallery.appendChild(mediaElement);
 
+                // **Update label to reflect new count**
                 if (label) {
-                    label.innerText = `Images (${point.image.length}/5)`;
+                    label.innerText = `Images (${currentMediaCount}/5)`;
                 }
             }
         })
         .catch(error => showMessage(`Error uploading ${type}: ${error.message}`, "error"));
-        */
     });
 }
 
@@ -242,26 +249,29 @@ function createMediaElement(mediaName, type, point) {
 
 
 // **Deletes an image/audio from UI & database**
-async function deleteMedia(mediaName, type, mediaElement, point) {
-    const endpoint = `/apiV1/point-media/delete-${type}/${mediaName}`;
+function deleteMedia(mediaName, type, mediaElement) {
+    const fileName = mediaName.split("/").pop();
+    const endpoint = `/apiV1/point-media/delete-${type}/${fileName}`;
 
     try {
-          // **Delete from database**
-          // *** DISABLED UPLOAD TO SERVER FOR UI TESTING ***
-//        const response = await fetch(endpoint, { method: "DELETE" });
-//
-//        if (!response.ok) {
-//            throw new Error(`Failed to delete ${type}`);
-//        }
+        // **Delete from database**
+        // *** DISABLED THIS FOR UI TESTING ***
+        fetch(endpoint, { method: "DELETE" })
+        .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to delete ${type}`);
+                }
+            }
+        );
 
         // **Remove from UI**
         mediaElement.remove();
 
         // **Remove from the corresponding array (point.image or point.audio)**
         if (type === "image") {
-            point.image = point.image.filter(img => img !== mediaName);
+            routePoints.image = routePoints.image.filter(img => img !== mediaName);
         } else {
-            point.audio = point.audio.filter(aud => aud !== mediaName);
+            routePoints.audio = routePoints.audio.filter(aud => aud !== mediaName);
         }
 
         showMessage(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully.`, "success");
@@ -288,7 +298,6 @@ export function openTourPointModal(tourId) {
                 }
             });
             updateRouteList();
-            console.log(routePoints)
         }
     });
     setTimeout(() => {

@@ -148,7 +148,7 @@
     left: 20rem;
     width: calc(100% - 15rem - 2rem - 1.5rem - 3rem);
     height: calc(100vh - 6.5rem);
-    overflow: scroll;
+    overflow-y: scroll;
 }
 
 .tour-stats {

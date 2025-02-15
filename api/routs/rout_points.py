@@ -110,8 +110,16 @@ async def get_rout(
     rows = result.fetchall()
 
     point_map = defaultdict(
-        lambda: {"id": None, "rout_id": None, "latitude": None, "longitude": None, "point_text": None, "image": [],
-                 "audio": []})
+        lambda: {
+            "id": None,
+            "rout_id": None,
+            "latitude": None,
+            "longitude": None,
+            "point_text": None,
+            "image": set(), # important to delete duplicates
+            "audio": set() # important to remove duplicates
+        }
+    )
 
     for row in rows:
         point: RoutPoint = row[0]
@@ -126,14 +134,17 @@ async def get_rout(
                     "point_text": point.point_text
                 }
             )
+
         # recombine media and audio data into lists
         if row[1] and f'media/audio/{row[1]}' not in point_map[point_id]["image"]:  # Image
-            point_map[point_id]["image"].append(f'media/images/{row[1]}')
+            point_map[point_id]["image"].add(f'media/images/{row[1]}')
 
         if row[2] and f'media/audio/{row[2]}' not in point_map[point_id]["audio"]:  # Audio
-            point_map[point_id]["audio"].append(f'media/audio/{row[2]}')
+            point_map[point_id]["audio"].add(f'media/audio/{row[2]}')
 
+    # Convert sets to lists before returning
     rout_points = list(point_map.values())
+
     if not rout_points:
         raise HTTPException(status_code=404, detail="Rout is empty")
     return rout_points
