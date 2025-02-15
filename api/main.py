@@ -10,6 +10,7 @@ from api.handlers import get_auth_token, get_current_admin
 from api.routs.admins import admin_rout_router
 from api.routs.auth import auth_router
 from api.routs.crm_auth import admin_router
+from api.routs.media import point_media_router
 from api.routs.routs import rout_router
 from api.routs.rout_points import rout_points_router
 from api.routs.users import user_routs_router
@@ -46,6 +47,7 @@ app.include_router(auth_router, prefix='/apiV1')
 app.include_router(rout_router, prefix='/apiV1')
 app.include_router(rout_points_router, prefix='/apiV1')
 app.include_router(user_routs_router, prefix='/apiV1')
+app.include_router(point_media_router, prefix='/apiV1')
 
 # crm renders
 @app.get('/', response_class=HTMLResponse)

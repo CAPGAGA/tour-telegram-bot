@@ -120,7 +120,7 @@ class RoutPoint(BaseTable):
             'rout_id': self.rout_id,
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'point_text': self.point_text
+            'point_text': self.point_text,
         }
 
 

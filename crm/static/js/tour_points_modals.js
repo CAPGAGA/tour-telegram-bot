@@ -21,6 +21,7 @@ export function initMap() {
 // add new point to map, points list and point list in modal
 export function addRoutePoint(latlng) {
     const newPoint = {
+        id: null,
         latitude: latlng.lat,
         longitude: latlng.lng,
         point_text: "",
@@ -80,6 +81,7 @@ export function updateRouteList() {
         if (point.image) {
             pointImage.style.backgroundImage = `url(${point.image})`;
             pointImage.style.backgroundSize = "cover";
+            pointImageContainer.appendChild(pointImage);
         }
         // add image button
         const imageInput = document.createElement("input");
@@ -153,6 +155,7 @@ export function openTourPointModal(tourId) {
     fetchTourPoints(tourId).then(points => {
         if (points) {
             points.forEach(point => {
+                console.log(point)
                 if (!routePoints.some(p => p.latitude === point.latitude && p.longitude === point.longitude)) {
                     routePoints.push(point);
                     L.marker([point.latitude, point.longitude]).addTo(map)
@@ -160,6 +163,7 @@ export function openTourPointModal(tourId) {
                 }
             });
             updateRouteList();
+            console.log(routePoints)
         }
     });
     setTimeout(() => {
@@ -190,6 +194,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // main function to work with points
 function saveTourPoint(point) {
+    let command = 'create'
+
+    if (point.id) {
+        command = 'edit'
+    }
+
     try {
         // Validate the point data
         if (!point.latitude || !point.longitude ) {
@@ -197,7 +207,7 @@ function saveTourPoint(point) {
         }
 
         // Send the base tour point data
-        const pointResponse = await fetch("/rout-points/create_rout_point", {
+        const pointResponse = fetch("/rout-points/create_rout_point", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -210,7 +220,7 @@ function saveTourPoint(point) {
         if (!pointResponse.ok) {
             throw new Error("Failed to create route point");
         }
-        const pointData = await pointResponse.json();
+        const pointData = pointResponse.json();
 
         // Upload images if available
         if (point.images && point.images.length) {
@@ -218,7 +228,7 @@ function saveTourPoint(point) {
                 const formData = new FormData();
                 formData.append("image", image);
                 formData.append("point_id", pointData.id);
-                await fetch("/point-media/add-image", {
+                fetch("/point-media/add-image", {
                     method: "POST",
                     body: formData
                 });
@@ -231,7 +241,7 @@ function saveTourPoint(point) {
                 const formData = new FormData();
                 formData.append("audio", audio);
                 formData.append("point_id", pointData.id);
-                await fetch("/point-media/add-audio", {
+                fetch("/point-media/add-audio", {
                     method: "POST",
                     body: formData
                 });
@@ -244,3 +254,6 @@ function saveTourPoint(point) {
     }
 }
 
+function deleteTourPoint(pointId) {
+
+};
