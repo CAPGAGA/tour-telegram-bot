@@ -241,20 +241,33 @@ function createMediaElement(mediaName, type, point) {
 }
 
 
-// **Delete Media Function**
-export function deleteMedia(mediaName, type, mediaElement) {
-//    const endpoint = type === "image" ? `/point-media/delete-image/${mediaName}` : `/point-media/delete-audio/${mediaName}`;
-//
-//    try {
+// **Deletes an image/audio from UI & database**
+async function deleteMedia(mediaName, type, mediaElement, point) {
+    const endpoint = `/apiV1/point-media/delete-${type}/${mediaName}`;
+
+    try {
+          // **Delete from database**
+          // *** DISABLED UPLOAD TO SERVER FOR UI TESTING ***
 //        const response = await fetch(endpoint, { method: "DELETE" });
+//
 //        if (!response.ok) {
 //            throw new Error(`Failed to delete ${type}`);
 //        }
-//        mediaElement.remove();
-//        showMessage(`${type} deleted successfully.`, "success");
-//    } catch (error) {
-//        showMessage(`Error deleting ${type}: ${error.message}`, "error");
-//    }
+
+        // **Remove from UI**
+        mediaElement.remove();
+
+        // **Remove from the corresponding array (point.image or point.audio)**
+        if (type === "image") {
+            point.image = point.image.filter(img => img !== mediaName);
+        } else {
+            point.audio = point.audio.filter(aud => aud !== mediaName);
+        }
+
+        showMessage(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully.`, "success");
+    } catch (error) {
+        showMessage(`Error deleting ${type}: ${error.message}`, "error");
+    }
 }
 
 // renders modal and all info
