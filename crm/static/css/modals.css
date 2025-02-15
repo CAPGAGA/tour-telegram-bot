@@ -255,8 +255,16 @@
 
 .point-media {
     display: flex;
-    gap: 10px;
     margin-top: 10px;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.point-media > div {
+    flex: 1;
+    height: 100%;
 }
 
 .point-media-card{
@@ -286,10 +294,16 @@
     width: 50px;
 }
 
-
 .point-audio {
     width: 300px;
     border-radius: 1.4rem
+}
+
+.point-media-image-input, .point-media-audio-input{
+    color: transparent;
+    width: 6rem;
+    box-sizing: border-box;
+    position: relative;
 }
 
 .point-media-image-input::file-selector-button, .point-media-audio-input::file-selector-button {
@@ -300,6 +314,70 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.media-container {
+    padding: 10px;
+}
+
+.image-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.image-gallery, .audio-gallery {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.audio-gallery audio {
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.audio-wrapper{
+    width: 100%;
+}
+
+.point-media-card {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.point-media-card:hover {
+    transform: scale(1.1);
+}
+
+.upload-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.delete-media-btn {
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.delete-media-btn:hover {
+    background-color: rgb(0 0 0 / 2%);
 }
 
 @media (max-width: 768px) {

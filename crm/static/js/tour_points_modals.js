@@ -45,108 +45,216 @@ export function updateRouteList() {
                 .bindPopup(`Point ${index + 1}: ${point.point_text}`).openPopup();
         }
 
-        // Create point card
-        const pointCard = document.createElement("div");
-        pointCard.className = "tour-point-card";
-
-        const pointIndex = document.createElement("div");
-        pointIndex.className = "point-index";
-        pointIndex.innerText = index + 1;
-
-        const pointBody = document.createElement("div");
-        pointBody.className = "point-body";
-
-        const pointLabel = document.createElement("label");
-        pointLabel.className = "point-label";
-        pointLabel.innerText = "Text for point";
-
-        const pointDescription = document.createElement("textarea");
-        pointDescription.className = "point-description";
-        pointDescription.value = point.point_text;
-
-        pointDescription.addEventListener("input", function () {
-            autoResizeTextarea(this);
-        });
-        autoResizeTextarea(pointDescription);
-
-        const pointMedia = document.createElement("div");
-        pointMedia.className = "point-media";
-
-        const pointImageContainer = document.createElement("div");
-        pointImageContainer.className = "point-image-container";
-
-
-        if (point.image) {
-            point.image.forEach(imageName => {
-                // image gallery for point
-                const pointImage = document.createElement("div");
-                pointImage.className = "point-media-card point-image";
-                pointImage.style.backgroundImage = `url(${imageName})`;
-                pointImage.style.backgroundSize = "cover";
-                pointImageContainer.appendChild(pointImage);
-            })
-
-        }
-        // add image button
-        const imageInput = document.createElement("input");
-        imageInput.className = "point-media-image-input";
-        imageInput.type = "file";
-        imageInput.accept = "image/*";
-        imageInput.multiple = true;
-        imageInput.addEventListener("change", function(event) {
-            Array.from(event.target.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    point.images = point.images || [];
-                    point.images.push(e.target.result);
-                    const img = document.createElement("img");
-                    img.src = e.target.result;
-                    img.className = "point-media-card point-image";
-                    pointImageContainer.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            });
-        });
-        // audio gallery for point
-        const pointAudio = document.createElement("div");
-        pointAudio.className = "point-media-card point-audio";
-        if (point.audio) {
-            pointAudio.innerHTML = `<audio controls><source src="${point.audio}" type="audio/mpeg"></audio>`;
-        }
-        // add audio button
-        const audioInput = document.createElement("input");
-        audioInput.className = "point-media-audio-input";
-        audioInput.type = "file";
-        audioInput.accept = "audio/*";
-        audioInput.addEventListener("change", function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    point.audio = e.target.result;
-                    pointAudio.innerHTML = `<audio controls><source src="${e.target.result}" type="audio/mpeg"></audio>`;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-        // media
-        pointMedia.appendChild(pointImageContainer);
-        pointMedia.appendChild(imageInput);
-        pointMedia.appendChild(pointAudio);
-        pointMedia.appendChild(audioInput);
-
-        // body of card
-        pointBody.appendChild(pointLabel);
-        pointBody.appendChild(pointDescription);
-        pointBody.appendChild(pointMedia);
-
-        // card constructor
-        pointCard.appendChild(pointIndex);
-        pointCard.appendChild(pointBody);
-
-        // add card to list
+        const pointCard = createPointCard(point, index);
         list.appendChild(pointCard);
     });
+}
+
+// **Creates a point card**
+function createPointCard(point, index) {
+    const pointCard = document.createElement("div");
+    pointCard.className = "tour-point-card";
+
+    const pointIndex = document.createElement("div");
+    pointIndex.className = "point-index";
+    pointIndex.innerText = index + 1;
+
+    const pointBody = document.createElement("div");
+    pointBody.className = "point-body";
+
+    const pointLabel = document.createElement("label");
+    pointLabel.className = "point-label";
+    pointLabel.innerText = "Text for point";
+
+    const pointDescription = document.createElement("textarea");
+    pointDescription.className = "point-description";
+    pointDescription.value = point.point_text;
+
+    pointDescription.addEventListener("input", function () {
+        autoResizeTextarea(this);
+    });
+    autoResizeTextarea(pointDescription);
+
+    const pointMedia = document.createElement("div");
+    pointMedia.className = "point-media";
+
+    const imageContainer = createImageContainer(point);
+    const audioContainer = createAudioContainer(point);
+
+    pointMedia.appendChild(imageContainer);
+    pointMedia.appendChild(audioContainer);
+
+    pointBody.appendChild(pointLabel);
+    pointBody.appendChild(pointDescription);
+    pointBody.appendChild(pointMedia);
+
+    pointCard.appendChild(pointIndex);
+    pointCard.appendChild(pointBody);
+
+    return pointCard;
+}
+
+// **Creates the image container**
+function createImageContainer(point) {
+    const imageContainer = document.createElement("div");
+    imageContainer.className = "media-container image-container";
+
+    const imageLabel = document.createElement("label");
+    imageLabel.className = "upload-label";
+    imageLabel.innerText = "Images (Limit: 5)";
+    imageContainer.appendChild(imageLabel);
+
+    const imageGallery = document.createElement("div");
+    imageGallery.className = "image-gallery";
+
+    if (point.image && point.image.length > 0) {
+        point.image.forEach(imageName => {
+            imageGallery.appendChild(createMediaElement(imageName, "image", point));
+        });
+    }
+
+    const imageInput = document.createElement("input");
+    imageInput.className = "point-media-image-input";
+    imageInput.type = "file";
+    imageInput.accept = "image/*";
+    imageInput.multiple = true;
+    imageInput.addEventListener("change", function(event) {
+        handleMediaUpload(event, point, "image", imageGallery, imageLabel);
+    });
+
+    imageContainer.appendChild(imageGallery);
+    imageContainer.appendChild(imageInput);
+    return imageContainer;
+}
+
+// **Creates the audio container**
+function createAudioContainer(point) {
+    const audioContainer = document.createElement("div");
+    audioContainer.className = "media-container audio-container";
+
+    const audioLabel = document.createElement("label");
+    audioLabel.className = "upload-label";
+    audioLabel.innerText = "Audio";
+    audioContainer.appendChild(audioLabel);
+
+    const audioGallery = document.createElement("div");
+    audioGallery.className = "audio-gallery";
+
+    if (point.audio && point.audio.length > 0) {
+        point.audio.forEach(audioName => {
+            audioGallery.appendChild(createMediaElement(audioName, "audio", point));
+        });
+    }
+
+    const audioInput = document.createElement("input");
+    audioInput.className = "point-media-audio-input";
+    audioInput.type = "file";
+    audioInput.accept = "audio/*";
+    audioInput.addEventListener("change", function(event) {
+        handleMediaUpload(event, point, "audio", audioGallery);
+    });
+
+    audioContainer.appendChild(audioGallery);
+    audioContainer.appendChild(audioInput);
+    return audioContainer;
+}
+
+// **Handles uploading images/audio (DISABLED UPLOAD FOR TESTING)**
+function handleMediaUpload(event, point, type, gallery, label = null) {
+    if (!point[type]) {
+        point[type] = [];
+    }
+
+    if (type === "image" && point.image.length >= 5) {
+        showMessage("Image limit reached.", "error");
+        return;
+    }
+
+    Array.from(event.target.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            point[type].push(e.target.result); // Add to UI immediately
+
+            const mediaElement = createMediaElement(e.target.result, type, point);
+            gallery.appendChild(mediaElement);
+
+            if (label) {
+                label.innerText = `Images (${point.image.length}/5)`;
+            }
+        };
+        reader.readAsDataURL(file);
+
+        // *** DISABLED UPLOAD TO SERVER FOR UI TESTING ***
+        /*
+        const formData = new FormData();
+        formData.append("rout_point_id", point.id);
+        formData.append(type, file);
+
+        fetch(`/point-media/add-${type}`, {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.file) {
+                point[type].push(data.file);
+                const mediaElement = createMediaElement(data.file, type, point);
+                gallery.appendChild(mediaElement);
+
+                if (label) {
+                    label.innerText = `Images (${point.image.length}/5)`;
+                }
+            }
+        })
+        .catch(error => showMessage(`Error uploading ${type}: ${error.message}`, "error"));
+        */
+    });
+}
+
+// **Creates image/audio element with delete button**
+function createMediaElement(mediaName, type, point) {
+    const mediaWrapper = document.createElement("div");
+    mediaWrapper.className = `${type}-wrapper`;
+
+    let mediaElement;
+    if (type === "image") {
+        mediaElement = document.createElement("img");
+        mediaElement.className = "point-media-card point-image";
+        mediaElement.src = mediaName;
+        mediaElement.addEventListener("click", () => openImageModal(mediaElement.src));
+    } else {
+        mediaElement = document.createElement("audio");
+        mediaElement.controls = true;
+        mediaElement.innerHTML = `<source src="${mediaName}" type="audio/mpeg">`;
+    }
+
+    // **Delete Button**
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-media-btn";
+    deleteBtn.innerHTML = "🗑️";
+    deleteBtn.addEventListener("click", () => deleteMedia(mediaName, type, mediaWrapper));
+
+    mediaWrapper.appendChild(mediaElement);
+    mediaWrapper.appendChild(deleteBtn);
+
+    return mediaWrapper;
+}
+
+
+// **Delete Media Function**
+export function deleteMedia(mediaName, type, mediaElement) {
+//    const endpoint = type === "image" ? `/point-media/delete-image/${mediaName}` : `/point-media/delete-audio/${mediaName}`;
+//
+//    try {
+//        const response = await fetch(endpoint, { method: "DELETE" });
+//        if (!response.ok) {
+//            throw new Error(`Failed to delete ${type}`);
+//        }
+//        mediaElement.remove();
+//        showMessage(`${type} deleted successfully.`, "success");
+//    } catch (error) {
+//        showMessage(`Error deleting ${type}: ${error.message}`, "error");
+//    }
 }
 
 // renders modal and all info
@@ -211,7 +319,7 @@ function saveTourPoint(point) {
         }
 
         // Send the base tour point data
-        const pointResponse = fetch("/rout-points/create_rout_point", {
+        const pointResponse = fetch("/apiV1/rout-points/create_rout_point", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -232,7 +340,7 @@ function saveTourPoint(point) {
                 const formData = new FormData();
                 formData.append("image", image);
                 formData.append("point_id", pointData.id);
-                fetch("/point-media/add-image", {
+                fetch("/apiV1/point-media/add-image", {
                     method: "POST",
                     body: formData
                 });
@@ -245,7 +353,7 @@ function saveTourPoint(point) {
                 const formData = new FormData();
                 formData.append("audio", audio);
                 formData.append("point_id", pointData.id);
-                fetch("/point-media/add-audio", {
+                fetch("/apiV1/point-media/add-audio", {
                     method: "POST",
                     body: formData
                 });
