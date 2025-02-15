@@ -1,6 +1,6 @@
 import { showMessage } from "./revolver.js";
 import { openTourModal } from "./tours_modals.js"
-import { openTourPointModal } from "./tour_points_modals.js"
+import { openTourPointModal, populateMapAndList } from "./tour_points_modals.js"
 
 export function fetchTours() {
     const adminId = document.getElementById("username").getAttribute("data-admin-id");
@@ -34,7 +34,7 @@ export function fetchTours() {
         .catch(error => showMessage(error.message, "error"));
 }
 
-export function fetchTourPoints(tourId) {
+export function fetchTour(tourId) {
     fetch(`/apiV1/rout/get-rout/${tourId}`)
     .then(response => response.json())
     .then(data => {
@@ -46,6 +46,9 @@ export function fetchTourPoints(tourId) {
 
     })
     .catch(error => showMessage(error.message, "error"));
+}
+
+export function fetchTourPoints(tourId) {
     fetch(`/apiV1/rout-points/get-rout?rout_id=${tourId}`)
     .then(response => {
         if (response.ok) {
@@ -56,9 +59,8 @@ export function fetchTourPoints(tourId) {
     })
     .then((responseJson) => {
         // rout's points
-        console.log(responseJson)
-        const routLength = responseJson.length;
-
+        populateMapAndList(responseJson);
+        return responseJson;
     })
     .catch(error => showMessage(error.message, "error"));
 }

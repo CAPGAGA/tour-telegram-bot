@@ -148,6 +148,7 @@
     left: 20rem;
     width: calc(100% - 15rem - 2rem - 1.5rem - 3rem);
     height: calc(100vh - 6.5rem);
+    overflow: scroll;
 }
 
 .tour-stats {
@@ -158,6 +159,14 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+}
+
+#map {
+    height: 30rem;
+    width: calc(100% - 40px);
+    margin: 0px 20px;
+    outline-style: none;
+    border-radius: 0.5rem;
 }
 
 .add-tour-point {
@@ -187,6 +196,79 @@
     background-color: #ecf0f1;
     box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.1);
     overflow: auto;
+}
+
+#tour-points-list {
+    padding: 20px;
+    width: calc(100% - 40px);
+}
+
+.tour-point-card {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.tour-point-card:hover {
+    transform: scale(1.02);
+}
+
+.point-index {
+    width: 40px;
+    height: 40px;
+    background: #007bff;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.point-body {
+    flex-grow: 1;
+}
+
+.point-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    color: #333;
+}
+
+.point-description {
+    max-width: 100%;
+    min-width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #f8f9fa;
+    box-sizing: border-box;
+}
+
+.point-media {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.point-image, .point-audio {
+    width: 50px;
+    height: 50px;
+    background: #ddd;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #666;
 }
 
 @media (max-width: 768px) {
