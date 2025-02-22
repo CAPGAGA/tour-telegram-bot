@@ -18,6 +18,13 @@ export function initMap(routId) {
     });
 }
 
+export function addDraggableSave(marker, point) {
+    marker.on("dragend", function (event) {
+        const newLatLng = event.target.getLatLng();
+        updatePointLocation(point.id, newLatLng.lat, newLatLng.lng);
+    });
+}
+
 // add new point to map, points list and point list in modal
 function addRoutePoint(latlng, routId) {
     const newPoint = {
@@ -44,11 +51,15 @@ function addRoutePoint(latlng, routId) {
         // Add the saved point to `routePoints` with its new DB ID
         newPoint.id = savedPoint.id;
 
-
         // Update the UI
-        const newMarker = L.marker([savedPoint.latitude, savedPoint.longitude])
+        const newMarker = L.marker([savedPoint.latitude, savedPoint.longitude],{
+            draggable: true,
+            autoPan: true
+        })
             .addTo(map)
-            .bindPopup(`Point ${routePoints.length}: ${savedPoint.point_text}`);
+            .bindPopup(`${routePoints.length + 1}: ${savedPoint.point_text}`);
+
+        addDraggableSave(newMarker, newPoint);
 
         // Add marker to point object
         newPoint.marker = newMarker;
@@ -70,10 +81,15 @@ export function updateRouteList() {
 
     routePoints.forEach((point, index) => {
         if (!point.marker) {
-            point.marker = L.marker([point.latitude, point.longitude]).addTo(map)
+            const point = L.marker([point.latitude, point.longitude],{
+            draggable: true,
+            autoPan: true
+            })
+                .addTo(map)
                 .bindPopup(`Point ${index + 1}: ${point.point_text}`).openPopup();
+            addDraggableSave(marker, point);
+            point.marker = marker;
         }
-
         const pointCard = createPointCard(point, index);
         list.appendChild(pointCard);
     });
@@ -263,30 +279,7 @@ function handleMediaUpload(event, point, type, gallery, label = null) {
     });
 }
 
-function savePointText(pointId, text) {
-    fetch(`/apiV1/rout-points/edit-rout-point?rout_point_id=${pointId}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            id: pointId,
-            point_text: text
-        })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Failed to save point text");
-        }
-        return response.json();
-    })
-    .then(() => {
-        showMessage("Point text saved successfully!", "success");
-    })
-    .catch(error => {
-        showMessage(`Error saving point text: ${error.message}`, "error");
-    });
-}
+
 
 // **Creates image/audio element with delete button**
 function createMediaElement(mediaName, type, point, label) {
@@ -364,8 +357,15 @@ export function openTourPointModal(tourId) {
             points.forEach(point => {
                 if (!routePoints.some(p => p.latitude === point.latitude && p.longitude === point.longitude)) {
                     routePoints.push(point);
-                    L.marker([point.latitude, point.longitude]).addTo(map)
-                        .bindPopup(`${routePoints.length}: ${point.point_text}`).openPopup();
+                    const marker = L.marker([point.latitude, point.longitude],{
+                            draggable: true,
+                            autoPan: true
+                        })
+                        .addTo(map)
+                        .bindPopup(`${routePoints.length}: ${point.point_text}`)
+                        .openPopup();
+                    addDraggableSave(marker, point);
+                    point.marker = marker;
                 }
             });
             updateRouteList();
@@ -427,3 +427,53 @@ function deleteRoutePoint(point) {
             showMessage(`Error deleting route point: ${error.message}`, "error");
         });
 };
+
+function savePointText(pointId, text) {
+    fetch(`/apiV1/rout-points/edit-rout-point?rout_point_id=${pointId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id: pointId,
+            point_text: text
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to save point text");
+        }
+        return response.json();
+    })
+    .then(() => {
+        showMessage("Point text saved successfully!", "success");
+    })
+    .catch(error => {
+        showMessage(`Error saving point text: ${error.message}`, "error");
+    });
+}
+
+function updatePointLocation(pointId, newLat, newLng) {
+    fetch(`/apiV1/rout-points/edit-rout-point?rout_point_id=${pointId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            latitude: newLat,
+            longitude: newLng
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to update location");
+        }
+        return response.json();
+    })
+    .then(() => {
+        showMessage("Location updated successfully!", "success");
+    })
+    .catch(error => {
+        showMessage(`Error updating location: ${error.message}`, "error");
+    });
+}
