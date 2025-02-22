@@ -26,6 +26,12 @@ class RoutEdit(BaseModel):
     base_price: int
     is_displayed: bool
 
+class RoutDisplay(BaseModel):
+
+    rout_id: int
+    is_displayed: bool
+
+
 class RoutResponse(BaseModel):
 
     id: int
@@ -79,6 +85,18 @@ async def update_rout(
     await session.commit()
     await session.refresh(session_rout)
     return session_rout
+
+@rout_router.put("/display-rout/{rout_id}", response_model=RoutDisplay)
+async def display_rout(
+        rout: RoutDisplay,
+        session: AsyncSession = Depends(get_session)
+):
+    query = select(Rout).where(Rout.id == rout.rout_id)
+    result = await session.execute(query)
+
+    # check if rout can be displayed
+    raise NotImplemented
+
 
 @rout_router.delete("/delete-rout/{rout_id}", response_model=dict)
 async def delete_rout(

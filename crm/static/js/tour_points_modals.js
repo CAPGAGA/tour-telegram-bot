@@ -1,13 +1,12 @@
 import { showMessage } from "./revolver.js";
-import {autoResizeTextarea } from "./utils.js"
+import {autoResizeTextarea, updateImageCounter } from "./utils.js"
 import { fetchTour, fetchTourPoints } from "./fetch_tours.js"
 
 let map;
 let routePoints = [];
 
 // redner map
-export function initMap() {
-    // For now set to Belgrade cords
+export function initMap(routId) {
     map = L.map('map').setView([44.81569, 20.45174], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -15,24 +14,64 @@ export function initMap() {
     }).addTo(map);
 
     map.on('click', function(e) {
-        addRoutePoint(e.latlng);
+        addRoutePoint(e.latlng, routId);
+    });
+}
+
+export function addDraggableSave(marker, point) {
+    marker.on("dragend", function (event) {
+        const newLatLng = event.target.getLatLng();
+        updatePointLocation(point.id, newLatLng.lat, newLatLng.lng);
     });
 }
 
 // add new point to map, points list and point list in modal
-export function addRoutePoint(latlng) {
+function addRoutePoint(latlng, routId) {
     const newPoint = {
-        id: null,
+        rout_id: routId,
         latitude: latlng.lat,
         longitude: latlng.lng,
-        point_text: "",
-        image: null,
-        audio: null
+        point_text: "" // Empty text by default
     };
-    routePoints.push(newPoint);
-    L.marker([newPoint.latitude, newPoint.longitude]).addTo(map)
-        .bindPopup(`${routePoints.length}: ${newPoint.point_text}`).openPopup();
-    updateRouteList();
+
+    fetch("/apiV1/rout-points/create", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newPoint)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to save point to the database");
+        }
+        return response.json();
+    })
+    .then(savedPoint => {
+        // Add the saved point to `routePoints` with its new DB ID
+        newPoint.id = savedPoint.id;
+
+        // Update the UI
+        const newMarker = L.marker([savedPoint.latitude, savedPoint.longitude],{
+            draggable: true,
+            autoPan: true
+        })
+            .addTo(map)
+            .bindPopup(`${routePoints.length + 1}: ${savedPoint.point_text}`);
+
+        addDraggableSave(newMarker, newPoint);
+
+        // Add marker to point object
+        newPoint.marker = newMarker;
+
+        // Add point to list
+        routePoints.push(newPoint);
+        // Refresh the list
+        updateRouteList();
+    })
+    .catch(error => {
+        showMessage(`Error saving point: ${error.message}`, "error");
+    });
 }
 
 // adds point to modal list
@@ -42,10 +81,15 @@ export function updateRouteList() {
 
     routePoints.forEach((point, index) => {
         if (!point.marker) {
-            point.marker = L.marker([point.latitude, point.longitude]).addTo(map)
+            const point = L.marker([point.latitude, point.longitude],{
+            draggable: true,
+            autoPan: true
+            })
+                .addTo(map)
                 .bindPopup(`Point ${index + 1}: ${point.point_text}`).openPopup();
+            addDraggableSave(marker, point);
+            point.marker = marker;
         }
-
         const pointCard = createPointCard(point, index);
         list.appendChild(pointCard);
     });
@@ -71,16 +115,33 @@ function createPointCard(point, index) {
     pointDescription.className = "point-description";
     pointDescription.value = point.point_text;
 
+    let typingTimer;
+
     pointDescription.addEventListener("input", function () {
+        // autoresize to fit whole text
         autoResizeTextarea(this);
+
+        // Clear the existing timer
+        clearTimeout(typingTimer);
+
+        // Set a new timer to save after 5 seconds
+        typingTimer = setTimeout(() => savePointText(point.id, pointDescription.value), 5000);
     });
+    // first autoresize to fit whole text
     autoResizeTextarea(pointDescription);
 
+    // media containers
     const pointMedia = document.createElement("div");
     pointMedia.className = "point-media";
 
     const imageContainer = createImageContainer(point);
     const audioContainer = createAudioContainer(point);
+
+    // deletion button
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "delete-point-btn";
+    deleteButton.innerHTML = "<img class='delete-icon' src='/static/icons/delete.png' alt='delete-icon'></img>";
+    deleteButton.addEventListener("click", () => deleteRoutePoint(point));
 
     pointMedia.appendChild(imageContainer);
     pointMedia.appendChild(audioContainer);
@@ -91,6 +152,7 @@ function createPointCard(point, index) {
 
     pointCard.appendChild(pointIndex);
     pointCard.appendChild(pointBody);
+    pointCard.appendChild(deleteButton);
 
     return pointCard;
 }
@@ -99,6 +161,9 @@ function createPointCard(point, index) {
 function createImageContainer(point) {
     const imageContainer = document.createElement("div");
     imageContainer.className = "media-container image-container";
+
+    // ensure that point.image is not empty
+    point.image = Array.isArray(point.image) ? point.image : [];
 
     const imageLabel = document.createElement("label");
     imageLabel.className = "upload-label";
@@ -110,7 +175,7 @@ function createImageContainer(point) {
 
     if (point.image && point.image.length > 0) {
         point.image.forEach(imageData => {
-            imageGallery.appendChild(createMediaElement(imageData, "image", point));
+            imageGallery.appendChild(createMediaElement(imageData, "image", point, imageLabel));
         });
     }
 
@@ -169,7 +234,6 @@ function handleMediaUpload(event, point, type, gallery, label = null) {
     // Count preloaded images/audio
     let currentMediaCount = point[type].length;
 
-    console.log(currentMediaCount)
 
     // Prevent uploading if already at limit
     if (type === "image" && currentMediaCount >= 5) {
@@ -200,7 +264,6 @@ function handleMediaUpload(event, point, type, gallery, label = null) {
         })
         .then(data => {
             if (data.id && data.file) {
-                console.log(data)
                 const mediaData = data.file;
                 point[type].push(mediaData);
                 currentMediaCount++; // Update count
@@ -208,18 +271,18 @@ function handleMediaUpload(event, point, type, gallery, label = null) {
                 const mediaElement = createMediaElement(mediaData, type, point);
                 gallery.appendChild(mediaElement);
 
-                // **Update label to reflect new count**
-                if (label) {
-                    label.innerText = `Images (${currentMediaCount}/5)`;
-                }
+                // Update the counter after adding an image
+                updateImageCounter(point, label);
             }
         })
         .catch(error => showMessage(`Error uploading ${type}: ${error.message}`, "error"));
     });
 }
 
+
+
 // **Creates image/audio element with delete button**
-function createMediaElement(mediaName, type, point) {
+function createMediaElement(mediaName, type, point, label) {
     const mediaWrapper = document.createElement("div");
     mediaWrapper.className = `${type}-wrapper`;
 
@@ -239,7 +302,7 @@ function createMediaElement(mediaName, type, point) {
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "delete-media-btn";
     deleteBtn.innerHTML = "🗑️";
-    deleteBtn.addEventListener("click", () => deleteMedia(mediaName, type, mediaWrapper));
+    deleteBtn.addEventListener("click", () => deleteMedia(mediaName, type, mediaWrapper, point, label));
 
     mediaWrapper.appendChild(mediaElement);
     mediaWrapper.appendChild(deleteBtn);
@@ -249,35 +312,37 @@ function createMediaElement(mediaName, type, point) {
 
 
 // **Deletes an image/audio from UI & database**
-function deleteMedia(mediaName, type, mediaElement) {
+function deleteMedia(mediaName, type, mediaElement, point, label) {
     const fileName = mediaName.split("/").pop();
     const endpoint = `/apiV1/point-media/delete-${type}/${fileName}`;
 
-    try {
-        // **Delete from database**
-        // *** DISABLED THIS FOR UI TESTING ***
-        fetch(endpoint, { method: "DELETE" })
+    fetch(endpoint, { method: "DELETE" })
         .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Failed to delete ${type}`);
-                }
+            if (!response.ok) {
+                throw new Error(`Failed to delete ${type}`);
             }
-        );
+            return response.json();
+        })
+        .then(() => {
+            // **Remove from UI**
+            mediaElement.remove();
 
-        // **Remove from UI**
-        mediaElement.remove();
+            // **Find the correct point and remove media from its array**
+            if (type === "image" && point.image) {
+                point.image = point.image.filter(img => img !== mediaName);
+            } else if (type === "audio" && point.audio) {
+                point.audio = point.audio.filter(aud => aud !== mediaName);
+            }
 
-        // **Remove from the corresponding array (point.image or point.audio)**
-        if (type === "image") {
-            routePoints.image = routePoints.image.filter(img => img !== mediaName);
-        } else {
-            routePoints.audio = routePoints.audio.filter(aud => aud !== mediaName);
-        }
+            if (type === "image") {
+                updateImageCounter(point, label)
+            };
 
-        showMessage(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully.`, "success");
-    } catch (error) {
-        showMessage(`Error deleting ${type}: ${error.message}`, "error");
-    }
+            showMessage(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully.`, "success");
+        })
+        .catch(error => {
+            showMessage(`Error deleting ${type}: ${error.message}`, "error");
+        });
 }
 
 // renders modal and all info
@@ -285,15 +350,22 @@ export function openTourPointModal(tourId) {
     const modal = document.getElementById("tour-points-modal");
     modal.style.display = "block";
     modal.style.opacity = 0;
-    initMap();
+    initMap(tourId);
     fetchTour(tourId);
     fetchTourPoints(tourId).then(points => {
         if (points) {
             points.forEach(point => {
                 if (!routePoints.some(p => p.latitude === point.latitude && p.longitude === point.longitude)) {
                     routePoints.push(point);
-                    L.marker([point.latitude, point.longitude]).addTo(map)
-                        .bindPopup(`${routePoints.length}: ${point.point_text}`).openPopup();
+                    const marker = L.marker([point.latitude, point.longitude],{
+                            draggable: true,
+                            autoPan: true
+                        })
+                        .addTo(map)
+                        .bindPopup(`${routePoints.length}: ${point.point_text}`)
+                        .openPopup();
+                    addDraggableSave(marker, point);
+                    point.marker = marker;
                 }
             });
             updateRouteList();
@@ -327,6 +399,81 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-function deleteTourPoint(pointId) {
+function deleteRoutePoint(point) {
+    const endpoint = `/apiV1/rout-points/delete-rout-point?rout_point_id=${point.id}`;
 
+    fetch(endpoint, { method: "DELETE" })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to delete route point");
+            }
+            return response.json();
+        })
+        .then(() => {
+            // Remove the point from `routePoints` array
+            routePoints = routePoints.filter(p => p.id !== point.id);
+
+            // Remove marker from map
+            if (point.marker) {
+                map.removeLayer(point.marker);
+            }
+
+            // Refresh the list
+            updateRouteList();
+
+            showMessage("Route point deleted successfully!", "success");
+        })
+        .catch(error => {
+            showMessage(`Error deleting route point: ${error.message}`, "error");
+        });
 };
+
+function savePointText(pointId, text) {
+    fetch(`/apiV1/rout-points/edit-rout-point?rout_point_id=${pointId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id: pointId,
+            point_text: text
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to save point text");
+        }
+        return response.json();
+    })
+    .then(() => {
+        showMessage("Point text saved successfully!", "success");
+    })
+    .catch(error => {
+        showMessage(`Error saving point text: ${error.message}`, "error");
+    });
+}
+
+function updatePointLocation(pointId, newLat, newLng) {
+    fetch(`/apiV1/rout-points/edit-rout-point?rout_point_id=${pointId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            latitude: newLat,
+            longitude: newLng
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to update location");
+        }
+        return response.json();
+    })
+    .then(() => {
+        showMessage("Location updated successfully!", "success");
+    })
+    .catch(error => {
+        showMessage(`Error updating location: ${error.message}`, "error");
+    });
+}
