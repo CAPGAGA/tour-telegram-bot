@@ -21,13 +21,13 @@ class RoutPointCreate(BaseModel):
     rout_id: int
     latitude: float
     longitude: float
-    point_text: str
+    point_text: Optional[str] = None
 
 
 class RoutPointEdit(BaseModel):
 
-    latitude: float
-    longitude: float
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     point_text: str
 
 class RoutPointResponse(BaseModel):
@@ -53,11 +53,6 @@ class RoutResponse(BaseModel):
 
     class Config:
         orm_mode = True
-
-
-
-
-
 
 
 @rout_points_router.post("/create", response_model=RoutPointResponse)
@@ -158,10 +153,15 @@ async def edit_rout_point(
     query = select(RoutPoint).where(RoutPoint.id == rout_point_id)
     result = await session.execute(query)
     session_rout_point = result.scalars().first()
+
     if not session_rout_point:
         raise HTTPException(status_code=404, detail="Rout point not found")
-    for key, value in rout_point.dict().items():
+
+    # exclude all none values from update
+    update_data = rout_point.dict(exclude_unset=True)
+    for key, value in update_data.items():
         setattr(session_rout_point, key, value)
+
     await session.commit()
     await session.refresh(session_rout_point)
     return session_rout_point
