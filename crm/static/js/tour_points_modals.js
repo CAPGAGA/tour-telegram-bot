@@ -43,14 +43,20 @@ function addRoutePoint(latlng, routId) {
     .then(savedPoint => {
         // Add the saved point to `routePoints` with its new DB ID
         newPoint.id = savedPoint.id;
-        routePoints.push(newPoint);
+
 
         // Update the UI
-        L.marker([savedPoint.latitude, savedPoint.longitude])
+        const newMarker = L.marker([savedPoint.latitude, savedPoint.longitude])
             .addTo(map)
             .bindPopup(`Point ${routePoints.length}: ${savedPoint.point_text}`);
 
-        updateRouteList(); // Refresh the list
+        // Add marker to point object
+        newPoint.marker = newMarker;
+
+        // Add point to list
+        routePoints.push(newPoint);
+        // Refresh the list
+        updateRouteList();
     })
     .catch(error => {
         showMessage(`Error saving point: ${error.message}`, "error");
