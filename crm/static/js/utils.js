@@ -1,3 +1,5 @@
+import { showMessage } from "./revolver.js";
+
 // automatically resize textareas to fill their content
 export function autoResizeTextarea(textarea) {
     textarea.style.height = "auto";
@@ -14,4 +16,40 @@ export function updateImageCounter(point, label) {
 
     // Update label text
     label.innerText = `Images (${imageCount}/5)`;
+}
+
+export function addVizTogglerCheck(toggler, tourId) {
+    toggler.addEventListener("change", function () {
+        const isDisplayed = toggler.checked;
+        const data = {
+            is_displayed: isDisplayed
+        }
+
+        fetch(`/apiV1/rout/display-rout/${tourId}`, {
+            method: "PUT",
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then(response => response.json().then(data => ({ status: response.status, body: data }))) // ✅ Extract response body
+        .then(({ status, body }) => {
+            if (status !== 200) {
+                showMessage(`Error updating route: ${body.detail}`, "error");
+
+                // Revert toggle switch on failure
+                toggler.checked = !isDisplayed;
+                throw new Error(body.detail);
+            }
+
+            showMessage(`Route is now ${isDisplayed ? "visible" : "hidden"}!`, "success");
+        })
+        .catch(error => {
+            console.error("Request failed:", error);
+            showMessage(`Error updating route: ${error.message}`, "error");
+
+            // Ensure toggle is reverted on error
+            toggler.checked = !isDisplayed;
+        });
+    });
 }

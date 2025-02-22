@@ -1,6 +1,7 @@
 import { showMessage } from "./revolver.js";
 import { openTourModal } from "./tours_modals.js"
 import { openTourPointModal } from "./tour_points_modals.js"
+import { addVizTogglerCheck } from "./utils.js"
 
 export function fetchTours() {
     const adminId = document.getElementById("username").getAttribute("data-admin-id");
@@ -44,6 +45,13 @@ export function fetchTour(tourId) {
         document.getElementById("tour-point-price").value = data.base_price;
         document.getElementById("viz-toggle").checked = data.is_displayed ? true : false;
 
+        const vizToggle = document.getElementById("viz-toggle");
+        // Remove previous event listener by cloning the element
+        // TODO: change logic here
+        const newVizToggle = vizToggle.cloneNode(true);
+        vizToggle.parentNode.replaceChild(newVizToggle, vizToggle);
+
+        addVizTogglerCheck(newVizToggle, tourId);
     })
     .catch(error => showMessage(error.message, "error"));
 }
