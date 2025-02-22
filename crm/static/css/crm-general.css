@@ -77,3 +77,8 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(24px);
 }
+
+.delete-icon{
+    height: 14px;
+    width: 14px;
+}

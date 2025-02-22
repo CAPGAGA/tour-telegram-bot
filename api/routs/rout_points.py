@@ -4,7 +4,7 @@ from typing_extensions import Self
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import RoutPoint, PointMedia, PointsAudio
@@ -171,11 +171,19 @@ async def delete_rout_point(
         rout_point_id: int,
         session: AsyncSession = Depends(get_session)
 ):
+    # Fetch the route point
     query = select(RoutPoint).where(RoutPoint.id == rout_point_id)
     result = await session.execute(query)
-    rout_point = result.scalars().first
+    rout_point = result.scalars().first()
+
     if not rout_point:
         raise HTTPException(status_code=404, detail="Rout point not found")
+
+    # Delete related media (images & audio)
+    await session.execute(delete(PointMedia).where(PointMedia.rout_point_id == rout_point_id))
+    await session.execute(delete(PointsAudio).where(PointsAudio.rout_point_id == rout_point_id))
+
+    # Delete the route point
     await session.delete(rout_point)
     await session.commit()
     return {"message": "Rout point deleted successfully"}

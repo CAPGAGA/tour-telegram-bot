@@ -212,6 +212,7 @@
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
+    position: relative;
     transition: transform 0.2s ease-in-out;
 }
 
@@ -244,7 +245,7 @@
 }
 
 .point-description {
-    max-width: 100%;
+    max-width: 1px;
     min-width: 100%;
     padding: 8px;
     border: 1px solid #ccc;
@@ -378,6 +379,25 @@
 
 .delete-media-btn:hover {
     background-color: rgb(0 0 0 / 2%);
+}
+
+.delete-point-btn {
+    background: #f85d69;
+    border: 1px solid #f85d69;
+    padding: 5px;
+    border-radius: 0.9rem;
+    position: absolute;
+    right: 1.5rem;
+    top: 1rem;
+    z-index: 1000;
+    line-height: 0;
+}
+
+.delete-point-btn:hover{
+    scale: 1.1;
+    cursor: pointer;
+    background: #c0392b;
+    border: 1px solid #c0392b;
 }
 
 @media (max-width: 768px) {

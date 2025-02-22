@@ -1,4 +1,3 @@
-
 // automatically resize textareas to fill their content
 export function autoResizeTextarea(textarea) {
     textarea.style.height = "auto";

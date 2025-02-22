@@ -6,8 +6,7 @@ let map;
 let routePoints = [];
 
 // redner map
-export function initMap() {
-    // For now set to Belgrade cords
+export function initMap(routId) {
     map = L.map('map').setView([44.81569, 20.45174], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -15,24 +14,47 @@ export function initMap() {
     }).addTo(map);
 
     map.on('click', function(e) {
-        addRoutePoint(e.latlng);
+        addRoutePoint(e.latlng, routId);
     });
 }
 
 // add new point to map, points list and point list in modal
-export function addRoutePoint(latlng) {
+function addRoutePoint(latlng, routId) {
     const newPoint = {
-        id: null,
+        rout_id: routId,
         latitude: latlng.lat,
         longitude: latlng.lng,
-        point_text: "",
-        image: null,
-        audio: null
+        point_text: "" // Empty text by default
     };
-    routePoints.push(newPoint);
-    L.marker([newPoint.latitude, newPoint.longitude]).addTo(map)
-        .bindPopup(`${routePoints.length}: ${newPoint.point_text}`).openPopup();
-    updateRouteList();
+
+    fetch("/apiV1/rout-points/create", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newPoint)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to save point to the database");
+        }
+        return response.json();
+    })
+    .then(savedPoint => {
+        // Add the saved point to `routePoints` with its new DB ID
+        newPoint.id = savedPoint.id;
+        routePoints.push(newPoint);
+
+        // Update the UI
+        L.marker([savedPoint.latitude, savedPoint.longitude])
+            .addTo(map)
+            .bindPopup(`Point ${routePoints.length}: ${savedPoint.point_text}`);
+
+        updateRouteList(); // Refresh the list
+    })
+    .catch(error => {
+        showMessage(`Error saving point: ${error.message}`, "error");
+    });
 }
 
 // adds point to modal list
@@ -86,11 +108,18 @@ function createPointCard(point, index) {
     // first autoresize to fit whole text
     autoResizeTextarea(pointDescription);
 
+    // media containers
     const pointMedia = document.createElement("div");
     pointMedia.className = "point-media";
 
     const imageContainer = createImageContainer(point);
     const audioContainer = createAudioContainer(point);
+
+    // deletion button
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "delete-point-btn";
+    deleteButton.innerHTML = "<img class='delete-icon' src='/static/icons/delete.png' alt='delete-icon'></img>";
+    deleteButton.addEventListener("click", () => deleteRoutePoint(point));
 
     pointMedia.appendChild(imageContainer);
     pointMedia.appendChild(audioContainer);
@@ -101,6 +130,7 @@ function createPointCard(point, index) {
 
     pointCard.appendChild(pointIndex);
     pointCard.appendChild(pointBody);
+    pointCard.appendChild(deleteButton);
 
     return pointCard;
 }
@@ -321,7 +351,7 @@ export function openTourPointModal(tourId) {
     const modal = document.getElementById("tour-points-modal");
     modal.style.display = "block";
     modal.style.opacity = 0;
-    initMap();
+    initMap(tourId);
     fetchTour(tourId);
     fetchTourPoints(tourId).then(points => {
         if (points) {
@@ -363,6 +393,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-function deleteTourPoint(pointId) {
+function deleteRoutePoint(point) {
+    const endpoint = `/apiV1/rout-points/delete-rout-point?rout_point_id=${point.id}`;
 
+    fetch(endpoint, { method: "DELETE" })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to delete route point");
+            }
+            return response.json();
+        })
+        .then(() => {
+            // Remove the point from `routePoints` array
+            routePoints = routePoints.filter(p => p.id !== point.id);
+
+            // Remove marker from map
+            if (point.marker) {
+                map.removeLayer(point.marker);
+            }
+
+            // Refresh the list
+            updateRouteList();
+
+            showMessage("Route point deleted successfully!", "success");
+        })
+        .catch(error => {
+            showMessage(`Error deleting route point: ${error.message}`, "error");
+        });
 };
