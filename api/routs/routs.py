@@ -6,6 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.database import get_session
 from db.models import Rout, RoutPoint, PointsAudio
 
+from api.handlers import get_admin_id
+from api.access_checkers import check_admin_rout_access
+
 rout_router = APIRouter(
     prefix="/rout",
     tags=["rout"],
@@ -45,8 +48,12 @@ class RoutResponse(BaseModel):
 @rout_router.post("/create", response_model=RoutResponse)
 async def create_rout(
         rout: RoutCreate,
-        session: AsyncSession = Depends(get_session)
+        session: AsyncSession = Depends(get_session),
+        admin_id: int = Depends(get_admin_id)
 ):
+    if not admin_id:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
     new_rout = Rout(**rout.dict())
     session.add(new_rout)
     await session.commit()
@@ -69,8 +76,17 @@ async def get_rout(
 async def update_rout(
         rout_id: int,
         rout: RoutEdit,
-        session: AsyncSession = Depends(get_session)
+        session: AsyncSession = Depends(get_session),
+        admin_id: int = Depends(get_admin_id)
 ):
+    if not admin_id:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    have_access = await check_admin_rout_access(rout_id, admin_id, session)
+
+    if not have_access:
+        raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
+
     query = select(Rout).where(Rout.id == rout_id)
     result = await session.execute(query)
     session_rout = result.scalars().first()
@@ -87,8 +103,17 @@ async def update_rout(
 async def display_rout(
         rout_id: int,
         rout: RoutDisplay,
-        session: AsyncSession = Depends(get_session)
+        session: AsyncSession = Depends(get_session),
+        admin_id: int = Depends(get_admin_id)
 ):
+    if not admin_id:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    have_access = await check_admin_rout_access(rout_id, admin_id, session)
+
+    if not have_access:
+        raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
+
     query = select(Rout).where(Rout.id == rout_id)
     result = await session.execute(query)
     db_rout = result.scalars().first()
@@ -129,8 +154,17 @@ async def display_rout(
 @rout_router.delete("/delete-rout/{rout_id}", response_model=dict)
 async def delete_rout(
         rout_id: int,
-        session: AsyncSession = Depends(get_session)
+        session: AsyncSession = Depends(get_session),
+        admin_id: int = Depends(get_admin_id)
 ):
+    if not admin_id:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    have_access = await check_admin_rout_access(rout_id, admin_id, session)
+
+    if not have_access:
+        raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
+
     query = select(Rout).where(Rout.id == rout_id)
     result = await session.execute(query)
     rout = result.scalars().first()

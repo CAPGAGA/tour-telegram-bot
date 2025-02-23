@@ -10,6 +10,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.models import RoutPoint, PointMedia, PointsAudio
 from db.database import get_session
 
+from api.handlers import get_admin_id
+from api.access_checkers import check_admin_rout_point_access
+
 
 rout_points_router = APIRouter(
     prefix="/rout-points",
@@ -58,8 +61,12 @@ class RoutResponse(BaseModel):
 @rout_points_router.post("/create", response_model=RoutPointResponse)
 async def create_rout_point(
         rout_point: RoutPointCreate,
-        session: AsyncSession = Depends(get_session)
+        session: AsyncSession = Depends(get_session),
+        admin_id: int = Depends(get_admin_id)
 ):
+    if not admin_id:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
     new_rout_point = RoutPoint(**rout_point.dict())
     session.add(new_rout_point)
     await session.commit()
@@ -148,8 +155,18 @@ async def get_rout(
 async def edit_rout_point(
         rout_point_id: int,
         rout_point: RoutPointEdit,
-        session: AsyncSession = Depends(get_session)
+        session: AsyncSession = Depends(get_session),
+        admin_id: int = Depends(get_admin_id)
 ):
+    if not admin_id:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    have_access = await check_admin_rout_point_access(rout_point_id, admin_id, session)
+
+    if not have_access:
+        raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
+
+    # Fetch the route point
     query = select(RoutPoint).where(RoutPoint.id == rout_point_id)
     result = await session.execute(query)
     session_rout_point = result.scalars().first()
@@ -169,8 +186,17 @@ async def edit_rout_point(
 @rout_points_router.delete("/delete-rout-point", response_model=dict)
 async def delete_rout_point(
         rout_point_id: int,
-        session: AsyncSession = Depends(get_session)
+        session: AsyncSession = Depends(get_session),
+        admin_id: int = Depends(get_admin_id)
 ):
+    if not admin_id:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    have_access = await check_admin_rout_point_access(rout_point_id, admin_id, session)
+
+    if not have_access:
+        raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
+
     # Fetch the route point
     query = select(RoutPoint).where(RoutPoint.id == rout_point_id)
     result = await session.execute(query)

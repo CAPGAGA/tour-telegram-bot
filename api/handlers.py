@@ -31,6 +31,26 @@ async def get_current_admin(request: Request):
     except jwt.PyJWTError:
         return None
 
+
+async def get_admin_id(request: Request):
+    """
+        Return admin id
+    """
+
+    token = request.cookies.get("auth_token")
+
+    if not token:
+        return None
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        admin_id: int = payload.get("user_id")
+        if admin_id is None:
+            return None
+        return admin_id
+    except jwt.PyJWTError:
+        return None
+
 def generate_hashed_filename(filename: str) -> str:
     hash_digest = hashlib.md5(filename.encode()).hexdigest()
     ext = os.path.splitext(filename)[1]

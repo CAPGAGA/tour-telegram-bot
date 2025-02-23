@@ -321,7 +321,7 @@ function createMediaElement(mediaName, type, point, label) {
 // **Deletes an image/audio from UI & database**
 function deleteMedia(mediaName, type, mediaElement, point, label) {
     const fileName = mediaName.split("/").pop();
-    const endpoint = `/apiV1/point-media/delete-${type}/${fileName}`;
+    const endpoint = `/apiV1/point-media/delete-${type}/${point.id}/${fileName}`;
 
     fetch(endpoint, { method: "DELETE" })
         .then(response => {
