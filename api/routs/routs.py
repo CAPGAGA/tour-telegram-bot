@@ -43,6 +43,13 @@ class RoutResponse(BaseModel):
     class Config:
         orm_mode = True
 
+class DisplayedRoutsResponse(BaseModel):
+
+    routs: list[RoutResponse]
+
+    class Config:
+        orm_mode = True
+
 
 
 @rout_router.post("/create", response_model=RoutResponse)
@@ -59,6 +66,15 @@ async def create_rout(
     await session.commit()
     await session.refresh(new_rout)
     return new_rout
+
+@rout_router.get("/get-routs/")
+async def get_routs(
+        session: AsyncSession = Depends(get_session)
+):
+    query = select(Rout).where(Rout.is_displayed == True)
+    result = await session.execute(query)
+    routs = result.scalars().all()
+    return routs
 
 @rout_router.get("/get-rout/{rout_id}", response_model=RoutResponse)
 async def get_rout(

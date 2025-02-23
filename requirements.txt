@@ -6,6 +6,7 @@ sqlalchemy
 databases
 aiosqlite
 requests
+aiohttp
 python-multipart
 jinja2
 pydub

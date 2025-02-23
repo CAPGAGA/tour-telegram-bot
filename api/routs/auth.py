@@ -33,6 +33,14 @@ class UserResponse(BaseModel):
 
 @auth_router.post("/register", response_model=UserResponse)
 async def create_user(user: UserCreate, session: AsyncSession = Depends(get_session)):
+    # check if user exists:
+    query = select(User).where(User.user_id == user.user_id)
+    result = await session.execute(query)
+    existing_user = result.scalars().first()
+
+    if existing_user:
+        return existing_user
+
     new_user = User(**user.dict())
     session.add(new_user)
     await session.commit()
