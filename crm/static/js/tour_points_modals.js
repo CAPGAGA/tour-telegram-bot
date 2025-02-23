@@ -1,11 +1,12 @@
 import { showMessage } from "./revolver.js";
 import {autoResizeTextarea, updateImageCounter } from "./utils.js"
-import { fetchTour, fetchTourPoints } from "./fetch_tours.js"
+import { fetchTour, fetchTours, fetchTourPoints } from "./fetch_tours.js"
+import { updateRouteStats } from "./tour_stats.js"
 
 let map;
 let routePoints = [];
 
-// redner map
+// Redner map
 export function initMap(routId) {
     map = L.map('map').setView([44.81569, 20.45174], 13);
 
@@ -22,10 +23,13 @@ export function addDraggableSave(marker, point) {
     marker.on("dragend", function (event) {
         const newLatLng = event.target.getLatLng();
         updatePointLocation(point.id, newLatLng.lat, newLatLng.lng);
+        // Update point stats
+        point.latitude = newLatLng.lat;
+        point.longitude = newLatLng.lng;
     });
 }
 
-// add new point to map, points list and point list in modal
+// Add new point to map, points list and point list in modal
 function addRoutePoint(latlng, routId) {
     const newPoint = {
         rout_id: routId,
@@ -66,6 +70,7 @@ function addRoutePoint(latlng, routId) {
 
         // Add point to list
         routePoints.push(newPoint);
+        updateRouteStats(routePoints);
         // Refresh the list
         updateRouteList();
     })
@@ -273,6 +278,8 @@ function handleMediaUpload(event, point, type, gallery, label = null) {
 
                 // Update the counter after adding an image
                 updateImageCounter(point, label);
+
+                updateRouteStats(routePoints);
             }
         })
         .catch(error => showMessage(`Error uploading ${type}: ${error.message}`, "error"));
@@ -354,6 +361,7 @@ export function openTourPointModal(tourId) {
     fetchTour(tourId);
     fetchTourPoints(tourId).then(points => {
         if (points) {
+            updateRouteStats(points);
             points.forEach(point => {
                 if (!routePoints.some(p => p.latitude === point.latitude && p.longitude === point.longitude)) {
                     routePoints.push(point);
@@ -386,17 +394,19 @@ export function closeTourPointModal() {
         map.remove()
         map = null;
     }
+    fetchTours();
     document.getElementById("tour-points-list").innerHTML = "";
     routePoints = []
     setTimeout(() => {
         modal.style.display = "none";
     }, 700);
+
 }
 
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelector("#close-tour-points-modal").addEventListener("click", closeTourPointModal);
+    document.querySelector("#edit-rout").addEventListener("click", editTour);
 });
-
 
 
 function deleteRoutePoint(point) {
@@ -413,10 +423,14 @@ function deleteRoutePoint(point) {
             // Remove the point from `routePoints` array
             routePoints = routePoints.filter(p => p.id !== point.id);
 
+
+
             // Remove marker from map
             if (point.marker) {
                 map.removeLayer(point.marker);
             }
+            // Refresh stats
+            updateRouteStats(routePoints);
 
             // Refresh the list
             updateRouteList();
@@ -472,8 +486,69 @@ function updatePointLocation(pointId, newLat, newLng) {
     })
     .then(() => {
         showMessage("Location updated successfully!", "success");
+        updateRouteStats(routePoints);
     })
     .catch(error => {
         showMessage(`Error updating location: ${error.message}`, "error");
+    });
+}
+
+function editTour(e) {
+    e.preventDefault();
+    const editBtn = document.getElementById("edit-rout"); // Element storing tour ID
+    const tourId = editBtn?.dataset.tourId; // Retrieve stored tour ID
+
+    if (!tourId) {
+        showMessage("Invalid tour ID. Please refresh and try again.", "error");
+        return;
+    }
+
+    // Get Input Fields
+    const nameInput = document.getElementById("tour-point-name");
+    const descInput = document.getElementById("tour-point-description");
+    const priceInput = document.getElementById("tour-point-price");
+
+    // Extract Values & Trim
+    const name = nameInput.value.trim();
+    const description = descInput.value.trim();
+    const basePrice = parseFloat(priceInput.value);
+
+    // Validate Inputs
+    if (!name || !description || isNaN(basePrice) || basePrice < 0) {
+        showMessage("Please fill in all fields correctly.", "error");
+        return;
+    }
+
+    editBtn.disabled = true; // Prevent multiple submissions
+
+    const requestData = {
+        rout_id: tourId,
+        rout_name: name,
+        rout_description: description,
+        base_price: basePrice,
+    };
+
+    // Send Update Request
+    fetch(`/apiV1/rout/edit-rout/${tourId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+        body: JSON.stringify(requestData),
+    })
+    .then(response => response.json().then(data => ({ status: response.status, body: data })))
+    .then(({ status, body }) => {
+        if (status !== 200) {
+            throw new Error(body.detail || "Failed to update route.");
+        }
+        showMessage("Route updated successfully!", "success");
+    })
+    .catch(error => {
+        console.error("Error updating tour:", error);
+        showMessage(error.message, "error");
+    })
+    .finally(() => {
+        editBtn.disabled = false; // Re-enable button after request
     });
 }

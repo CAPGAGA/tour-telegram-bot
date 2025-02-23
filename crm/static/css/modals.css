@@ -161,6 +161,13 @@
     align-items: flex-start;
 }
 
+.tour-stats-list {
+    list-style: none;
+    text-align: start;
+    padding: 0;
+    margin: 0;
+}
+
 #map {
     height: 30rem;
     width: calc(100% - 40px);

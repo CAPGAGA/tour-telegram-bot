@@ -19,8 +19,6 @@ admin_router = APIRouter(
     tags=["admin"],
 )
 
-
-
 class AdminCreate(BaseModel):
     username: str
     password: str

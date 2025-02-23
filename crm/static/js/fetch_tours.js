@@ -44,6 +44,7 @@ export function fetchTour(tourId) {
         document.getElementById("tour-point-description").value = data.rout_description;
         document.getElementById("tour-point-price").value = data.base_price;
         document.getElementById("viz-toggle").checked = data.is_displayed ? true : false;
+        document.getElementById("edit-rout").dataset.tourId = tourId
 
         const vizToggle = document.getElementById("viz-toggle");
         // Remove previous event listener by cloning the element
