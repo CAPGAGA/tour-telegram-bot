@@ -7,9 +7,7 @@ databases
 aiosqlite
 requests
 python-multipart
-yookassa
 jinja2
-python-dotenv
 pydub
 bcrypt
 pyjwt
