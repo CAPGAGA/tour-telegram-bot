@@ -4,8 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.database import get_session
-from db.models import BaseUser, UserRout
-
+from db.models import BaseUser, UserRout, Rout
 
 user_routs_router = APIRouter(
     prefix="/user_routs",
@@ -23,6 +22,16 @@ class UserRoutResponse(BaseModel):
     user_id: int
     rout_id: int
 
+class DetailedUserRoutResponse(BaseModel):
+
+    id: int
+    user_id: int
+    rout_id: int
+    rout_name: str
+    rout_description: str
+    base_price: float
+    is_displayed: bool
+
 
 @user_routs_router.post("/create", response_model=UserRoutResponse)
 async def create_user_rout(
@@ -35,17 +44,37 @@ async def create_user_rout(
     await session.refresh(new_user_rout)
     return new_user_rout
 
-@user_routs_router.get("/get-user-rout", response_model=list[UserRoutResponse])
+@user_routs_router.get("/get-user-rout", response_model=list[DetailedUserRoutResponse])
 async def get_user_routs(
         user_id: int,
         session: AsyncSession = Depends(get_session)
 ):
-    query = select(UserRout).where(UserRout.user_id == user_id)
+    query = (
+        select(UserRout, Rout)
+        .join(Rout, Rout.id == UserRout.rout_id)
+        .where(UserRout.user_id == user_id)
+    )
+
     result = await session.execute(query)
-    user_routs = result.scalars().all()
+    user_routs = result.all()
+
     if not user_routs:
-        raise HTTPException(status_code=404, detail="User have no routs")
-    return user_routs
+        raise HTTPException(status_code=404, detail="User has no routes")
+    # Format response
+    response = []
+    for user_rout in user_routs:
+        response.append(
+            DetailedUserRoutResponse(
+                id=user_rout.UserRout.id,
+                user_id=user_rout.UserRout.user_id,
+                rout_id=user_rout.UserRout.rout_id,
+                rout_name=user_rout.Rout.rout_name,
+                rout_description=user_rout.Rout.rout_description,
+                base_price=user_rout.Rout.base_price,
+                is_displayed=user_rout.Rout.is_displayed
+            )
+        )
+    return response
 
 @user_routs_router.get("/check-user-rout", response_model=dict)
 async def check_user_rout(

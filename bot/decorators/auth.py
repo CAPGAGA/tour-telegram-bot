@@ -13,7 +13,7 @@ def user_auth(func):
         telegram_id = update.effective_user.id
         username = update.effective_user.username or f"user_{telegram_id}"  # Fallback if no username
 
-        # ✅ Payload for user registration
+        # Payload for user registration
         payload = {
             "user_id": telegram_id,
             "username": username,
@@ -27,13 +27,13 @@ def user_auth(func):
                         await update.message.reply_text("❌ Error while registering. Please try again later.")
                         return
 
-                    user = await response.json()  # ✅ Convert response to JSON
+                    user = await response.json()  # Convert response to JSON
 
             except aiohttp.ClientError as e:
                 await update.message.reply_text("❌ Network error. Please try again later.")
                 return
 
-        # ✅ Pass user data to the handler
+        # Pass user data to the handler
         return await func(update, context, user, *args, **kwargs)
 
     return wrapper

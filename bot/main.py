@@ -6,6 +6,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 
 from bot.modules.shop import show_tour_menu, handle_tour_pagination, handle_main_menu_return
 from bot.modules.tour_card import show_tour_details
+from bot.modules.users_tours import users_tours
 # import modules
 from modules.start import start
 from modules.main_menu import main_menu, handle_menu_callbacks
@@ -39,6 +40,8 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_main_menu_return, pattern="main_menu"))
     # Used to open individual tour card
     application.add_handler(CallbackQueryHandler(show_tour_details, pattern="view_tour_.*"))
+    # --- Handlers for "My Tours" button in main menu ---
+    application.add_handler(CallbackQueryHandler(users_tours, pattern="my_tours"))
 
     application.add_error_handler(error)
 
