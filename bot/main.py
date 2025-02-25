@@ -45,7 +45,7 @@ def main():
     application.add_handler(CallbackQueryHandler(users_tours, pattern="my_tours"))
     # --- Handlers for tour ---
     application.add_handler(CallbackQueryHandler(show_tour_point, pattern="start_mytour_.*"))
-    application.add_handler(CallbackQueryHandler(show_tour_point, pattern="end_mytour_.*"))
+    application.add_handler(CallbackQueryHandler(show_tour_point, pattern="review_mytour_.*"))
     application.add_handler(CallbackQueryHandler(show_tour_point, pattern="mid_mytour_.*"))
 
     application.add_error_handler(error)

@@ -59,7 +59,7 @@ async def show_tour_point(update: Update, context: CallbackContext):
     if state == 'start':
         # this is first point so we fetch first point with rout_id
         point = await fetch_first_tour_point(data)
-    elif state == 'end':
+    elif state == 'review':
         # this is last point show review button and exit
         point = None
     elif state == 'mid':
@@ -74,6 +74,16 @@ async def show_tour_point(update: Update, context: CallbackContext):
         return
 
     # render last message
+    keyboard = [
+        [InlineKeyboardButton(text="⭐", callback_data="review_{data}_1")],
+        [InlineKeyboardButton(text="⭐⭐", callback_data="review_{data}_2")],
+        [InlineKeyboardButton(text="⭐⭐⭐", callback_data="review_{data}_3")],
+        [InlineKeyboardButton(text="⭐⭐⭐⭐", callback_data="review_{data}_4")],
+        [InlineKeyboardButton(text="⭐⭐⭐⭐⭐", callback_data="review_{data}_5")],
+        [InlineKeyboardButton(text="🔙 Back to Menu", callback_data="main_menu")]
+    ]
+    await update.callback_query.message.edit_text('Rate this tour', reply_markup=InlineKeyboardMarkup(keyboard))
+    return
 
 
 async def render_point_message(update: Update, context: CallbackContext, point: dict):
@@ -122,7 +132,8 @@ async def render_point_message(update: Update, context: CallbackContext, point: 
     if point.get("next_point"):
         keyboard.append([InlineKeyboardButton("➡️ Next Point", callback_data=f"mid_mytour_{point['next_point']}")])
     else:
-        keyboard.append([InlineKeyboardButton("✅ Finish Tour", callback_data="end_mytour_0")])
+        keyboard.append([InlineKeyboardButton("⭐ Leave review!", callback_data=f"review_mytour_{point['rout_id']}")])
+        keyboard.append([InlineKeyboardButton("✅ To main menu", callback_data="main_menu")])
 
     # send controller
     reply_markup = InlineKeyboardMarkup(keyboard)
