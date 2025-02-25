@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.database import get_session
 from db.models import Rout, RoutPoint, PointsAudio
 
-from api.handlers import get_admin_id
+from api.handlers import get_admin_id, haversine
 from api.access_checkers import check_admin_rout_access
 
 rout_router = APIRouter(
@@ -42,6 +42,17 @@ class RoutResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class DetailedResponse(BaseModel):
+
+    id: int
+    rout_name: str
+    rout_description: str
+    base_price: int
+    is_displayed: bool
+    total_points: int
+    distance: float
+
 
 class DisplayedRoutsResponse(BaseModel):
 
@@ -87,6 +98,43 @@ async def get_rout(
     if not rout:
         raise HTTPException(status_code=404, detail="Rout not found")
     return rout
+
+@rout_router.get('/get-rout/detailed/{rout_id}', response_model=DetailedResponse)
+async def get_rout_detailed(
+        rout_id: int,
+        session: AsyncSession = Depends(get_session)
+):
+    query = select(Rout).where(Rout.id == rout_id)
+    result = await session.execute(query)
+    rout = result.scalars().first()
+
+    if not rout:
+        raise HTTPException(status_code=404, detail="Rout not found")
+
+    rout_points = select(RoutPoint).where(RoutPoint.rout_id == rout.id)
+    result = await session.execute(rout_points)
+    points = result.scalars().all()
+
+    if not points:
+        raise HTTPException(status_code=404, detail="Rout has no points")
+
+    total_points = len(points)
+    distance = 0
+
+    # calculate rout distance
+    for i in range(total_points-1):
+        distance += await haversine(points[i].longitude, points[i].latitude, points[i+1].longitude, points[i+1].latitude)
+
+    return {
+        "id": rout.id,
+        "rout_name": rout.rout_name,
+        "rout_description": rout.rout_description,
+        "base_price": rout.base_price,
+        "is_displayed": rout.is_displayed,
+        "total_points": total_points,
+        "distance": distance
+    }
+
 
 @rout_router.put("/edit-rout/{rout_id}", response_model=RoutResponse)
 async def update_rout(

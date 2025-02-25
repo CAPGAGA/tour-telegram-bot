@@ -5,6 +5,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext, CallbackQueryHandler
 
 from bot.modules.shop import show_tour_menu, handle_tour_pagination, handle_main_menu_return
+from bot.modules.tour import show_tour_point
 from bot.modules.tour_card import show_tour_details
 from bot.modules.users_tours import users_tours
 # import modules
@@ -42,6 +43,10 @@ def main():
     application.add_handler(CallbackQueryHandler(show_tour_details, pattern="view_tour_.*"))
     # --- Handlers for "My Tours" button in main menu ---
     application.add_handler(CallbackQueryHandler(users_tours, pattern="my_tours"))
+    # --- Handlers for tour ---
+    application.add_handler(CallbackQueryHandler(show_tour_point, pattern="start_mytour_.*"))
+    application.add_handler(CallbackQueryHandler(show_tour_point, pattern="end_mytour_.*"))
+    application.add_handler(CallbackQueryHandler(show_tour_point, pattern="mid_mytour_.*"))
 
     application.add_error_handler(error)
 

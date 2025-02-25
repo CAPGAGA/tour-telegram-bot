@@ -5,7 +5,7 @@ from bot.utils.messages import send_message
 
 async def get_main_menu():
     keyboard = [
-        [InlineKeyboardButton("🛒 Buy Tours", callback_data="buy_tours")],
+        [InlineKeyboardButton("🛒 Buy Tour", callback_data="buy_tours")],
         [InlineKeyboardButton("📁 Browse My Tours", callback_data="my_tours")],
         [InlineKeyboardButton("ℹ️ Help", callback_data="help")],
         [InlineKeyboardButton("❓ About this bot", callback_data="about")]

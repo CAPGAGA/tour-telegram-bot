@@ -43,6 +43,18 @@ class RoutPointResponse(BaseModel):
     image: Optional[list[str]] = None
     audio: Optional[list[str]] = None
 
+class DetailedRoutPointResponse(BaseModel):
+
+    id: int
+    rout_id: int
+    latitude: float
+    longitude: float
+    point_text: str
+    image: Optional[list[str]] = None
+    audio: Optional[list[str]] = None
+    next_point: Optional[int] = None
+
+
 
 class RoutResponse(BaseModel):
 
@@ -73,6 +85,36 @@ async def create_rout_point(
     await session.refresh(new_rout_point)
     return new_rout_point
 
+@rout_points_router.get("/get-first-point", response_model=DetailedRoutPointResponse)
+async def get_first_point(
+        rout_id: int,
+        session: AsyncSession = Depends(get_session)
+):
+    query = select(RoutPoint).where(RoutPoint.rout_id == rout_id).limit(1)
+    result = await session.execute(query)
+    first_point = result.scalars().first()
+
+    if not first_point:
+        raise HTTPException(status_code=404, detail="Rout is empty")
+
+    point_media = await session.execute(select(PointMedia).where(PointMedia.rout_point_id == first_point.id))
+    first_point.image = [media.media_name for media in point_media.scalars().all()]
+
+    point_audio = await session.execute(select(PointsAudio).where(PointsAudio.rout_point_id == first_point.id))
+    first_point.audio = [media.audio_name for media in point_audio.scalars().all()]
+
+    next_point = select(RoutPoint).where(
+        RoutPoint.rout_id == first_point.rout_id,
+        RoutPoint.id > first_point.id
+    ).limit(1)
+    result = await session.execute(next_point)
+    next_point = result.scalars().first()
+
+    first_point.next_point = next_point.id if next_point else None
+
+    return first_point
+
+
 @rout_points_router.get("/get-rout-point", response_model=RoutPointResponse)
 async def get_rout_point(
         rout_point_id: int,
@@ -90,6 +132,35 @@ async def get_rout_point(
 
     point_audio = await session.execute(select(PointsAudio).where(PointsAudio.rout_point_id == rout_point_id))
     rout_point.audio = [media.audio_name for media in point_audio.scalars().all()]
+
+    return rout_point
+
+@rout_points_router.get("/get-detailed-rout-point", response_model=DetailedRoutPointResponse)
+async def get_detailed_rout_point(
+        rout_point_id: int,
+        session: AsyncSession = Depends(get_session)
+):
+    query = select(RoutPoint).where(RoutPoint.id == rout_point_id)
+    result = await session.execute(query)
+    rout_point = result.scalars().first()
+
+    if not rout_point:
+        raise HTTPException(status_code=404, detail="Rout point not found")
+
+    point_media = await session.execute(select(PointMedia).where(PointMedia.rout_point_id == rout_point_id))
+    rout_point.image = [media.media_name for media in point_media.scalars().all()]
+
+    point_audio = await session.execute(select(PointsAudio).where(PointsAudio.rout_point_id == rout_point_id))
+    rout_point.audio = [media.audio_name for media in point_audio.scalars().all()]
+
+    next_point = select(RoutPoint).where(
+        RoutPoint.rout_id == rout_point.rout_id,
+        RoutPoint.id > rout_point.id
+    ).limit(1)
+    result = await session.execute(next_point)
+    next_point = result.scalars().first()
+
+    rout_point.next_point = next_point.id if next_point else None
 
     return rout_point
 

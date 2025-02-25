@@ -12,7 +12,7 @@ async def fetch_tour_details(tour_id):
     """Fetch individual tour details from API."""
     async with aiohttp.ClientSession() as session:
         try:
-            async with session.get(f"{API_BASE_URL}/rout/get-rout/{tour_id}") as response:
+            async with session.get(f"{API_BASE_URL}/rout/get-rout/detailed/{tour_id}") as response:
                 if response.status != 200:
                     return None
                 return await response.json()
@@ -34,13 +34,18 @@ async def show_tour_details(update: Update, context: CallbackContext):
     rout_name = escape_markdown(tour["rout_name"], version=2)
     base_price = escape_markdown(str(tour["base_price"]), version=2)
     description = escape_markdown(tour["rout_description"], version=2)
+    distance = escape_markdown(str(round(float(tour['distance']), 2)), version=2)
+    points = escape_markdown(str(tour['total_points']), version=2)
 
     # Tour description (trim if too long)
     if len(description) > 600:
         description = description[:600] + "..."
 
     # Create tour card message
-    tour_text = f"🗺 **{rout_name}**\n\n💵 **Price:** ${base_price}\n\n📖 **Description:** {description}"
+    tour_text = (f"🗺 **{rout_name}**"
+                 f"\n\n💵 **Price:** {base_price}$"
+                 f"\n\n📖 **Description:** {description} "
+                 f"\n\n📢 **Points:** {points} ┃ 📏 **Distance:** {distance} km  ")
 
     # Create purchase buttons
     keyboard = [
