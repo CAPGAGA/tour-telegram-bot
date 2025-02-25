@@ -49,15 +49,21 @@
     left: 0;
     padding: 0 20px;
     width: calc(100% - 40px);
+    max-height: 2.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tour-card-description {
     position: absolute;
-    top: 2.5rem;
+    top: calc(2.5rem + 1rem);
     text-align: left;
     left: 0;
     padding: 0 20px;
     width: calc(100% - 40px);
+    max-height: 5.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tour-card-price {
