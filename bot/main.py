@@ -9,6 +9,7 @@ from bot.modules.tour import show_tour_point
 from bot.modules.tour_card import show_tour_details
 from bot.modules.users_tours import users_tours
 from bot.payment.payment_gateway import render_gateway_menu
+from bot.payment.payment_world import render_paypal_payment_menu
 # import modules
 from modules.start import start
 from modules.main_menu import main_menu, handle_menu_callbacks
@@ -46,6 +47,8 @@ def main():
     # --- Handlers for payments ---
     application.add_handler(CallbackQueryHandler(render_gateway_menu, pattern="buy_me_.*"))
     application.add_handler(CallbackQueryHandler(render_gateway_menu, pattern="buy_friend_.*"))
+    application.add_handler(CallbackQueryHandler(render_paypal_payment_menu, pattern="buy_world_.*"))
+
 
     # --- Handlers for "My Tours" button in main menu ---
     application.add_handler(CallbackQueryHandler(users_tours, pattern="my_tours"))

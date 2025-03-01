@@ -7,7 +7,7 @@ def get_gateway_menu(tour_id: int, subject: str):
     Keyboard with all available payment methods.
     """
     keyboard = [
-        [InlineKeyboardButton('Pay with card', callback_data=f'buy_world_{subject}_{tour_id}')],
+        [InlineKeyboardButton('Pay with card', callback_data=f'buy_world_{subject}_paypal_{tour_id}')],
         [InlineKeyboardButton('Pay with russian card', callback_data=f'buy_ru_{subject}_{tour_id}')],
         [InlineKeyboardButton('🔙 Back to Tour Page', callback_data=f'view_tour_{subject}_{tour_id}')]
     ]
