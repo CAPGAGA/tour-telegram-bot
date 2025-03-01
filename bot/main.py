@@ -8,6 +8,7 @@ from bot.modules.shop import show_tour_menu, handle_tour_pagination, handle_main
 from bot.modules.tour import show_tour_point
 from bot.modules.tour_card import show_tour_details
 from bot.modules.users_tours import users_tours
+from bot.payment.payment_gateway import render_gateway_menu
 # import modules
 from modules.start import start
 from modules.main_menu import main_menu, handle_menu_callbacks
@@ -41,12 +42,19 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_main_menu_return, pattern="main_menu"))
     # Used to open individual tour card
     application.add_handler(CallbackQueryHandler(show_tour_details, pattern="view_tour_.*"))
+
+    # --- Handlers for payments ---
+    application.add_handler(CallbackQueryHandler(render_gateway_menu, pattern="buy_me_.*"))
+    application.add_handler(CallbackQueryHandler(render_gateway_menu, pattern="buy_friend_.*"))
+
     # --- Handlers for "My Tours" button in main menu ---
     application.add_handler(CallbackQueryHandler(users_tours, pattern="my_tours"))
+
     # --- Handlers for tour ---
     application.add_handler(CallbackQueryHandler(show_tour_point, pattern="start_mytour_.*"))
     application.add_handler(CallbackQueryHandler(show_tour_point, pattern="review_mytour_.*"))
     application.add_handler(CallbackQueryHandler(show_tour_point, pattern="mid_mytour_.*"))
+    application.add_handler(CallbackQueryHandler(show_tour_point, pattern="info_mytour_.*"))
 
     application.add_error_handler(error)
 

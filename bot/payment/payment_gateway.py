@@ -1,0 +1,32 @@
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import CallbackContext
+
+
+def get_gateway_menu(tour_id: int, subject: str):
+    """
+    Keyboard with all available payment methods.
+    """
+    keyboard = [
+        [InlineKeyboardButton('Pay with card', callback_data=f'buy_world_{subject}_{tour_id}')],
+        [InlineKeyboardButton('Pay with russian card', callback_data=f'buy_ru_{subject}_{tour_id}')],
+        [InlineKeyboardButton('🔙 Back to Tour Page', callback_data=f'view_tour_{subject}_{tour_id}')]
+    ]
+
+    return InlineKeyboardMarkup(keyboard)
+
+async def render_gateway_menu(
+        update: Update,
+        context: CallbackContext
+):
+    """
+    Render for gateway message
+    """
+    query = update.callback_query
+    await query.answer()
+
+    tour_id, subject = int(query.data.split('_')[-1]), query.data.split('_')[1]
+
+    await query.message.edit_text(
+        "Choose how you want to pay:",
+        reply_markup=get_gateway_menu(tour_id, subject),
+    )

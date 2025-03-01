@@ -9,6 +9,23 @@ from api.settings import BASE_DIR
 
 API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000/apiV1")
 
+# underscore width of different messages (_)
+# Max width of text message
+MAX_MESSAGE_WIDTH = 68
+MAX_MESSAGE_WITH_EMOJI=17
+# Width of map widget
+MAP_MESSAGE_WIDTH = 36
+MAP_MESSAGE_WITH_EMOJI = 13
+# Width of message with 1 photos
+MEDIA_GROUP_1_WIDTH = 68
+MEDIA_GROUP_1_WITH_EMOJI = 17
+# Width of message with 4 photos
+MEDIA_GROUP_4_WIDTH = 50
+MEDIA_GROUP_4_WITH_EMOJI = 25
+# Width of message with 5 photos
+MEDIA_GROUP_5_WIDTH = 68
+MEDIA_GROUP_5_WIDTH_EMOJI = 17
+
 async def fetch_first_tour_point(rout_id):
     """
         Fetch first tour point from API
@@ -62,7 +79,7 @@ async def show_tour_point(update: Update, context: CallbackContext):
     elif state == 'review':
         # this is last point show review button and exit
         point = None
-    elif state == 'mid':
+    elif state == 'mid' or state == 'info':
         # mid of tour so we fetch point with point_id
         point = await fetch_tour_point(data)
     else:
@@ -70,7 +87,10 @@ async def show_tour_point(update: Update, context: CallbackContext):
 
     if point:
         # render point
-        await render_point_message(update, context, point)
+        if state == 'mid' or state == 'start':
+            await show_tour_point_map(update, context, point)
+        elif state == 'info':
+            await show_tour_point_materials(update, context, point)
         return
 
     # render last message
@@ -86,18 +106,20 @@ async def show_tour_point(update: Update, context: CallbackContext):
     return
 
 
-async def render_point_message(update: Update, context: CallbackContext, point: dict):
+async def show_tour_point_map(update: Update, context: CallbackContext, point: dict):
     """
         Renders point message
     """
 
     chat_id = update.effective_chat.id
+    upper_border = '➖' * MAP_MESSAGE_WITH_EMOJI
     # send point description
-    description = f"📃 {point.get('point_text', '***')}"
+    description = (f"{upper_border}"
+                   f"\n           <a href="">&#8204;</a>🧭 <b>Map of next point</b>")
     await context.bot.send_message(
         chat_id=chat_id,
         text=description,
-        parse_mode=ParseMode.MARKDOWN_V2
+        parse_mode=ParseMode.HTML
     )
     # send point map
     latitude = point.get("latitude")
@@ -105,18 +127,47 @@ async def render_point_message(update: Update, context: CallbackContext, point: 
 
     # send map with point
     if latitude and longitude:
-        await context.bot.send_location(chat_id, latitude=latitude, longitude=longitude)
+        reply_markup = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        'I am here!',
+                        callback_data=f"info_mytour_{point['id']}"
+                    )
+                 ]
+            ]
+        )
+        await context.bot.send_location(
+            chat_id,
+            latitude=latitude,
+            longitude=longitude,
+            reply_markup=reply_markup
+        )
+    return
+
+async def show_tour_point_materials(
+        update: Update,
+        context: CallbackContext,
+        point: dict
+):
+    chat_id = update.effective_chat.id
 
     # check and send audios if needed
     audios = point.get("audio", [])
     if isinstance(audios, list) and audios:
         for audio in audios:
             audio_path =  os.path.join(BASE_DIR, 'crm/media/audio', audio)
+            audio_name = f"Audio for point {point.get('id')}"
             await context.bot.send_audio(
                 chat_id,
                 audio=audio_path,
-                filename=f'Point {point["id"]} audio'
+                filename=audio_name,
+                performer='PocketTourBot',
+                protect_content=True
             )
+
+
+
     # check and send images if needed
     images = point.get("image", [])
     if isinstance(images, list) and images:
@@ -125,7 +176,7 @@ async def render_point_message(update: Update, context: CallbackContext, point: 
                 media=open(os.path.join(BASE_DIR, 'crm/media/images', img), 'rb')
             ) for img in images
         ]
-        await context.bot.send_media_group(chat_id, media_group)
+        await context.bot.send_media_group(chat_id, media_group, protect_content=True)
 
     # setup controller
     keyboard = []

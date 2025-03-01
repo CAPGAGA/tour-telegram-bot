@@ -1,14 +1,21 @@
+# utils
+requests
+aiohttp
+python-multipart
+pydub
+
+# api's backend and frontend
 fastapi
 uvicorn
+bcrypt
+pyjwt
+jinja2
+
+# telegram bot
 python-telegram-bot
+
+# database
 pydantic
 sqlalchemy
 databases
 aiosqlite
-requests
-aiohttp
-python-multipart
-jinja2
-pydub
-bcrypt
-pyjwt

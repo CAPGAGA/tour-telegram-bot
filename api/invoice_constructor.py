@@ -1,0 +1,108 @@
+from datetime import datetime
+
+import aiohttp
+from fastapi import HTTPException
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from db.database import get_session
+from db.models import Rout, BaseUser
+from api.settings import PAYPAL_API_URL, PAYPAL_SECRET, PAYPAL_CLIENT_ID
+
+class InvoiceConstructor:
+
+    @staticmethod
+    async def _fetch_tour_details(tour_id: int, session: AsyncSession):
+        """
+        Fetch tour details from the database
+        """
+        result = await session.execute(select(Rout).where(Rout.id == tour_id))
+        tour = result.scalars().first()
+        if not tour:
+            raise HTTPException(status_code=404, detail="Tour not found")
+        return tour
+
+    @staticmethod
+    async def _fetch_user_details(user_id: int, session: AsyncSession):
+        """
+        Fetch user details from the database
+        """
+        result = await session.execute(select(BaseUser).where(BaseUser.id == user_id))
+        user = result.scalars().first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
+
+    @staticmethod
+    async def return_invoice_paypal_link(
+            tour_id: int,
+            user_id: int
+    ) -> dict:
+        """
+        Construct an invoice for PayPal payments
+        """
+        # Get data from db
+        async with get_session() as session:
+            tour_data = await InvoiceConstructor._fetch_tour_details(tour_id, session)
+            user_data = await InvoiceConstructor._fetch_user_details(user_id, session)
+
+        if tour_data and user_data:
+            # Get access token
+            auth = aiohttp.BasicAuth(PAYPAL_CLIENT_ID, PAYPAL_SECRET)
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                        f"{PAYPAL_API_URL}/v1/oauth2/token",
+                        auth=auth,
+                        data={"grant_type": "client_credentials"}
+                ) as response:
+                    if response.status != 200:
+                        return HTTPException(status_code=500, detail='Failed to authenticate with PayPal')
+                    token_data = await response.json()
+                    access_token = token_data["access_token"]
+
+            invoice_id = f"ORD-{tour_id}-{user_id}-{int(datetime.utcnow().timestamp())}"
+
+            # Insert token into header
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {access_token}"
+            }
+            payload = {
+                "intent": "CAPTURE",
+                "purchase_units": [
+                    {
+                        "reference_id": invoice_id,
+                        "amount": {
+                            "currency_code": "USD",
+                            "value": str(tour_data.base_price)
+                        },
+                        "description": f'Access to tour: "{tour_data.rout_name}"'
+                    }
+                ],
+                "application_context": {
+                    "return_url": "https://example.com/payment-success",
+                    "cancel_url": "https://example.com/payment-cancel"
+                }
+            }
+
+            # Get and return payment link
+            async with session.post(
+                    f"{PAYPAL_API_URL}/v2/checkout/orders",
+                    headers=headers,
+                    json=payload
+            ) as response:
+                if response.status != 201:
+                    raise HTTPException(status_code=500, detail="Failed to create PayPal order")
+
+                order_data = await response.json()
+                approval_link = next((link["href"] for link in order_data["links"] if link["rel"] == "approve"), None)
+
+                if not approval_link:
+                    raise HTTPException(status_code=500, detail="Failed to generate PayPal link")
+
+                return {
+                    "invoice_id": invoice_id,
+                    "approval_link": approval_link
+                }
+
+        raise HTTPException(status_code=500, detail="Invoice generation failed")

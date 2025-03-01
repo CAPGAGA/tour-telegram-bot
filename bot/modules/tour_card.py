@@ -28,7 +28,11 @@ async def show_tour_details(update: Update, context: CallbackContext):
     tour = await fetch_tour_details(tour_id)
 
     if not tour:
-        await query.message.edit_text("❌ Failed to load tour details. Try again later.")
+        keyboard = [[InlineKeyboardButton('🛒 Back to shop', callback_data="buy_tours")]]
+        await query.message.edit_text(
+            "❌ Failed to load tour details. Try again later.",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
         return
 
     rout_name = escape_markdown(tour["rout_name"], version=2)
