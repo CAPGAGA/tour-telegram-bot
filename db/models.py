@@ -72,6 +72,24 @@ class BaseUser(BaseTable):
     username: Mapped[str] = mapped_column(String, nullable=True)
 
 
+class Order(BaseTable):
+
+    """
+        Table to store orders of users
+    """
+
+    __tablename__ = 'order'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    rout_id: Mapped[int] = mapped_column(ForeignKey("rout.id"))
+    amount: Mapped[float] = mapped_column(Float, nullable=False)
+    status: Mapped[str] = mapped_column(String, nullable=False, default='pending')
+    payment_method: Mapped[str] = mapped_column(String, nullable=False)
+    invoice_id: Mapped[str] = mapped_column(String, nullable=False)
+    payment_link: Mapped[str] = mapped_column(String, nullable=True)
+
+
 class Rout(BaseTable):
 
     """

@@ -7,6 +7,29 @@ from fastapi import Request
 
 from api.settings import SECRET_KEY, ALGORITHM
 
+def create_payment_token(user_id: int, tour_id: int, invoice_id: str):
+    """Creates token to sign order"""
+    payload = {
+        "user_id": user_id,
+        "tour_id": tour_id,
+        "invoice_id": invoice_id
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+def decode_payment_token(token: str):
+    """Decodes token to get user_id and tour_id"""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("user_id")
+        tour_id = payload.get("tour_id")
+        invoice_id = payload.get('invoice_id')
+
+        return user_id, tour_id, invoice_id
+    except jwt.PyJWTError:
+        return None, None
+    except TypeError:
+        return None, None
+
 async def get_auth_token(request: Request):
     """
         Get and check auth token
