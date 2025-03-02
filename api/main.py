@@ -37,9 +37,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 # mount static files
-app.mount("/static", StaticFiles(directory="crm/static"), name="static")
-app.mount('/media', StaticFiles(directory='crm/media'), name='media')
-templates = Jinja2Templates(directory="crm/templates")
+app.mount("/static", StaticFiles(directory="web/static"), name="static")
+app.mount('/media', StaticFiles(directory='web/media'), name='media')
+templates = Jinja2Templates(directory="web/templates")
 
 
 # base routs of api
