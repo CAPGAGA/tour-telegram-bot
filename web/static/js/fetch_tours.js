@@ -40,6 +40,7 @@ export function fetchTour(tourId) {
     .then(response => response.json())
     .then(data => {
         // base rout info
+        document.getElementById("tour-point-image").src = data.image ? `media/images/${data.image}`: "/static/images/placeholder-image.jpg";
         document.getElementById("tour-point-name").value = data.rout_name;
         document.getElementById("tour-point-description").value = data.rout_description;
         document.getElementById("tour-point-price").value = data.base_price;

@@ -17,8 +17,8 @@ point_media_router = APIRouter(
     tags=["point-media"],
 )
 
-UPLOAD_IMAGE_DIR = "crm/media/images"
-UPLOAD_AUDIO_DIR = "crm/media/audio"
+UPLOAD_IMAGE_DIR = "web/media/images"
+UPLOAD_AUDIO_DIR = "web/media/audio"
 
 os.makedirs(UPLOAD_IMAGE_DIR, exist_ok=True)
 os.makedirs(UPLOAD_AUDIO_DIR, exist_ok=True)

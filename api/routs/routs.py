@@ -1,4 +1,7 @@
-from fastapi import APIRouter, HTTPException, Depends
+import os
+from typing import Optional
+
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
 from pydantic import BaseModel
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,13 +9,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.database import get_session
 from db.models import Rout, RoutPoint, PointsAudio
 
-from api.handlers import get_admin_id, haversine
+from api.handlers import get_admin_id, haversine, generate_hashed_filename
 from api.access_checkers import check_admin_rout_access
 
 rout_router = APIRouter(
     prefix="/rout",
     tags=["rout"],
 )
+
+UPLOAD_IMAGE_DIR = "web/media/images"
+
+os.makedirs(UPLOAD_IMAGE_DIR, exist_ok=True)
+
 
 class RoutCreate(BaseModel):
 
@@ -27,6 +35,7 @@ class RoutEdit(BaseModel):
     rout_description: str
     base_price: int
 
+
 class RoutDisplay(BaseModel):
 
     is_displayed: bool
@@ -39,6 +48,7 @@ class RoutResponse(BaseModel):
     rout_description: str
     base_price: int
     is_displayed: bool
+    image: str
 
     class Config:
         orm_mode = True
@@ -82,6 +92,9 @@ async def create_rout(
 async def get_routs(
         session: AsyncSession = Depends(get_session)
 ):
+    """
+    Get all displayed routs.
+    """
     query = select(Rout).where(Rout.is_displayed == True)
     result = await session.execute(query)
     routs = result.scalars().all()
@@ -154,14 +167,52 @@ async def update_rout(
     query = select(Rout).where(Rout.id == rout_id)
     result = await session.execute(query)
     session_rout = result.scalars().first()
+
     if not session_rout:
         raise HTTPException(status_code=404, detail="Rout not found")
+
     for key, value in rout.dict().items():
         setattr(session_rout, key, value)
         session.add(session_rout)
     await session.commit()
     await session.refresh(session_rout)
     return session_rout
+
+@rout_router.post("/upload-image/{rout_id}", response_model=dict)
+async def upload_rout_image(
+        rout_id: int,
+        image: UploadFile = File(...),
+        session: AsyncSession = Depends(get_session),
+        admin_id: int = Depends(get_admin_id),
+):
+    if not admin_id:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    have_access = await check_admin_rout_access(rout_id, admin_id, session)
+
+    if not have_access:
+        raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
+
+    hashed_filename = generate_hashed_filename(image.filename)
+    file_path = os.path.join(UPLOAD_IMAGE_DIR, hashed_filename)
+
+    with open(file_path, "wb") as buffer:
+        buffer.write(await image.read())
+
+    query = select(Rout).where(Rout.id == rout_id)
+    result = await session.execute(query)
+    rout = result.scalars().first()
+
+    if not rout:
+        raise HTTPException(status_code=404, detail="Rout not found")
+
+    rout.image = hashed_filename
+    await session.commit()
+
+    return {"message": "Image uploaded successfully"}
+
+
+
 
 @rout_router.put("/display-rout/{rout_id}", response_model=dict)
 async def display_rout(
