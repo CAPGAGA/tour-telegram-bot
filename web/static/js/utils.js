@@ -53,3 +53,51 @@ export function addVizTogglerCheck(toggler, tourId) {
         });
     });
 }
+
+export function updateTourImage(imageInput, tourId) {
+    imageInput.addEventListener("change", function (event) {
+        const file = event.target.files[0]; // Get the selected file
+        if (!file) return; // No file selected
+
+        // Select the tour image element
+        const tourImage = document.getElementById("tour-point-image");
+        if (!tourImage) {
+            console.error("Tour image element not found!");
+            return;
+        }
+
+        // Create form data to send the image
+        const formData = new FormData();
+        formData.append("image", file);
+        formData.append("rout_id", tourId);
+
+        // Upload the image via API
+        fetch(`/apiV1/rout/upload-image/${tourId}`, {
+            method: "POST",
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to upload image");
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.image_url) {
+                // Update UI with new image
+                tourImage.src = data.image_url;
+                tourImage.style.display = "block";
+
+                if (typeof showMessage === "function") {
+                    showMessage("Image uploaded successfully!", "success");
+                }
+            }
+        })
+        .catch(error => {
+            console.error("Image upload failed:", error);
+            if (typeof showMessage === "function") {
+                showMessage("Image upload failed!", "error");
+            }
+        });
+    });
+}

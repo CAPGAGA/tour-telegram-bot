@@ -288,6 +288,7 @@ function handleMediaUpload(event, point, type, gallery, label = null) {
 
 
 
+
 // **Creates image/audio element with delete button**
 function createMediaElement(mediaName, type, point, label) {
     const mediaWrapper = document.createElement("div");
@@ -388,6 +389,8 @@ export function openTourPointModal(tourId) {
 export function closeTourPointModal() {
     const modal = document.getElementById("tour-points-modal")
     const settingForm = document.querySelector(".tour-settings");
+    const imageInput = document.getElementById("tour-image-input")
+
     settingForm.reset();
     modal.style.opacity = 0;
     if (map) {
@@ -507,6 +510,8 @@ function editTour(e) {
     const nameInput = document.getElementById("tour-point-name");
     const descInput = document.getElementById("tour-point-description");
     const priceInput = document.getElementById("tour-point-price");
+    const imageInput = document.getElementById("tour-image-input");
+    const tourImage = document.getElementById("tour-point-image");
 
     // Extract Values & Trim
     const name = nameInput.value.trim();
@@ -521,34 +526,73 @@ function editTour(e) {
 
     editBtn.disabled = true; // Prevent multiple submissions
 
-    const requestData = {
-        rout_id: tourId,
-        rout_name: name,
-        rout_description: description,
-        base_price: basePrice,
-    };
+    // Function to Update Tour Details
+    function updateTour(imageUrl = null) {
+        const requestData = {
+            rout_id: tourId,
+            rout_name: name,
+            rout_description: description,
+            base_price: basePrice,
+            image: imageUrl || tourImage.src // Use uploaded image URL or keep the existing one
+        };
 
-    // Send Update Request
-    fetch(`/apiV1/rout/edit-rout/${tourId}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        },
-        body: JSON.stringify(requestData),
-    })
-    .then(response => response.json().then(data => ({ status: response.status, body: data })))
-    .then(({ status, body }) => {
-        if (status !== 200) {
-            throw new Error(body.detail || "Failed to update route.");
-        }
-        showMessage("Route updated successfully!", "success");
-    })
-    .catch(error => {
-        console.error("Error updating tour:", error);
-        showMessage(error.message, "error");
-    })
-    .finally(() => {
-        editBtn.disabled = false; // Re-enable button after request
-    });
+        fetch(`/apiV1/rout/edit-rout/${tourId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify(requestData),
+        })
+        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+        .then(({ status, body }) => {
+            if (status !== 200) {
+                throw new Error(body.detail || "Failed to update route.");
+            }
+            showMessage("Route updated successfully!", "success");
+        })
+        .catch(error => {
+            console.error("Error updating tour:", error);
+            showMessage(error.message, "error");
+        })
+        .finally(() => {
+            editBtn.disabled = false; // Re-enable button after request
+        });
+    }
+
+    // If user selected a new image, upload it first
+    if (imageInput.files.length > 0) {
+        const file = imageInput.files[0];
+        const formData = new FormData();
+        formData.append("image", file);
+        formData.append("rout_id", tourId);
+
+        // Upload Image
+        fetch(`/apiV1/rout/upload-image/${tourId}`, {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.image_url) {
+                // Update UI
+                tourImage.src = data.image_url;
+                tourImage.style.display = "block";
+
+                // Proceed to update tour details
+                updateTour(data.image_url);
+            } else {
+                showMessage("Image upload failed!", "error");
+                editBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error("Image upload failed:", error);
+            showMessage("Image upload failed!", "error");
+            editBtn.disabled = false;
+        });
+    } else {
+        // No new image uploaded, update tour details directly
+        updateTour();
+    }
 }

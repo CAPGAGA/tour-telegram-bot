@@ -67,9 +67,12 @@ class BaseUser(BaseTable):
     __tablename__ = 'user'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(Integer, unique=True, index=True)
+    user_id: Mapped[int] = mapped_column(Integer, unique=True, index=True, nullable=True)
     is_admin: Mapped[bool] = mapped_column(Boolean,default=False)
+    admin_id: Mapped[int] = mapped_column(ForeignKey('admin.id'), nullable=True)
     username: Mapped[str] = mapped_column(String, nullable=True)
+    # users that registered with telegram won't have password
+    password: Mapped[str] = mapped_column(String, nullable=True)
 
 
 class Order(BaseTable):

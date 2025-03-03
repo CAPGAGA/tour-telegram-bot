@@ -25,7 +25,7 @@ async def fetch_user_routs(user_id):
 @user_auth
 async def users_tours(update: Update, context: CallbackContext, user):
     """Displays a list of routes owned by the user"""
-    user_id = user["id"]
+    user_id = user["user_id"]
     routs = await fetch_user_routs(user_id)
 
     if not routs:

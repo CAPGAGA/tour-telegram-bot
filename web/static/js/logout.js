@@ -1,5 +1,5 @@
 function logoutUser() {
-    fetch('/apiV1/admin/logout', { method: 'GET' })
+    fetch('/apiV1/auth/logout', { method: 'GET' })
         .then(response => response.json())
         .then(data => {
             document.cookie = "auth_token=; path=/; max-age=0"; // Clear auth token manually

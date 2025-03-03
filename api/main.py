@@ -1,14 +1,16 @@
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Depends, Request
+from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.handlers import get_auth_token, get_current_admin
 from api.routs.admins import admin_rout_router
-from api.routs.auth import auth_router
+from api.routs.auth_v2 import auth_router
 from api.routs.crm_auth import admin_router
 from api.routs.media import point_media_router
 from api.routs.orders import order_router
@@ -16,7 +18,8 @@ from api.routs.routs import rout_router
 from api.routs.rout_points import rout_points_router
 from api.routs.users import user_routs_router
 
-from db.database import Base, engine
+from db.database import Base, engine, get_session
+from db.models import Admin
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +46,8 @@ templates = Jinja2Templates(directory="web/templates")
 
 
 # base routs of api
-app.include_router(admin_router, prefix='/apiV1')
+# deprecated
+# app.include_router(admin_router, prefix='/apiV1')
 app.include_router(admin_rout_router, prefix='/apiV1')
 app.include_router(auth_router, prefix='/apiV1')
 app.include_router(rout_router, prefix='/apiV1')
@@ -78,7 +82,10 @@ async def login_page(request: Request, auth_token: str = Depends(get_auth_token)
     return RedirectResponse(url="/tour-admin")
 
 @app.get('/register', response_class=HTMLResponse)
-async def login_page(request: Request, auth_token: str = Depends(get_auth_token)):
+async def login_page(
+        request: Request,
+        auth_token: str = Depends(get_auth_token)
+):
     if not auth_token:
         return templates.TemplateResponse(
             request=request, name='register.html'
@@ -89,11 +96,17 @@ async def login_page(request: Request, auth_token: str = Depends(get_auth_token)
 async def tour_admin(
         request: Request,
         auth_token: str = Depends(get_auth_token),
-        user: str = Depends(get_current_admin)
+        user: str = Depends(get_current_admin),
+        session: AsyncSession = Depends(get_session)
 ):
     if not auth_token:
         return RedirectResponse(url="/login")
-    username, user_id = user
+    user_id, is_admin = user
+    if not is_admin:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    db_user = select(Admin).where(Admin.id==user_id)
+    result = await session.execute(db_user)
+    db_user = result.scalars().first()
     return templates.TemplateResponse(
-        context={'username': username, 'user_id': user_id}, request=request, name='tour_admin.html'
+        context={'username': db_user.username, 'user_id': user_id}, request=request, name='tour_admin.html'
     )

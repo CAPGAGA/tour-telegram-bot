@@ -1,7 +1,7 @@
 import { showMessage } from "./revolver.js";
 import { openTourModal } from "./tours_modals.js"
 import { openTourPointModal } from "./tour_points_modals.js"
-import { addVizTogglerCheck } from "./utils.js"
+import { addVizTogglerCheck, updateTourImage } from "./utils.js"
 
 export function fetchTours() {
     const adminId = document.getElementById("username").getAttribute("data-admin-id");
@@ -52,7 +52,6 @@ export function fetchTour(tourId) {
         // TODO: change logic here
         const newVizToggle = vizToggle.cloneNode(true);
         vizToggle.parentNode.replaceChild(newVizToggle, vizToggle);
-
         addVizTogglerCheck(newVizToggle, tourId);
     })
     .catch(error => showMessage(error.message, "error"));

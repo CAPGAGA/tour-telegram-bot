@@ -22,7 +22,7 @@ def user_auth(func):
 
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.post(f"{API_BASE_URL}/auth/register", json=payload) as response:
+                async with session.post(f"{API_BASE_URL}/auth/register-telegram", json=payload) as response:
                     if response.status != 200:
                         await update.message.reply_text("❌ Error while registering. Please try again later.")
                         return

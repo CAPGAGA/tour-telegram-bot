@@ -1,11 +1,28 @@
 import hashlib
 import os
+from datetime import timedelta, datetime
 from math import radians, cos, sin, asin, sqrt
 
+import bcrypt
 import jwt
 from fastapi import Request
 
 from api.settings import SECRET_KEY, ALGORITHM
+
+async def hash_password(password: str) -> str:
+    salt = bcrypt.gensalt()
+    hash_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hash_password.decode('utf-8')
+
+async def create_token(
+        data: dict,
+        expires_delta: timedelta
+) -> str:
+    to_encode = data.copy()
+    expire = datetime.utcnow() + expires_delta
+    to_encode.update({'exp': expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 def create_payment_token(user_id: int, tour_id: int, invoice_id: str):
     """Creates token to sign order"""
@@ -47,11 +64,10 @@ async def get_current_admin(request: Request):
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
         user_id: int = payload.get("user_id")
-        if username is None:
-            return None
-        return username, user_id
+        is_admin: bool = payload.get('is_admin')
+
+        return user_id, is_admin
     except jwt.PyJWTError:
         return None
 
@@ -79,6 +95,7 @@ def generate_hashed_filename(filename: str) -> str:
     hash_digest = hashlib.md5(filename.encode()).hexdigest()
     ext = os.path.splitext(filename)[1]
     return f"{hash_digest}{ext}"
+
 
 
 async def haversine(lon1, lat1, lon2, lat2):

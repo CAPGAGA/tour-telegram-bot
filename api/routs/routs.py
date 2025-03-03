@@ -48,7 +48,7 @@ class RoutResponse(BaseModel):
     rout_description: str
     base_price: int
     is_displayed: bool
-    image: str
+    image: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -209,7 +209,7 @@ async def upload_rout_image(
     rout.image = hashed_filename
     await session.commit()
 
-    return {"message": "Image uploaded successfully"}
+    return {"image_url": f"/media/images/{hashed_filename}", "message": "Image uploaded successfully"}
 
 
 

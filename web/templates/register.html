@@ -5,27 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRM Registration</title>
     <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', path='css/auth-page.css') }}" rel="stylesheet">
+<!--    <link href="{{ url_for('static', path='css/auth-page.css') }}" rel="stylesheet">-->
+    <link href="{{ url_for('static', path='css/bulma.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/revolver-msg.css') }}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="login-container">
-        <form id="register-form" class="login-form">
-            <h2 class="login-title">Tour Admin Registration</h2>
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" placeholder="Enter your username" required>
+    <section class="hero is-fullheight">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <div class="column is-6 is-offset-3">
+                    <h3 class="title is-4">Register</h3>
+
+                    <!-- Toggle Registration Type -->
+                    <div class="buttons has-addons is-centered">
+                        <button id="user-btn" class="button is-info is-light">Register as User</button>
+                        <button id="creator-btn" class="button is-info">Register as Creator</button>
+                    </div>
+
+                    <!-- User Registration Form -->
+                    <div id="user-form" class="box">
+                        <h4 class="title is-5">Register as a User</h4>
+                        <form id="register-user">
+                            <div class="field">
+                                <label class="label">Username</label>
+                                <div class="control">
+                                    <input class="input" type="text" id="user-username" placeholder="Enter username" required>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Password</label>
+                                <div class="control">
+                                    <input class="input" type="password" id="user-password" placeholder="Enter password" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="button is-info is-fullwidth">Register</button>
+                        </form>
+                    </div>
+
+                    <!-- Creator Registration Form -->
+                    <div id="creator-form" class="box" style="display: none;">
+                        <h4 class="title is-5">Register as a Creator</h4>
+                        <form id="register-creator">
+                            <div class="field">
+                                <label class="label">Username</label>
+                                <div class="control">
+                                    <input class="input" type="text" id="creator-username" placeholder="Enter username" required>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Password</label>
+                                <div class="control">
+                                    <input class="input" type="password" id="creator-password" placeholder="Enter password" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="button is-info is-fullwidth">Register</button>
+                        </form>
+                    </div>
+
+                    <p class="has-text-grey">
+                        <a href="/login">Already have an account? Login</a>
+                    </p>
+                </div>
             </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Enter your password" required>
-            </div>
-            <button type="submit">Register</button>
-            <p class="back-to-login"><a href="/login">Back to Login</a></p>
-        </form>
-    </div>
+        </div>
+    </section>
 </body>
-<script type="module" src="{{ url_for('static', path='js/register.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/revolver.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/landing/auth.js') }}"></script>
+<!--<script type="module" src="{{ url_for('static', path='js/register.js') }}"></script>-->
 </html>

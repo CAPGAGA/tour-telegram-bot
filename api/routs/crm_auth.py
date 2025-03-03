@@ -9,6 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 import jwt
 
+from api.handlers import create_token, hash_password
 from api.settings import SECRET_KEY, ALGORITHM, TOKEN_EXPIRATION_MINUTES
 
 from db.database import get_session
@@ -30,21 +31,6 @@ class AdminResponse(BaseModel):
     class Config:
         orm_mode = True
 
-
-async def hash_password(password: str) -> str:
-    salt = bcrypt.gensalt()
-    hash_password = bcrypt.hashpw(password.encode('utf-8'), salt)
-    return hash_password.decode('utf-8')
-
-async def create_token(
-        data: dict,
-        expires_delta: timedelta
-) -> str:
-    to_encode = data.copy()
-    expire = datetime.utcnow() + expires_delta
-    to_encode.update({'exp': expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
 
 @admin_router.post("/register", response_model=AdminResponse)
 async def create_admin(admin: AdminCreate, session: AsyncSession = Depends(get_session)):
