@@ -17,7 +17,6 @@ services:
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=m.gnatenko99@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      -
     ports:
       - "80:80"
       - "443:443"
@@ -27,7 +26,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       app_network:
-      test_network:
 
   web:
     build:
@@ -52,11 +50,9 @@ services:
     volumes:
       - ./web/media:/web/media
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     networks:
       app_network:
-      test_network:
 
   bot:
     build:
@@ -73,14 +69,11 @@ services:
     env_file:
       - .env
     environment:
-      - PYTHONPATH=.
       - API_BASE_URL=http://web/apiV1
     depends_on:
-      web:
-        condition: service_started
+      - web
     networks:
       app_network:
-      test_network:
 
 
   postgres:
@@ -98,7 +91,6 @@ services:
       retries: 5
     networks:
       app_network:
-      test_network:
 
 volumes:
   postgres_data:
@@ -107,5 +99,3 @@ volumes:
 networks:
   app_network:
     driver: bridge
-  test_network:
-    external: true

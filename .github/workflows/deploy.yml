@@ -1,0 +1,46 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+      - dev # temp for tests
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get branch name
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr '/' '-')" >> $GITHUB_ENV
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Build & Push Docker Images
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tour-app:latest -f Dockerfile .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/tour-app:latest
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e  # Exit immediately on error
+            cd ~/app-deploy
+
+            echo "Pulling latest changes..."
+            git pull origin main
+
+            echo "Pulling latest Docker image..."
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/tour-app:latest
+
+            echo "Restarting Docker containers..."
+            docker compose down
+            docker compose up -d --remove-orphans
