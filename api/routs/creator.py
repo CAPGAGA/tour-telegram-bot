@@ -26,7 +26,7 @@ class CreatorRoutResponse(BaseModel):
     routs: list[RoutSchema]
 
 @creator_rout_router.post("/link-rout", response_model=CreatorRoutResponse)
-async def link_rout_to_admin(
+async def link_rout_to_creator(
         creator_rout: CreatorRoutCreate,
         session: AsyncSession = Depends(get_session)
 ):

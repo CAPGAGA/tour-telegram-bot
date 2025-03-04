@@ -11,7 +11,7 @@ from db.models import RoutPoint, PointMedia, PointsAudio
 from db.database import get_session
 
 from api.handlers import get_creator_id
-from api.access_checkers import check_admin_rout_point_access
+from api.access_checkers import check_creator_rout_point_access
 
 
 rout_points_router = APIRouter(
@@ -232,7 +232,7 @@ async def edit_rout_point(
     if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    have_access = await check_admin_rout_point_access(rout_point_id, creator_id, session)
+    have_access = await check_creator_rout_point_access(rout_point_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
@@ -263,7 +263,7 @@ async def delete_rout_point(
     if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    have_access = await check_admin_rout_point_access(rout_point_id, creator_id, session)
+    have_access = await check_creator_rout_point_access(rout_point_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")

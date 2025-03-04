@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import Rout, RoutPoint, CreatorRout
 
-async def check_admin_rout_point_access(
+async def check_creator_rout_point_access(
         rout_point_id: int,
         creator_id: int,
         session: AsyncSession
@@ -24,7 +24,7 @@ async def check_admin_rout_point_access(
         return False
     return True
 
-async def check_admin_rout_access(
+async def check_creator_rout_access(
         rout_id: int,
         creator_id: int,
         session: AsyncSession

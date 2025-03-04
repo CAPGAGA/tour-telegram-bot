@@ -142,7 +142,6 @@ async def login_user(
 
     # Generate JWT Token
     token = await create_token(
-        # Important to switch id between admin and user
         {
             "user_id": user.id,
             "is_creator": user.is_creator

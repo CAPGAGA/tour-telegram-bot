@@ -10,7 +10,7 @@ from db.database import get_session
 from db.models import Rout, RoutPoint, PointsAudio
 
 from api.handlers import get_creator_id, haversine, generate_hashed_filename
-from api.access_checkers import check_admin_rout_access
+from api.access_checkers import check_creator_rout_access
 
 rout_router = APIRouter(
     prefix="/rout",
@@ -159,7 +159,7 @@ async def update_rout(
     if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    have_access = await check_admin_rout_access(rout_id, creator_id, session)
+    have_access = await check_creator_rout_access(rout_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
@@ -188,7 +188,7 @@ async def upload_rout_image(
     if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    have_access = await check_admin_rout_access(rout_id, creator_id, session)
+    have_access = await check_creator_rout_access(rout_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
@@ -224,7 +224,7 @@ async def display_rout(
     if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    have_access = await check_admin_rout_access(rout_id, creator_id, session)
+    have_access = await check_creator_rout_access(rout_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
@@ -275,7 +275,7 @@ async def delete_rout(
     if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    have_access = await check_admin_rout_access(rout_id, creator_id, session)
+    have_access = await check_creator_rout_access(rout_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")

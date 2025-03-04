@@ -60,13 +60,7 @@ app.include_router(order_router, prefix='/apiV1')
 @app.get('/', response_class=HTMLResponse)
 async def landing(
         request: Request,
-        auth_token: str = Depends(get_auth_token)
 ):
-    # deprecated logic
-    # if not auth_token:
-    #     return RedirectResponse(url="/login")
-    # return RedirectResponse(url="/tour-admin")
-
     return templates.TemplateResponse(
         request=request,
         name='landing.html'
