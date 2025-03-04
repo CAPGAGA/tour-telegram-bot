@@ -2,14 +2,47 @@ version: "3.4"
 
 services:
 
+  reverse-proxy:
+    image: traefik:3.1
+    labels:
+      - "traefik.enable=true"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "-entrypoints.web.address=:80"
+      - "-entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "-entryPoints.web.http.redirections.entrypoint.scheme=https"
+      - "-entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=m.gnatenko99@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      -
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      app_network:
+      test_network:
+
   web:
     build:
       context: .
       dockerfile: Dockerfile
       target: web
-    container_name: web
-    ports:
-      - "8000:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`app.localhost`) || Host(`pocketour.online`)"
+      - "traefik.http.services.web.loadbalancer.server.port=80"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.certresolver=myresolver"
+    deploy:
+      mode: replicated
+      replicas: 3
     command: >
       bash -c '
         uvicorn api.main:app --host 0.0.0.0 --port 80
@@ -23,12 +56,15 @@ services:
         condition: service_healthy
     networks:
       app_network:
+      test_network:
 
   bot:
     build:
       context: .
       dockerfile: Dockerfile
       target: bot
+    labels:
+      - "traefik.enable=false"
     container_name: bot
     command: >
       bash -c '
@@ -44,6 +80,7 @@ services:
         condition: service_started
     networks:
       app_network:
+      test_network:
 
 
   postgres:
@@ -61,10 +98,14 @@ services:
       retries: 5
     networks:
       app_network:
+      test_network:
 
 volumes:
   postgres_data:
+  letsencrypt:
 
 networks:
   app_network:
     driver: bridge
+  test_network:
+    external: true
