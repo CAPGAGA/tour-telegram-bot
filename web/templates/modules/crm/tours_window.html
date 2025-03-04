@@ -1,0 +1,12 @@
+<div class="tours-grid" id="tours-grid">
+    <button class="tour-card add-tour" id="add-tour-button">
+        <span class="plus">+</span>
+        <p>Add New Tour</p>
+    </button>
+    {% for tour in tours %}
+    <div class="tour-card" onclick="openTourDetailModal('{{ tour.id }}')">
+        <h3>{{ tour.name }}</h3>
+        <p>{{ tour.description[:50] }}...</p>
+    </div>
+    {% endfor %}
+</div>

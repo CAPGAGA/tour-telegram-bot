@@ -1,22 +1,13 @@
 import os
 from pathlib import Path
 
-# init .env file
-from dotenv import load_dotenv
-dotenv_path = os.path.join(Path(__file__).resolve().parent, '.env')
-print(dotenv_path)
-load_dotenv(dotenv_path)
+# auth settings
+SECRET_KEY: str = os.getenv('SECRET_KEY')
+ALGORITHM = "HS256"
+TOKEN_EXPIRATION_MINUTES = 60*24*30 #30 days
 
-BASE_URL = str(os.getenv("BASE_URL"))
+BASE_DIR: str = Path(__file__).parent
 
-TELEGRAM_TOKEN = str(os.getenv("TELEGRAM_TOKEN"))
-# don't run debug in production!
-DEBUG = os.getenv("DEBUG") == 'True'
-
-BASE_DIR = Path(__file__).resolve().parent
-MEDIA_DIR = os.path.join(Path(__file__).resolve().parent, 'media')
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-PAYMENT_TOKEN = os.getenv("PAYMENT_TOKEN")
-
-PRODAMUS_TOKEN = os.getenv("PRODAMUS_TOKEN")
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
+PAYPAL_SECRET = os.getenv("PAYPAL_SECRET")
+PAYPAL_API_URL = os.getenv("PAYPAL_API_URL", "https://api-m.sandbox.paypal.com")

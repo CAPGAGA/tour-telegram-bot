@@ -1,13 +1,22 @@
+# utils
+requests
+aiohttp
+python-multipart
+pydub
+
+# api's backend and frontend
 fastapi
 uvicorn
+bcrypt
+pyjwt
+jinja2
+
+# telegram bot
 python-telegram-bot
-pydantic==1.10.7
-sqlalchemy==1.4.48
+
+# database
+pydantic
+sqlalchemy[asyncio]
+asyncpg
 databases
 aiosqlite
-requests
-python-multipart
-yookassa
-jinja2
-python-dotenv
-pydub

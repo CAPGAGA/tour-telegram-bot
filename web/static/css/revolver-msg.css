@@ -1,0 +1,33 @@
+.message-box {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    color: white;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.message-box.success {
+    background-color: green;
+}
+
+.message-box.info {
+    background-color: blue;
+}
+
+.message-box.error {
+    background-color: red;
+}
+
+.message-box.warning {
+    background-color: yellow;
+    color: black;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -161,3 +161,6 @@ cython_debug/
 /sqlite.db
 /media/
 /conversations
+/prod.db
+/crm/media/images/*
+/crm/media/audio/*

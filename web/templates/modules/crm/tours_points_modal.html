@@ -1,0 +1,39 @@
+<div class="tours-points-modal" id="tour-points-modal">
+    <div class="tour-modal-layout">
+        <span class="close" id="close-tour-points-modal">&times;</span>
+        <form class="tour-points-window tour-settings">
+            <h2>Rout Settings</h2>
+            <label for="tour-point-image">Current Image</label>
+            <img class="tour-point-image" src="" id="tour-point-image" alt="Tour Image">
+            <input type="file" id="tour-image-input" accept="image/*">
+            <label for="tour-point-name">Rout Name</label>
+            <input type="text" id="tour-point-name" >
+            <label for="tour-point-description">Description</label>
+            <textarea id="tour-point-description"></textarea>
+            <label for="tour-point-price">Base Price</label>
+            <input type="number" id="tour-point-price">
+            <button class="submit-button" id="edit-rout">Save</button>
+        </form>
+        <form class="tour-points-window viz-settings">
+            <label for="viz-toggle">Displayed:</label>
+            <label class="switch">
+                <input type="checkbox" id="viz-toggle">
+                <span class="slider"></span>
+            </label>
+        </form>
+        <div class="tour-points-window tour-stats">
+            <h4>Stats</h4>
+            <ul class="tour-stats-list" id="tour-stats-list">
+                <li>Total Distance: <span id="stat-distance">0 km</span></li>
+                <li>Point Count: <span id="stat-points">0</span></li>
+                <li>Photo Count: <span id="stat-photos">0</span></li>
+                <li>Total Audio Length: <span id="stat-audio">0 sec</span></li>
+            </ul>
+        </div>
+        <div class="tour-points-window tour-points-constructor">
+            <h2>Rout Points</h2>
+            <div id="map"></div>
+            <div id="tour-points-list"></div>
+        </div>
+    </div>
+</div>

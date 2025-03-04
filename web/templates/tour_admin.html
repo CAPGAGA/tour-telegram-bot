@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Tour Admin</title>
+    <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/revolver-msg.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/leaflet.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/navbar.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/crm-general.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/tour-card.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/modals.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    {% include "modules/crm/navbar.html" %}
+    <!-- Main Content Block -->
+    <main>
+        <div id="tours-window" class="working-window">
+            {% include "modules/crm/tours_window.html" %}
+        </div>
+        <div id="clients-window" class="working-window active">
+            {% include "modules/crm/clients_window.html" %}
+        </div>
+        <div id="admins-window" class="working-window">
+            {% include "modules/crm/admins_window.html" %}
+        </div>
+        <div id="settings-window" class="working-window">
+            {% include "modules/crm/settings_window.html" %}
+        </div>
+    </main>
+</body>
+{% include "modules/crm/tour_modal.html" %}
+{% include "modules/crm/tours_points_modal.html" %}
+<script type="module" src="{{ url_for('static', path='js/leaflet.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/utils.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/tour_stats.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/revolver.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/tours_modals.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/tour_points_modals.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/fetch_tours.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/working_window_switcher.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/logout.js') }}"></script>
+</html>
