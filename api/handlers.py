@@ -6,8 +6,11 @@ from math import radians, cos, sin, asin, sqrt
 import bcrypt
 import jwt
 from fastapi import Request
+from sqlalchemy import select
 
 from api.settings import SECRET_KEY, ALGORITHM
+from db.models import BaseUser
+
 
 async def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
@@ -53,9 +56,9 @@ async def get_auth_token(request: Request):
     """
     return request.cookies.get('auth_token')
 
-async def get_current_admin(request: Request):
+async def get_current_creator(request: Request):
     """
-        Return base admin info
+        Return base creator info
     """
     token = request.cookies.get("auth_token")
 
@@ -65,16 +68,16 @@ async def get_current_admin(request: Request):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: int = payload.get("user_id")
-        is_admin: bool = payload.get('is_admin')
+        is_creator: bool = payload.get('is_creator')
 
-        return user_id, is_admin
+        return user_id, is_creator
     except jwt.PyJWTError:
         return None
 
 
-async def get_admin_id(request: Request):
+async def get_creator_id(request: Request):
     """
-        Return admin id
+        Return creator id
     """
 
     token = request.cookies.get("auth_token")
@@ -84,10 +87,14 @@ async def get_admin_id(request: Request):
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        admin_id: int = payload.get("user_id")
-        if admin_id is None:
+        user_id: int = payload.get("user_id")
+        if user_id is None:
             return None
-        return admin_id
+        query = select(BaseUser).where(BaseUser.id == user_id)
+        result = await session.execute(query)
+        user = result.scalars().first()
+
+        return user.creator_id
     except jwt.PyJWTError:
         return None
 

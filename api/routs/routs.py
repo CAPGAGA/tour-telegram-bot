@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.database import get_session
 from db.models import Rout, RoutPoint, PointsAudio
 
-from api.handlers import get_admin_id, haversine, generate_hashed_filename
+from api.handlers import get_creator_id, haversine, generate_hashed_filename
 from api.access_checkers import check_admin_rout_access
 
 rout_router = APIRouter(
@@ -77,9 +77,9 @@ class DisplayedRoutsResponse(BaseModel):
 async def create_rout(
         rout: RoutCreate,
         session: AsyncSession = Depends(get_session),
-        admin_id: int = Depends(get_admin_id)
+        creator_id: int = Depends(get_creator_id)
 ):
-    if not admin_id:
+    if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     new_rout = Rout(**rout.dict())
@@ -154,12 +154,12 @@ async def update_rout(
         rout_id: int,
         rout: RoutEdit,
         session: AsyncSession = Depends(get_session),
-        admin_id: int = Depends(get_admin_id)
+        creator_id: int = Depends(get_creator_id)
 ):
-    if not admin_id:
+    if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    have_access = await check_admin_rout_access(rout_id, admin_id, session)
+    have_access = await check_admin_rout_access(rout_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
@@ -183,12 +183,12 @@ async def upload_rout_image(
         rout_id: int,
         image: UploadFile = File(...),
         session: AsyncSession = Depends(get_session),
-        admin_id: int = Depends(get_admin_id),
+        creator_id: int = Depends(get_creator_id),
 ):
-    if not admin_id:
+    if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    have_access = await check_admin_rout_access(rout_id, admin_id, session)
+    have_access = await check_admin_rout_access(rout_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
@@ -219,12 +219,12 @@ async def display_rout(
         rout_id: int,
         rout: RoutDisplay,
         session: AsyncSession = Depends(get_session),
-        admin_id: int = Depends(get_admin_id)
+        creator_id: int = Depends(get_creator_id)
 ):
-    if not admin_id:
+    if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    have_access = await check_admin_rout_access(rout_id, admin_id, session)
+    have_access = await check_admin_rout_access(rout_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
@@ -270,12 +270,12 @@ async def display_rout(
 async def delete_rout(
         rout_id: int,
         session: AsyncSession = Depends(get_session),
-        admin_id: int = Depends(get_admin_id)
+        creator_id: int = Depends(get_creator_id)
 ):
-    if not admin_id:
+    if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    have_access = await check_admin_rout_access(rout_id, admin_id, session)
+    have_access = await check_admin_rout_access(rout_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, HTTPException, Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -7,7 +9,7 @@ import jwt
 from datetime import datetime, timedelta
 
 from db.database import get_session
-from db.models import BaseUser, Admin
+from db.models import BaseUser, Creator
 
 from api.handlers import hash_password, create_token
 
@@ -19,6 +21,8 @@ auth_router = APIRouter(
 class UserRegisterRequest(BaseModel):
     username: str
     password: str
+    is_creator: bool
+    email: Optional[str] = None
 
 @auth_router.post("/register-user")
 async def register_user(
@@ -33,77 +37,57 @@ async def register_user(
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
 
+    new_creator = None
+    if user_data.is_creator:
+        if not user_data.email:
+            raise HTTPException(status_code=403, detail="Email required for creator")
+
+        query = select(Creator).where(Creator.email == user_data.email)
+        result = await session.execute(query)
+        existing_creator = result.scalars().first()
+
+        if existing_creator:
+            raise HTTPException(status_code=400, detail="Creator already exists")
+
+        new_creator = Creator(email=user_data.email, is_active=True)
+        session.add(new_creator)
+        await session.commit()
+        await session.refresh(new_creator)
+
+
     # Hash the password
     hashed_password = await hash_password(user_data.password)
 
     # Create new user
-    new_user = BaseUser(
-        username=user_data.username,
-        password=hashed_password,
-        is_admin=False
-    )
+    if user_data.is_creator and new_creator:
+        new_user = BaseUser(
+            username=user_data.username,
+            password=hashed_password,
+            is_creator=True,
+            is_admin=False,
+            creator_id=new_creator.id
+        )
+    else:
+        new_user = BaseUser(
+            username=user_data.username,
+            password=hashed_password,
+            is_admin=False
+        )
 
     session.add(new_user)
     await session.commit()
     await session.refresh(new_user)
 
     # Generate token
-    token = await create_token({"user_id": new_user.id, "is_admin": False}, timedelta(days=30))
+    token = await create_token(
+        {
+            "user_id": new_user.id,
+            "is_creator": user_data.is_creator
+        }, timedelta(days=30)
+    )
 
     return {"message": "User registered successfully", "token": token}
 
-class AdminRegisterRequest(BaseModel):
-    username: str
-    password: str
-
-@auth_router.post("/register-admin")
-async def register_admin(
-    admin_data: AdminRegisterRequest,
-    session: AsyncSession = Depends(get_session)
-):
-    # Check if admin exists in Admin table
-    query_admin = select(Admin).where(Admin.username == admin_data.username)
-    result_admin = await session.execute(query_admin)
-    existing_admin = result_admin.scalars().first()
-
-    # Check if admin exists in BaseUser table
-    query_user = select(BaseUser).where(BaseUser.username == admin_data.username)
-    result_user = await session.execute(query_user)
-    existing_user = result_user.scalars().first()
-
-    if existing_admin or existing_user:
-        raise HTTPException(status_code=400, detail="Admin already exists")
-
-    # Hash the password
-    hashed_password = await hash_password(admin_data.password)
-
-    # Create new admin entry
-    new_admin = Admin(
-        username=admin_data.username,
-        password=hashed_password,
-        is_active=True
-    )
-    session.add(new_admin)
-    await session.commit()
-    await session.refresh(new_admin)
-
-    # Create a corresponding BaseUser entry with is_admin=True
-    new_user = BaseUser(
-        username=admin_data.username,
-        password=hashed_password,
-        is_admin=True,
-        admin_id=new_admin.id
-    )
-
-
-    session.add(new_user)
-    await session.commit()
-    await session.refresh(new_user)
-
-    # Generate JWT token
-    token = await create_token({"user_id": new_user.id, "is_admin": True}, timedelta(days=30))
-
-    return {"message": "Admin registered successfully", "token": token}
 
 class TelegramRegisterRequest(BaseModel):
     user_id: int
@@ -160,13 +144,13 @@ async def login_user(
     token = await create_token(
         # Important to switch id between admin and user
         {
-            "user_id": user.admin_id if user.is_admin else user.id,
-            "is_admin": user.is_admin
+            "user_id": user.id,
+            "is_creator": user.is_creator
         },
         timedelta(days=30)
     )
 
-    return {"message": "Login successful", "token": token, "is_admin": user.is_admin}
+    return {"message": "Login successful", "token": token, "is_creator": user.is_creator}
 
 class TelegramLoginRequest(BaseModel):
     user_id: int
@@ -187,12 +171,12 @@ async def login_telegram_user(
     # Generate JWT Token
     token_data = {
         "user_id": user.id,
-        "is_admin": user.is_admin  # Admin status is dynamically assigned
+        "is_creator": user.is_creator  # Admin status is dynamically assigned
     }
 
-    token = await create_token({"user_id": login_data.user_id, "is_admin": user.is_admin}, timedelta(days=30))
+    token = await create_token({"user_id": login_data.user_id, "is_creator": user.is_creator}, timedelta(days=30))
 
-    return {"message": "Login successful", "token": token, "is_admin": user.is_admin}
+    return {"message": "Login successful", "token": token, "is_creator": user.is_creator}
 
 
 @auth_router.get('/logout')

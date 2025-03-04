@@ -33,28 +33,28 @@ class BaseTable(Base):
         server_onupdate=func.now()  # update timestamp on update
     )
 
-class Admin(BaseTable):
+class Creator(BaseTable):
     """
-        Table to store admins of telegram bot
+        Table to store creators of tours
     """
 
-    __tablename__ = 'admin'
+    __tablename__ = 'creator'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    username: Mapped[str] = mapped_column(String, nullable=False, unique=True)
-    password: Mapped[str] = mapped_column(String, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=False)
+    creator_name: Mapped[str] = mapped_column(String, nullable=True)
+    email: Mapped[str] = mapped_column(String, nullable=False)
 
 
-class AdminRout(BaseTable):
+class CreatorRout(BaseTable):
     """
-        Table to store admins routs
+        Table to store creators routs
     """
 
-    __tablename__ = 'admin_rout'
+    __tablename__ = 'creator_rout'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    admin_id: Mapped[int] = mapped_column(ForeignKey('admin.id'))
+    creator_id: Mapped[int] = mapped_column(ForeignKey('creator.id'))
     rout_id: Mapped[int] = mapped_column(ForeignKey('rout.id'))
 
 
@@ -68,8 +68,9 @@ class BaseUser(BaseTable):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(Integer, unique=True, index=True, nullable=True)
-    is_admin: Mapped[bool] = mapped_column(Boolean,default=False)
-    admin_id: Mapped[int] = mapped_column(ForeignKey('admin.id'), nullable=True)
+    is_creator: Mapped[bool] = mapped_column(Boolean,default=False)
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    creator_id: Mapped[int] = mapped_column(ForeignKey('creator.id'), nullable=True)
     username: Mapped[str] = mapped_column(String, nullable=True)
     # users that registered with telegram won't have password
     password: Mapped[str] = mapped_column(String, nullable=True)
@@ -86,7 +87,7 @@ class Order(BaseTable):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     rout_id: Mapped[int] = mapped_column(ForeignKey("rout.id"))
-    amount: Mapped[float] = mapped_column(Float, nullable=False)
+    amount: Mapped[float] = mapped_column(String, nullable=False)
     status: Mapped[str] = mapped_column(String, nullable=False, default='pending')
     payment_method: Mapped[str] = mapped_column(String, nullable=False)
     invoice_id: Mapped[str] = mapped_column(String, nullable=False)

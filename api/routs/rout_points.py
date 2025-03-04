@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.models import RoutPoint, PointMedia, PointsAudio
 from db.database import get_session
 
-from api.handlers import get_admin_id
+from api.handlers import get_creator_id
 from api.access_checkers import check_admin_rout_point_access
 
 
@@ -74,9 +74,9 @@ class RoutResponse(BaseModel):
 async def create_rout_point(
         rout_point: RoutPointCreate,
         session: AsyncSession = Depends(get_session),
-        admin_id: int = Depends(get_admin_id)
+        creator_id: int = Depends(get_creator_id)
 ):
-    if not admin_id:
+    if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     new_rout_point = RoutPoint(**rout_point.dict())
@@ -227,12 +227,12 @@ async def edit_rout_point(
         rout_point_id: int,
         rout_point: RoutPointEdit,
         session: AsyncSession = Depends(get_session),
-        admin_id: int = Depends(get_admin_id)
+        creator_id: int = Depends(get_creator_id)
 ):
-    if not admin_id:
+    if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    have_access = await check_admin_rout_point_access(rout_point_id, admin_id, session)
+    have_access = await check_admin_rout_point_access(rout_point_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
@@ -258,12 +258,12 @@ async def edit_rout_point(
 async def delete_rout_point(
         rout_point_id: int,
         session: AsyncSession = Depends(get_session),
-        admin_id: int = Depends(get_admin_id)
+        creator_id: int = Depends(get_creator_id)
 ):
-    if not admin_id:
+    if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    have_access = await check_admin_rout_point_access(rout_point_id, admin_id, session)
+    have_access = await check_admin_rout_point_access(rout_point_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")

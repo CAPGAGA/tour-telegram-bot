@@ -8,10 +8,10 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.handlers import get_auth_token, get_current_admin
-from api.routs.admins import admin_rout_router
+from api.handlers import get_auth_token, get_current_creator
+from api.routs.creator import creator_rout_router
 from api.routs.auth_v2 import auth_router
-from api.routs.crm_auth import admin_router
+# from api.routs.crm_auth import admin_router
 from api.routs.media import point_media_router
 from api.routs.orders import order_router
 from api.routs.routs import rout_router
@@ -19,7 +19,7 @@ from api.routs.rout_points import rout_points_router
 from api.routs.users import user_routs_router
 
 from db.database import Base, engine, get_session
-from db.models import Admin
+from db.models import Creator, BaseUser
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ templates = Jinja2Templates(directory="web/templates")
 # base routs of api
 # deprecated
 # app.include_router(admin_router, prefix='/apiV1')
-app.include_router(admin_rout_router, prefix='/apiV1')
+app.include_router(creator_rout_router, prefix='/apiV1')
 app.include_router(auth_router, prefix='/apiV1')
 app.include_router(rout_router, prefix='/apiV1')
 app.include_router(rout_points_router, prefix='/apiV1')
@@ -95,18 +95,23 @@ async def login_page(
 @app.get('/tour-admin', response_class=HTMLResponse)
 async def tour_admin(
         request: Request,
-        auth_token: str = Depends(get_auth_token),
-        user: str = Depends(get_current_admin),
+        user: str = Depends(get_current_creator),
         session: AsyncSession = Depends(get_session)
 ):
-    if not auth_token:
+    if not user:
         return RedirectResponse(url="/login")
-    user_id, is_admin = user
-    if not is_admin:
+    print(user)
+    user_id, is_creator = user
+    if not is_creator:
         raise HTTPException(status_code=403, detail="Forbidden")
-    db_user = select(Admin).where(Admin.id==user_id)
-    result = await session.execute(db_user)
-    db_user = result.scalars().first()
+
+    query = select(BaseUser).where(BaseUser.id == user_id)
+    result = await session.execute(query)
+    user = result.scalars().first()
+
     return templates.TemplateResponse(
-        context={'username': db_user.username, 'user_id': user_id}, request=request, name='tour_admin.html'
+        context={
+            'username': user.username,
+            'creator_id': user.creator_id
+        }, request=request, name='tour_admin.html'
     )

@@ -7,7 +7,7 @@ from  sqlalchemy.ext.asyncio import AsyncSession
 
 from db.database import get_session
 from db.models import PointMedia, PointsAudio
-from api.handlers import generate_hashed_filename, get_admin_id
+from api.handlers import generate_hashed_filename, get_creator_id
 from api.access_checkers import check_admin_rout_point_access
 
 
@@ -37,15 +37,15 @@ async def add_image(
         rout_point_id: int,
         image: UploadFile = File(...),
         session: AsyncSession = Depends(get_session),
-        admin_id: int = Depends(get_admin_id)
+        creator_id: int = Depends(get_creator_id)
 ):
-    if not admin_id:
+    if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     if not image:
         raise HTTPException(status_code=400, detail="No image provided")
 
-    have_access = await check_admin_rout_point_access(rout_point_id, admin_id, session)
+    have_access = await check_admin_rout_point_access(rout_point_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
@@ -68,15 +68,15 @@ async def add_audio(
         rout_point_id: int,
         audio: UploadFile = File(...),
         session: AsyncSession = Depends(get_session),
-        admin_id: int = Depends(get_admin_id)
+        creator_id: int = Depends(get_creator_id)
 ):
-    if not admin_id:
+    if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     if not audio:
         raise HTTPException(status_code=400, detail="No audio provided")
 
-    have_access = await check_admin_rout_point_access(rout_point_id, admin_id, session)
+    have_access = await check_admin_rout_point_access(rout_point_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
@@ -111,12 +111,12 @@ async def delete_image(
         rout_point_id: int,
         file_name: str,
         session: AsyncSession = Depends(get_session),
-        admin_id: int = Depends(get_admin_id)
+        creator_id: int = Depends(get_creator_id)
 ):
-    if not admin_id:
+    if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    have_access = await check_admin_rout_point_access(rout_point_id, admin_id, session)
+    have_access = await check_admin_rout_point_access(rout_point_id, creator_id, session)
 
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
@@ -131,12 +131,12 @@ async def delete_audio(
         rout_point_id: int,
         file_name: str,
         session: AsyncSession = Depends(get_session),
-        admin_id: int = Depends(get_admin_id)
+        creator_id: int = Depends(get_creator_id)
 ):
-    if not admin_id:
+    if not creator_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    have_access = await check_admin_rout_point_access(rout_point_id, admin_id, session)
+    have_access = await check_admin_rout_point_access(rout_point_id, creator_id, session)
     if not have_access:
         raise HTTPException(status_code=403, detail="Access denied: You do not own this route")
 

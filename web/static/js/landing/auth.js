@@ -69,15 +69,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const username = document.getElementById("creator-username").value.trim();
             const password = document.getElementById("creator-password").value.trim();
+            const email = document.getElementById("creator-email").value.trim();
 
             if (!username || !password) {
                 showMessage("Please fill in all fields!", "error");
                 return;
             }
 
-            const requestData = { username, password };
+            const requestData = {
+             username: username,
+             password: password,
+             is_creator: true,
+             email: email
+            };
 
-            fetch("/apiV1/auth/register-admin", {
+            fetch("/apiV1/auth/register-user", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(requestData)
@@ -127,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Redirect users & admins
                 setTimeout(() => {
-                    if (body.is_admin) {
+                    if (body.is_creator) {
                         window.location.href = "/tour-admin";
                     } else {
                         window.location.href = "/shop";
