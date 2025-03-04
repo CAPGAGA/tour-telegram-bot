@@ -16,6 +16,7 @@ python-telegram-bot
 
 # database
 pydantic
-sqlalchemy
+sqlalchemy[asyncio]
+asyncpg
 databases
 aiosqlite

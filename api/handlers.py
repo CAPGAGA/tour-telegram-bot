@@ -5,10 +5,12 @@ from math import radians, cos, sin, asin, sqrt
 
 import bcrypt
 import jwt
-from fastapi import Request
+from fastapi import Request, Depends
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.settings import SECRET_KEY, ALGORITHM
+from settings import SECRET_KEY, ALGORITHM
+from db.database import get_session
 from db.models import BaseUser
 
 
@@ -75,7 +77,10 @@ async def get_current_creator(request: Request):
         return None
 
 
-async def get_creator_id(request: Request):
+async def get_creator_id(
+        request: Request,
+        session: AsyncSession = Depends(get_session)
+):
     """
         Return creator id
     """

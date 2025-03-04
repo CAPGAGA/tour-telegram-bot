@@ -1,21 +1,28 @@
-FROM python:3.9-slim
+# Building base image to then split into web and bot container
+FROM python:3.9-slim as base_image
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update -y && apt -y upgrade && \
-    apt-get install -y gcc python3 python3-pip build-essential pkg-config
+# Update all package managers
+RUN apt-get update -y && apt -y upgrade
+RUN pip install pip --upgrade
 
-WORKDIR /app
+COPY requirements.txt .
 
-COPY requirements.txt ./
+RUN pip install --no-cache -r requirements.txt
 
-RUN pip3 install -r requirements.txt
+COPY ./settings.py .
 
-EXPOSE 8000
+# Copy needed file for api
+FROM base_image as web
 
-COPY . ./
+COPY ./api /api
+COPY ./db  /db
+COPY ./web /web
 
-COPY entrypoint.sh .
+# Copy needed files for bot
+FROM base_image as bot
 
-CMD bash -C 'entrypoint.sh'; 'bash'
+COPY ./bot /bot
+

@@ -4,14 +4,13 @@ import logging
 from datetime import datetime
 
 import aiohttp
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.database import get_session
 from db.models import Rout, BaseUser
 from api.handlers import create_payment_token
-from api.settings import PAYPAL_API_URL, PAYPAL_SECRET, PAYPAL_CLIENT_ID
+from settings import PAYPAL_API_URL, PAYPAL_SECRET, PAYPAL_CLIENT_ID
 
 logger = logging.getLogger(__name__)
 

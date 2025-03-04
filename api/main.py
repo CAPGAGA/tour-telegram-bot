@@ -11,7 +11,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.handlers import get_auth_token, get_current_creator
 from api.routs.creator import creator_rout_router
 from api.routs.auth_v2 import auth_router
-# from api.routs.crm_auth import admin_router
 from api.routs.media import point_media_router
 from api.routs.orders import order_router
 from api.routs.routs import rout_router
@@ -46,8 +45,6 @@ templates = Jinja2Templates(directory="web/templates")
 
 
 # base routs of api
-# deprecated
-# app.include_router(admin_router, prefix='/apiV1')
 app.include_router(creator_rout_router, prefix='/apiV1')
 app.include_router(auth_router, prefix='/apiV1')
 app.include_router(rout_router, prefix='/apiV1')
@@ -56,7 +53,7 @@ app.include_router(user_routs_router, prefix='/apiV1')
 app.include_router(point_media_router, prefix='/apiV1')
 app.include_router(order_router, prefix='/apiV1')
 
-# crm renders
+# functions to output pages
 @app.get('/', response_class=HTMLResponse)
 async def landing(
         request: Request,
@@ -65,7 +62,6 @@ async def landing(
         request=request,
         name='landing.html'
     )
-
 
 @app.get('/login', response_class=HTMLResponse)
 async def login_page(request: Request, auth_token: str = Depends(get_auth_token)):

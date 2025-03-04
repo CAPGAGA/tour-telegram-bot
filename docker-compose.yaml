@@ -1,0 +1,70 @@
+version: "3.4"
+
+services:
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    container_name: web
+    ports:
+      - "8000:80"
+    command: >
+      bash -c '
+        uvicorn api.main:app --host 0.0.0.0 --port 80
+      '
+    env_file:
+      - .env
+    volumes:
+      - ./web/media:/web/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      app_network:
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: bot
+    container_name: bot
+    command: >
+      bash -c '
+        python bot/main.py
+      '
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=.
+      - API_BASE_URL=http://web/apiV1
+    depends_on:
+      web:
+        condition: service_started
+    networks:
+      app_network:
+
+
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      app_network:
+
+volumes:
+  postgres_data:
+
+networks:
+  app_network:
+    driver: bridge
