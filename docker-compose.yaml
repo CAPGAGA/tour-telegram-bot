@@ -17,7 +17,6 @@ services:
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=m.gnatenko99@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      -
     ports:
       - "80:80"
       - "443:443"
@@ -73,7 +72,6 @@ services:
     env_file:
       - .env
     environment:
-      - PYTHONPATH=.
       - API_BASE_URL=http://web/apiV1
     depends_on:
       web:
