@@ -23,7 +23,6 @@ COPY ./api /app/api
 COPY ./db  /app/db
 COPY ./web /app/web
 
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "80"]
 
 # Copy needed files for bot
 FROM base_image as bot
@@ -33,5 +32,3 @@ ENV PYTHONPATH=.
 WORKDIR /app
 
 COPY ./bot /app/bot
-
-CMD ["python", "/app/bot/main.py"]
