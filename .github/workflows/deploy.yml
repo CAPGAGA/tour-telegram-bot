@@ -20,10 +20,17 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login --username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      - name: Build & Push Docker Images
+      # Build & Push Web Image
+      - name: Build & Push Web Image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/pocketour:latest -f Dockerfile .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/pocketour:latest
+          docker build --target web -t ${{ secrets.DOCKERHUB_USERNAME }}/pocketour:web-latest -f Dockerfile .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/pocketour:web-latest
+
+      # Build & Push Bot Image
+      - name: Build & Push Bot Image
+        run: |
+          docker build --target bot -t ${{ secrets.DOCKERHUB_USERNAME }}/pocketour:bot-latest -f Dockerfile .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/pocketour:bot-latest
 
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v0.1.10
@@ -43,4 +50,4 @@ jobs:
 
             echo "Restarting Docker containers..."
             docker compose down
-            docker compose up -d --remove-orphans
+            docker compose -f docker-compose.prod.yaml up -d --remove-orphans
