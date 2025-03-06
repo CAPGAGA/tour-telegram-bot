@@ -37,7 +37,7 @@ services:
       - "traefik.http.routers.web.rule=Host(`app.localhost`) || Host(`pocketour.online`)"
       - "traefik.http.services.web.loadbalancer.server.port=80"
       - "traefik.http.routers.web.entrypoints=websecure"
-      - "traefik.http.routers.web.certresolver=myresolver"
+      - "traefik.http.routers.web.tls.certresolver=myresolver"
     deploy:
       mode: replicated
       replicas: 3
