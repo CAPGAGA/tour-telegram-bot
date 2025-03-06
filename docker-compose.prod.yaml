@@ -1,0 +1,95 @@
+version: "3.4"
+
+services:
+
+  reverse-proxy:
+    image: traefik:3.1
+    labels:
+      - "traefik.enable=true"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "-entrypoints.web.address=:80"
+      - "-entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "-entryPoints.web.http.redirections.entrypoint.scheme=https"
+      - "-entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=m.gnatenko99@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      app_network:
+
+  web:
+    image: capgaga/pocketour:web-latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`pocketour.online`)"
+      - "traefik.http.services.web.loadbalancer.server.port=80"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.tls.certresolver=myresolver"
+    deploy:
+      mode: replicated
+      replicas: 3
+    command: >
+      bash -c '
+        uvicorn api.main:app --host 0.0.0.0 --port 80
+      '
+    env_file:
+      - .env
+    volumes:
+      - ./web/media:/web/media
+    depends_on:
+      - postgres
+    networks:
+      app_network:
+
+  bot:
+    image: capgaga/pocketour:bot-latest
+    labels:
+      - "traefik.enable=false"
+    container_name: bot
+    command: >
+      bash -c '
+        python bot/main.py
+      '
+    env_file:
+      - .env
+    environment:
+      - API_BASE_URL=http://web/apiV1
+    depends_on:
+      - web
+    networks:
+      app_network:
+
+
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      app_network:
+
+volumes:
+  postgres_data:
+  letsencrypt:
+
+networks:
+  app_network:
+    driver: bridge
