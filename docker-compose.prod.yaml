@@ -40,12 +40,13 @@ services:
       replicas: 3
     command: >
       bash -c '
-        uvicorn api.main:app --host 0.0.0.0 --port 80 --proxy-headers
+        uvicorn api.main:app --host 0.0.0.0 --port 80 --proxy-headers --ssl-keyfile /etc/letsencrypt/live/pocketour.online/privkey.pem --ssl-certfile /etc/letsencrypt/live/pocketour.online/fullchain.pem
       '
     env_file:
       - .env
     volumes:
       - ./web/media:/web/media
+      - letsencrypt:/etc/letsencrypt
     depends_on:
       - postgres
     networks:
