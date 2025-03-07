@@ -156,7 +156,7 @@ async def show_tour_point_materials(
     audios = point.get("audio", [])
     if isinstance(audios, list) and audios:
         for audio in audios:
-            audio_path =  os.path.join(BASE_DIR, 'crm/media/audio', audio)
+            audio_path =  os.path.join(BASE_DIR, 'web/media/audio', audio)
             audio_name = f"Audio for point {point.get('id')}"
             await context.bot.send_audio(
                 chat_id,
@@ -173,7 +173,7 @@ async def show_tour_point_materials(
     if isinstance(images, list) and images:
         media_group = [
             InputMediaPhoto(
-                media=open(os.path.join(BASE_DIR, 'crm/media/images', img), 'rb')
+                media=open(os.path.join(BASE_DIR, 'web/media/images', img), 'rb')
             ) for img in images
         ]
         await context.bot.send_media_group(chat_id, media_group, protect_content=True)

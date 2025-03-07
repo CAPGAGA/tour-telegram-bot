@@ -3,13 +3,14 @@ import os
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
 from pydantic import BaseModel
 from sqlalchemy import select, delete
-from  sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.database import get_session
 from db.models import PointMedia, PointsAudio
 from api.handlers import generate_hashed_filename, get_creator_id
 from api.access_checkers import check_creator_rout_point_access
 
+from settings import BASE_DIR
 
 
 point_media_router = APIRouter(
@@ -17,8 +18,8 @@ point_media_router = APIRouter(
     tags=["point-media"],
 )
 
-UPLOAD_IMAGE_DIR = "web/media/images"
-UPLOAD_AUDIO_DIR = "web/media/audio"
+UPLOAD_IMAGE_DIR = os.path.join(BASE_DIR, "web/media/images")
+UPLOAD_AUDIO_DIR = os.path.join(BASE_DIR, "web/media/audio")
 
 os.makedirs(UPLOAD_IMAGE_DIR, exist_ok=True)
 os.makedirs(UPLOAD_AUDIO_DIR, exist_ok=True)

@@ -46,7 +46,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./web/media:/web/media
+      - shared_media:/web/media
       - letsencrypt:/etc/letsencrypt
     depends_on:
       - postgres
@@ -68,6 +68,8 @@ services:
       - API_BASE_URL=http://web/apiV1
     depends_on:
       - web
+    volumes:
+      - shared_media:/web/media
     networks:
       app_network:
 
@@ -93,6 +95,7 @@ services:
 volumes:
   postgres_data:
   letsencrypt:
+  shared_media:
 
 networks:
   app_network:
