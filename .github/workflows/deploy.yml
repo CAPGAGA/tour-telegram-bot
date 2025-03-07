@@ -46,7 +46,7 @@ jobs:
             git pull origin main
 
             echo "Pulling latest Docker image..."
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/pocketour:latest
+            docker compose -f docker-compose.prod.yaml pull
 
             echo "Restarting Docker containers..."
             docker compose down

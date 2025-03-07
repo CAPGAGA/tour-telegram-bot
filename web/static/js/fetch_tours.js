@@ -4,8 +4,8 @@ import { openTourPointModal } from "./tour_points_modals.js"
 import { addVizTogglerCheck, updateTourImage } from "./utils.js"
 
 export function fetchTours() {
-    const adminId = document.getElementById("username").getAttribute("data-admin-id");
-    fetch(`/apiV1/admin_rout/get-admin-rout?admin_id=${adminId}`)
+    const creatorId = document.getElementById("username").getAttribute("data-creator-id");
+    fetch(`/apiV1/creator_rout/get-creator-rout?creator_id=${creatorId}`)
         .then(response => response.json())
         .then(data => {
             const toursGrid = document.getElementById("tours-grid");
@@ -32,7 +32,7 @@ export function fetchTours() {
                 toursGrid.appendChild(tourCard);
             });
         })
-        .catch(error => showMessage(error.message, "error"));
+        .catch(error => console.log(error));
 }
 
 export function fetchTour(tourId) {

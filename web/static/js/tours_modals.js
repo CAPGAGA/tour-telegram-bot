@@ -35,7 +35,7 @@ export function closeTourDetailModal() {
 
 document.getElementById("new-tour-form").addEventListener("submit", function(event) {
     event.preventDefault();
-    const adminId = document.getElementById("username").getAttribute("data-admin-id"); // Replace with dynamic admin ID if needed
+    const creatorId = document.getElementById("username").getAttribute("data-creator-id"); // Replace with dynamic admin ID if needed
     const requestData = {
         rout_name: document.getElementById("tour-name").value,
         rout_description: document.getElementById("tour-description").value,
@@ -52,12 +52,12 @@ document.getElementById("new-tour-form").addEventListener("submit", function(eve
     .then(response => response.json())
     .then(data => {
         const routId = data.id;
-        return fetch("/apiV1/admin_rout/link-rout", {
+        return fetch("/apiV1/creator_rout/link-rout", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ admin_id: adminId, rout_id: routId }),
+            body: JSON.stringify({ creator_id: creatorId, rout_id: routId }),
         });
     })
     .then(response => response.json())

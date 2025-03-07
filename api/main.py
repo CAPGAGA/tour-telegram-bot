@@ -20,6 +20,8 @@ from api.routs.users import user_routs_router
 from db.database import Base, engine, get_session
 from db.models import Creator, BaseUser
 
+from settings import DEBUG
+
 logger = logging.getLogger(__name__)
 
 @asynccontextmanager
@@ -27,13 +29,16 @@ async def lifespan(app: FastAPI):
     """
      Api startup function
     """
-    try:
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-        logger.info('All table are created! Database is up to date!')
-    except Exception as e:
-        logger.error(f'Error while starting api: {e}')
-
+    if DEBUG:
+        logger.info('Running with debug mode')
+        try:
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            logger.info('All table are created! Database is up to date!')
+        except Exception as e:
+            logger.error(f'Error while starting api: {e}')
+    else:
+        logger.info('Running in production mode')
     yield
 
 
