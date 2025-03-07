@@ -58,6 +58,10 @@
     cursor: pointer;
 }
 
+.navbar-menu button:disabled, button[disabled] {
+    cursor: not-allowed;
+}
+
 .navbar-user {
     display: flex;
     align-items: center;
