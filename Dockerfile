@@ -22,6 +22,8 @@ WORKDIR /app
 COPY ./api /app/api
 COPY ./db  /app/db
 COPY ./web /app/web
+COPY ./alembic /app/alembic
+COPY ./alembic.ini /app/alembic.ini
 
 
 # Copy needed files for bot
