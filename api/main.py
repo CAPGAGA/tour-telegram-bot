@@ -18,7 +18,7 @@ from api.routs.rout_points import rout_points_router
 from api.routs.users import user_routs_router
 
 from db.database import Base, engine, get_session
-from db.models import Creator, BaseUser
+from db.models import BaseUser
 
 from settings import DEBUG
 
