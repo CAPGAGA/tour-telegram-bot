@@ -46,7 +46,7 @@ services:
     env_file:
       - .env
     volumes:
-      - shared_media:/web/media
+      - shared_media:/app/web/media
       - letsencrypt:/etc/letsencrypt
     depends_on:
       - postgres
@@ -69,7 +69,7 @@ services:
     depends_on:
       - web
     volumes:
-      - shared_media:/web/media
+      - shared_media:/app/web/media
     networks:
       app_network:
 
