@@ -42,7 +42,7 @@ async def link_rout_to_creator(
 
     return {"creator_id": new_admin_rout.creator_id, "routs": [rout]}
 
-@creator_rout_router.get("/get-admin-rout", response_model=CreatorRoutResponse)
+@creator_rout_router.get("/get-creator-rout", response_model=CreatorRoutResponse)
 async def get_admin_rout(
         creator_id: int,
         session: AsyncSession = Depends(get_session)
