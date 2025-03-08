@@ -7,10 +7,11 @@ import aiohttp
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from telegram import LabeledPrice
 
 from db.models import Rout, BaseUser
 from api.handlers import create_payment_token
-from settings import PAYPAL_API_URL, PAYPAL_SECRET, PAYPAL_CLIENT_ID
+from settings import PAYPAL_API_URL, PAYPAL_SECRET, PAYPAL_CLIENT_ID, TELEGRAM_PAYMENT_PROVIDER, TELEGRAM_CURRENCY
 
 logger = logging.getLogger(__name__)
 
@@ -117,8 +118,12 @@ class InvoiceConstructor:
                 order_data = await response.json()
                 logger.info(order_data)
                 approval_link = next(
-                    (link["href"] for link in order_data["links"] if link["rel"] == "payer-action"), None)
-                logger.info(approval_link)
+                    (
+                        link["href"] for link in order_data["links"] if link["rel"] == "payer-action"
+                    ),
+                    None
+                )
+
                 if not approval_link:
                     raise HTTPException(status_code=500, detail="Failed to generate PayPal link")
 
@@ -128,3 +133,45 @@ class InvoiceConstructor:
                     "amount": tour_data.base_price,
                     "payment_method": "paypal"
                 }
+
+
+    @staticmethod
+    async def return_invoice_telegram_json(
+            user_id: int,
+            tour_id: int,
+            session: AsyncSession
+    ) -> dict:
+        """
+        Construct an invoice for Telegram payments
+        """
+        # Get data from db
+        tour_data = await InvoiceConstructor._fetch_tour_details(tour_id, session)
+        user_data = await InvoiceConstructor._fetch_user_details(user_id, session)
+
+        if not tour_data or not user_data:
+            raise HTTPException(status_code=500, detail="Invoice generation failed")
+
+        invoice_id = f"TG-ORD-{tour_id}-{user_id}-{int(datetime.utcnow().timestamp())}"
+
+        prices = [LabeledPrice(label=tour_data.rout_name, amount=int(tour_data.base_price * 100))]
+
+        invoice_payload = {
+            "chat_id": user_id,
+            "title": f"{tour_data.rout_name} Tour",
+            "description": tour_data.rout_description[:200],  # Telegram limits description length
+            "payload": invoice_id,  # Unique identifier for tracking payments
+            "provider_token": TELEGRAM_PAYMENT_PROVIDER,
+            "currency": TELEGRAM_CURRENCY,
+            "prices": prices,
+            "start_parameter": f"buy_tour_{tour_id}",
+            "need_email": True,
+            "need_phone_number": False,
+        }
+
+        return {
+            "invoice_id": invoice_id,
+            "invoice_payload": invoice_payload,
+            "amount": tour_data.base_price,
+            "payment_method": "telegram"
+        }
+

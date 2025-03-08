@@ -17,6 +17,8 @@ from api.routs.routs import rout_router
 from api.routs.rout_points import rout_points_router
 from api.routs.users import user_routs_router
 
+from api.sitemap import sitemap
+
 from db.database import Base, engine, get_session
 from db.models import BaseUser
 
@@ -57,6 +59,10 @@ app.include_router(rout_points_router, prefix='/apiV1')
 app.include_router(user_routs_router, prefix='/apiV1')
 app.include_router(point_media_router, prefix='/apiV1')
 app.include_router(order_router, prefix='/apiV1')
+
+# util urls
+app.mount('/sitemap.xml', sitemap)
+
 
 # functions to output pages
 @app.get('/', response_class=HTMLResponse)
