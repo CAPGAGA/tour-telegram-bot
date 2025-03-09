@@ -109,6 +109,16 @@ class Rout(BaseTable):
     is_displayed: Mapped[bool] = mapped_column(Boolean, default=False)
     image: Mapped[str] = mapped_column(String, nullable=True)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'rout_name': self.rout_name,
+            'rout_description': self.rout_description,
+            'base_price': self.base_price,
+            'is_displayed': self.is_displayed,
+            'image': self.image,
+        }
+
 
 class UserRout(BaseTable):
     """

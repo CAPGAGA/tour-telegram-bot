@@ -48,9 +48,9 @@ def decode_payment_token(token: str):
 
         return user_id, tour_id, invoice_id
     except jwt.PyJWTError:
-        return None, None
+        return None, None, None
     except TypeError:
-        return None, None
+        return None, None, None
 
 async def get_auth_token(request: Request):
     """

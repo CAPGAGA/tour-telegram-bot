@@ -153,24 +153,32 @@ class InvoiceConstructor:
 
         invoice_id = f"TG-ORD-{tour_id}-{user_id}-{int(datetime.utcnow().timestamp())}"
 
-        prices = [LabeledPrice(label=tour_data.rout_name, amount=int(tour_data.base_price * 100))]
-
         invoice_payload = {
-            "chat_id": user_id,
             "title": f"{tour_data.rout_name} Tour",
             "description": tour_data.rout_description[:200],  # Telegram limits description length
             "payload": invoice_id,  # Unique identifier for tracking payments
             "provider_token": TELEGRAM_PAYMENT_PROVIDER,
             "currency": TELEGRAM_CURRENCY,
-            "prices": prices,
+            "prices": {
+                'label': tour_data.rout_name,
+                'price': tour_data.base_price,
+            },
             "start_parameter": f"buy_tour_{tour_id}",
             "need_email": True,
             "need_phone_number": False,
+            "send_email_to_provider": True,
+            "send_phone_number_to_provider": False,
+            "is_flexible": False,
+            "protect_content": True,
+
         }
+
+        order_sign = create_payment_token(user_id, tour_id, invoice_id)
 
         return {
             "invoice_id": invoice_id,
             "invoice_payload": invoice_payload,
+            "order_sign": order_sign,
             "amount": tour_data.base_price,
             "payment_method": "telegram"
         }
