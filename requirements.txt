@@ -10,6 +10,7 @@ uvicorn
 bcrypt
 pyjwt
 jinja2
+asgi-sitemaps==1.*
 
 # telegram bot
 python-telegram-bot

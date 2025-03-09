@@ -11,7 +11,11 @@ from bot.payment.utils import fetch_tour_payment_details
 API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000/apiV1")
 
 @user_auth
-async def render_paypal_payment_menu(update: Update, context: CallbackContext, user: dict):
+async def render_paypal_payment_menu(
+        update: Update,
+        context: CallbackContext,
+        user: dict
+):
     query = update.callback_query
     await query.answer()
 
