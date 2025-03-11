@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         <p>${tour.rout_description.substring(0, 100)}...</p>
                     </div>
                     <footer class="card-footer">
-                        <a href="tour/${tour.id}" class="card-footer-item" data-tour-id="${tour.id}">Buy</a>
+                        <a href="tour/${tour.id}" class="card-footer-item" data-tour-id="${tour.id}">Learn More</a>
                     </footer>
                 </div>
             `;

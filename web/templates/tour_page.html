@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', path='logo/favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='logo/favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='logo/favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', path='logo/favicon/site.webmanifest') }}">
+    <title>PockeTour: {{ rout.rout_name }}</title>
+    <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/bulma.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/tour_page/rout_points.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YH9DBEETFV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YH9DBEETFV');
+    </script>
+</head>
+<body>
+    {% include "modules/landing/navbar.html" %}
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <!-- Image Section -->
+                <div class="column is-half">
+                    <figure class="image is-4by3">
+                        {% if rout.image %}
+                        <img id="tour-image" src="/media/images/{{ rout.image }}" alt="Tour Image">
+                        {% else %}
+                        <img id="tour-image" src="{{ url_for('static', path='images/placeholder-image.jpg') }}" alt="Tour Image">
+                        {% endif %}
+                    </figure>
+                </div>
+                <!-- Tour Info Section -->
+                <div class="column is-half">
+                    <h1 class="title" id="tour-name">{{ rout.rout_name }}</h1>
+                    <p class="subtitle" id="tour-price">${{ rout.base_price }}</p>
+                    <p id="tour-description">{{ rout.rout_description }}</p>
+                    <br>
+                    <div class="buttons">
+                        <button class="button is-success" id="buy-for-me">Buy for Me</button>
+                        <button class="button is-info" id="buy-for-friend">Gift to Friend</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Tour Points -->
+            <div class="box">
+                <h2 class="title">Tour Points</h2>
+                <div id="tour-points">
+                    {% for rout in rout_points[:3] %}
+                    <div class="box">
+                        <p><strong>{{ rout.point_text }}</strong></p>
+                        <div class="columns is-vcentered">
+                            <!-- Images Section -->
+                            <div class="column is-half">
+                                {% if rout.image %}
+                                <div class="grid">
+                                    {% for image in rout.image %}
+                                    <div class="cell">
+                                        <figure class="image">
+                                            <img src="/{{ image }}" alt="Tour Image" class="tour-thumbnail">
+                                        </figure>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <!-- Audio Section -->
+                            <div class="column is-half">
+                                {% if rout.audio %}
+                                    <div class="audio-gallery">
+                                        {% for audio in rout.audio %}
+                                        <button class="button is-info is-small play-audio" data-audio="/{{ audio }}">
+                                            ▶ Play Audio
+                                        </button>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% for rout in rout_points[3:] %}
+                    <div class="box">
+                        <p><strong>{{ rout.point_text }}</strong></p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+    {% include "modules/landing/footer.html" %}
+</body>
+<script type="module" src="{{ url_for('static', path='js/tour_page/audio.js') }}"></script>
+</html>
