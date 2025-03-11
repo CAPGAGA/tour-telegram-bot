@@ -14,14 +14,14 @@ from api.routs.auth_v2 import auth_router
 from api.routs.media import point_media_router
 from api.routs.orders import order_router
 from api.routs.routs import rout_router
-from api.routs.rout_points import rout_points_router
+from api.routs.rout_points import rout_points_router, get_rout
 from api.routs.search import search_router
 from api.routs.users import user_routs_router
 
 from api.sitemap import sitemap
 
 from db.database import Base, engine, get_session
-from db.models import BaseUser
+from db.models import BaseUser, Rout
 
 from settings import DEBUG
 
@@ -84,8 +84,36 @@ async def shop(
         request=request,
         name='shop.html'
     )
+
+@app.get('/tour/{rout_id}')
+async def tour_page(
+        request: Request,
+        rout_id: int,
+        user: str = Depends(get_current_creator),
+        session: AsyncSession = Depends(get_session)
+):
+    query = select(Rout).where(Rout.id == rout_id)
+    result = await session.execute(query)
+    rout = result.scalars().first()
+    if not rout:
+        raise HTTPException(status_code=404, detail="Rout not found")
+
+    rout_points = await get_rout(rout_id, session)
+
+    return templates.TemplateResponse(
+        request=request,
+        context={
+            'rout': rout.to_dict(),
+            'rout_points': rout_points
+        },
+        name='tour_page.html'
+    )
+
 @app.get('/login', response_class=HTMLResponse)
-async def login_page(request: Request, auth_token: str = Depends(get_auth_token)):
+async def login_page(
+        request: Request,
+        auth_token: str = Depends(get_auth_token)
+):
     if not auth_token:
         return templates.TemplateResponse(
             request=request, name='login.html'
