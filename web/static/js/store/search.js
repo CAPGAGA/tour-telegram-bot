@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function fetchTours() {
         let queryParams = new URLSearchParams({
             search: searchInput.value || "",
+//            Not implemented yet
 //            city: cityInput.value || "",
 //            country: countryInput.value || "",
 //            max_price: maxPriceInput.value || "",
