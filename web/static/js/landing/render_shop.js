@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", function () {
         data.slice(0, 3).forEach(tour => {
             const tourCard = document.createElement("div");
             tourCard.className = "column is-one-third";
-            console.log(data)
             tourCard.innerHTML = `
                 <div class="card">
                     <div class="card-image">
