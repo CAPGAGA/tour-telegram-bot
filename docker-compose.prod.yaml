@@ -10,6 +10,7 @@ services:
       - "--accesslog=true"
       - "--accesslog.format=json"
       - "--log.level=INFO"
+      - "--log.filePath=/var/log/traefik/traefik.log"
       - "--api.insecure=false"
       - "--providers.docker"
       - "--providers.docker.exposedbydefault=false"
@@ -25,7 +26,7 @@ services:
       - "443:443"
       - "8080:8080"
     volumes:
-      - /var/log/traefik:/var/log
+      - /var/log/traefik/traefik.log:/var/log/traefik/traefik.log
       - letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
