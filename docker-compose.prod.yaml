@@ -7,7 +7,10 @@ services:
     labels:
       - "traefik.enable=true"
     command:
-      - "--api.insecure=true"
+      - "--accesslog=true"
+      - "--accesslog.format=json"
+      - "--log.level=INFO"
+      - "--api.insecure=false"
       - "--providers.docker"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
@@ -22,6 +25,7 @@ services:
       - "443:443"
       - "8080:8080"
     volumes:
+      - /var/log/traefik:/var/log
       - letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock
     networks:

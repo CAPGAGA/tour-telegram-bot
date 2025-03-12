@@ -164,6 +164,7 @@ cython_debug/
 /prod.db
 /crm/media/images/*
 /crm/media/audio/*
+/web/media/*
 
 example.com+5-key.pem
 example.com+5.pem
