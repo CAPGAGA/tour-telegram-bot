@@ -144,6 +144,7 @@ class RoutPoint(BaseTable):
     rout_id: Mapped[int] = mapped_column(ForeignKey('rout.id'))
     latitude: Mapped[float] = mapped_column(Float, nullable=False)
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
+    point_name: Mapped[str] = mapped_column(String, nullable=True)
     point_text: Mapped[str] = mapped_column(Text, nullable=True)
 
 
