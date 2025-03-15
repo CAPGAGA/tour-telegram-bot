@@ -1,5 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
+from typing import Optional
 
 from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse
@@ -13,8 +14,8 @@ from api.routs.creator import creator_rout_router
 from api.routs.auth_v2 import auth_router
 from api.routs.media import point_media_router
 from api.routs.orders import order_router
-from api.routs.routs import rout_router
-from api.routs.rout_points import rout_points_router, get_rout
+from api.routs.routs import rout_router, get_rout as get_rout_without_points
+from api.routs.rout_points import rout_points_router, get_rout as get_rout_with_points
 from api.routs.search import search_router
 from api.routs.users import user_routs_router
 
@@ -98,7 +99,7 @@ async def tour_page(
     if not rout:
         raise HTTPException(status_code=404, detail="Rout not found")
 
-    rout_points = await get_rout(rout_id, session)
+    rout_points = await get_rout_with_points(rout_id, session)
 
     return templates.TemplateResponse(
         request=request,
@@ -107,6 +108,30 @@ async def tour_page(
             'rout_points': rout_points
         },
         name='tour_page.html'
+    )
+
+@app.get('/tour/{rout_id}/buy')
+async def tour_purchase_page(
+        request: Request,
+        rout_id: int,
+        user: Optional[tuple] = Depends(get_current_creator),
+        session: AsyncSession = Depends(get_session)
+):
+    if not user:
+        return RedirectResponse(url="/login?next=/tour/{rout_id}/buy")
+
+    rout = await get_rout_without_points(
+        rout_id=rout_id,
+        session=session
+    )
+
+    return templates.TemplateResponse(
+        request=request,
+        context={
+            "user_id": user[0],
+            "tour": rout
+        },
+        name='checkout.html'
     )
 
 @app.get('/login', response_class=HTMLResponse)

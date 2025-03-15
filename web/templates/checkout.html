@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='logo/favicon/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='logo/favicon/favicon-16x16.png') }}">
     <link rel="manifest" href="{{ url_for('static', path='logo/favicon/site.webmanifest') }}">
-    <title>PockeTour</title>
+    <title>PockeTour: Checkout for {{ tour.rout_name }}</title>
     <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/bulma.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/revolver-msg.css') }}" rel="stylesheet">
@@ -26,18 +26,27 @@
     </script>
 </head>
 <body>
-
 {% include "modules/landing/navbar.html" %}
+  <section class="section">
+      <div class="container">
+          <h1 class="title">Checkout</h1>
+          <div class="box">
+              <h2 class="subtitle">Tour Details</h2>
+              <p><strong>Tour:</strong> <span id="tour-name">{{ tour.rout_name }}</span></p>
+              <p><strong>Price:</strong> <span id="tour-price">{{ tour.base_price }}</span> USD</p>
+              <p><strong>Description:</strong> <span id="tour-description">{{ tour.rout_description }}</span></p>
+          </div>
 
-{% include "modules/landing/hero_section.html" %}
-
-{% include "modules/landing/features.html" %}
-
-{% include "modules/landing/mini_shop.html" %}
-
+          <div class="box">
+              <h2 class="subtitle">Choose Payment Method</h2>
+              <button class="button is-primary" id="pay-with-paypal" data-user-id="{{ user_id }}" data-tour-id="{{ tour.id }}">Pay with PayPal</button>
+<!--              <button class="button is-link" id="pay-with-other">Other Payment Methods</button>-->
+          </div>
+      </div>
+  </section>
 {% include "modules/landing/footer.html" %}
-
 </body>
-<script type="module" src="{{ url_for('static', path='js/landing/render_shop.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/revolver.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/landing/utils.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/checkout/getInvoice.js') }}"></script>
 </html>
