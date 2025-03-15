@@ -10,6 +10,7 @@
     <link href="{{ url_for('static', path='css/revolver-msg.css') }}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
+{% include "modules/landing/navbar.html" %}
 <body>
     <section class="hero is-fullheight">
         <div class="hero-body">
@@ -41,7 +42,9 @@
             </div>
         </div>
     </section>
+{% include "modules/landing/footer.html" %}
 </body>
 <script type="module" src="{{ url_for('static', path='js/landing/auth.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/revolver.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/landing/utils.js') }}"></script>
 </html>

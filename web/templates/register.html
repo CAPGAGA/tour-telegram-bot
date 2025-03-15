@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+{% include "modules/landing/navbar.html" %}
     <section class="hero is-fullheight">
         <div class="hero-body">
             <div class="container has-text-centered">
@@ -78,8 +79,9 @@
             </div>
         </div>
     </section>
+{% include "modules/landing/footer.html" %}
 </body>
 <script type="module" src="{{ url_for('static', path='js/revolver.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/landing/auth.js') }}"></script>
-<!--<script type="module" src="{{ url_for('static', path='js/register.js') }}"></script>-->
+<script type="module" src="{{ url_for('static', path='js/landing/utils.js') }}"></script>
 </html>
