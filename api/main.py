@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.handlers import get_auth_token, get_current_creator
+from api.handlers import get_auth_token, get_current_creator, get_current_user
 from api.routs.creator import creator_rout_router
 from api.routs.auth_v2 import auth_router
 from api.routs.media import point_media_router
@@ -17,7 +17,7 @@ from api.routs.orders import order_router
 from api.routs.routs import rout_router, get_rout as get_rout_without_points
 from api.routs.rout_points import rout_points_router, get_rout as get_rout_with_points
 from api.routs.search import search_router
-from api.routs.users import user_routs_router
+from api.routs.users import user_routs_router, get_user_routs
 
 from api.sitemap import sitemap
 
@@ -71,18 +71,22 @@ app.mount('/sitemap.xml', sitemap)
 @app.get('/', response_class=HTMLResponse)
 async def landing(
         request: Request,
+        user: str = Depends(get_current_creator)
 ):
     return templates.TemplateResponse(
         request=request,
+        context={"user_id": user[0], "is_creator": user[1]},
         name='landing.html'
     )
 
 @app.get('/shop')
 async def shop(
-        request: Request
+        request: Request,
+        user: str = Depends(get_current_creator)
 ):
     return templates.TemplateResponse(
         request=request,
+        context={"user_id": user[0], "is_creator": user[1]},
         name='shop.html'
     )
 
@@ -134,6 +138,28 @@ async def tour_purchase_page(
         name='checkout.html'
     )
 
+@app.get('/my-tours', response_class=HTMLResponse)
+async def my_tours_page(
+        request: Request,
+        user: Optional[tuple] = Depends(get_current_creator),
+        session: AsyncSession = Depends(get_session)
+):
+    if not user:
+        return RedirectResponse(url='login?next=/my-tours')
+    try:
+        user_owned_routs = await get_user_routs(user_id=user[0], session=session)
+    except:
+        user_owned_routs = []
+
+    return templates.TemplateResponse(
+        request=request,
+        context={
+            "user_id": user[0],
+            "routs": user_owned_routs
+        },
+        name='my_tours_page.html'
+    )
+
 @app.get('/login', response_class=HTMLResponse)
 async def login_page(
         request: Request,
@@ -146,7 +172,7 @@ async def login_page(
     return RedirectResponse(url="/tour-admin")
 
 @app.get('/register', response_class=HTMLResponse)
-async def login_page(
+async def register_page(
         request: Request,
         auth_token: str = Depends(get_auth_token)
 ):
