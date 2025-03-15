@@ -15,7 +15,14 @@
             <div class="navbar-end">
                 <a class="navbar-item" href="/for-creators">For Creators</a>
                 <a class="navbar-item" href="/shop">Shop</a>
+                {% if user_id %}
+                <a class="navbar-item" href="/my-tours">My Tours</a>
+                    {% if is_creator %}
+                        <a class="navbar-item" href="/tour-admin">Creator's cabinet</a>
+                    {% endif %}
+                {% else %}
                 <a class="navbar-item" href="/login">Login</a>
+                {% endif %}
             </div>
         </div>
     </div>

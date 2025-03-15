@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', path='logo/favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='logo/favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='logo/favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', path='logo/favicon/site.webmanifest') }}">
+    <title>PockeTour: Your Tours</title>
+    <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/bulma.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/revolver-msg.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YH9DBEETFV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YH9DBEETFV');
+    </script>
+</head>
+<body>
+{% include "modules/landing/navbar.html" %}
+<section class="section">
+    <div class="container">
+        <h1 class="title">🎟️ My Purchased Tours</h1>
+        {% if routs %}
+        <div class="columns is-multiline">
+            {% for tour in routs %}
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-image">
+                        <figure class="image is-1by1">
+                            <img src="media/images/{{ tour.image }}" alt="{{ tour.rout_name }}">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <p class="title is-4">{{ tour.rout_name }}</p>
+                        <p>{{ tour.rout_description[:100] }}...</p>
+                        <br>
+                        <a href="/tour/{{ tour.id }}/web-tour" class="button is-primary">Start Tour</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- No Tours Message -->
+        <div class="notification has-text-centered">
+            <p class="title is-5">Nothing here yet...</p>
+            <p class="subtitle is-6">Start exploring by purchasing your first tour!</p>
+            <a href="/shop" class="button is-info is-medium">🛒 Browse Tours</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% include "modules/landing/footer.html" %}
+</body>
+</html>

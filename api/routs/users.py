@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -30,6 +32,7 @@ class DetailedUserRoutResponse(BaseModel):
     rout_name: str
     rout_description: str
     base_price: float
+    image: Optional[str] = None
     is_displayed: bool
 
 
@@ -71,6 +74,7 @@ async def get_user_routs(
                 rout_name=user_rout.Rout.rout_name,
                 rout_description=user_rout.Rout.rout_description,
                 base_price=user_rout.Rout.base_price,
+                image=user_rout.Rout.image,
                 is_displayed=user_rout.Rout.is_displayed
             )
         )

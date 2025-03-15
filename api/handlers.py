@@ -58,6 +58,24 @@ async def get_auth_token(request: Request):
     """
     return request.cookies.get('auth_token')
 
+async def get_current_user(request: Request):
+    """
+        Return base user info
+    """
+
+    token = request.cookies.get("auth_token")
+
+    if not token:
+        return None
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: int = payload.get("user_id")
+        return user_id
+    except jwt.PyJWTError:
+        return None
+
+
 async def get_current_creator(request: Request):
     """
         Return base creator info
