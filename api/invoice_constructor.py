@@ -73,6 +73,7 @@ class InvoiceConstructor:
                     raise HTTPException(status_code=500, detail='Failed to authenticate with PayPal')
                 token_data = await response.json()
                 access_token = token_data["access_token"]
+
             order_sign = create_payment_token(user_id, tour_id, invoice_id)
             # Create PayPal Order
             headers = {

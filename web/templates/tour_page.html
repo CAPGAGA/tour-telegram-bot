@@ -11,6 +11,7 @@
     <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/bulma.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/tour_page/rout_points.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/revolver-msg.css') }}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,8 +48,8 @@
                     <p id="tour-description">{{ rout.rout_description }}</p>
                     <br>
                     <div class="buttons">
-                        <button class="button is-success" id="buy-for-me">Buy for Me</button>
-                        <button class="button is-info" id="buy-for-friend">Gift to Friend</button>
+                        <a class="button is-success" id="buy-for-me" href="/tour/{{ rout.id }}/buy?target=self">Buy for Me</a>
+                        <a class="button is-info" id="buy-for-friend" href="/tour/{{ rout.id }}/buy?target=friend">Gift to Friend</a>
                     </div>
                 </div>
             </div>

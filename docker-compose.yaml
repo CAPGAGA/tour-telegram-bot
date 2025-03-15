@@ -6,6 +6,7 @@ services:
     image: traefik:3.1
     labels:
       - "traefik.enable=true"
+      - "traefik.http.routers.reverse-proxy.rule=Host(`proxy.localhost`)"
     command:
       - "--api.insecure=true"
       - "--providers.docker"
