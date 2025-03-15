@@ -21,7 +21,7 @@ async def render_paypal_payment_menu(
 
     tour_id = int(query.data.split("_")[-1])
     method = query.data.split("_")[-2]
-    user_id = user.get('id')
+    user_id = user.get('user_id')
 
     invoice_data = await fetch_tour_payment_details(
         tour_id=tour_id,
