@@ -75,7 +75,7 @@ async def landing(
 ):
     return templates.TemplateResponse(
         request=request,
-        context={"user_id": user[0], "is_creator": user[1]} if user else None,
+        context={"user_id": user[0], "is_creator": user[1]} if user else {},
         name='landing.html'
     )
 
@@ -86,7 +86,7 @@ async def shop(
 ):
     return templates.TemplateResponse(
         request=request,
-        context={"user_id": user[0], "is_creator": user[1]} if user else None,
+        context={"user_id": user[0], "is_creator": user[1]} if user else {},
         name='shop.html'
     )
 
@@ -154,7 +154,7 @@ async def my_tours_page(
     return templates.TemplateResponse(
         request=request,
         context={
-            "user_id": user[0] if user else None,
+            "user_id": user[0],
             "routs": user_owned_routs
         },
         name='my_tours_page.html'
