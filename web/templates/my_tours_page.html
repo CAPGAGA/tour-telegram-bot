@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', path='logo/favicon/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='logo/favicon/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='logo/favicon/favicon-16x16.png') }}">
@@ -61,7 +63,18 @@
     </div>
 </section>
 {% include "modules/landing/footer.html" %}
+
+<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/static/js/pwa/sw.js")
+        .then(() => console.log("Service Worker Registered"))
+        .catch(err => console.error("Service Worker Registration Failed", err));
+}
+</script>
+
 </body>
 <script type="module" src="{{ url_for('static', path='js/revolver.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/landing/utils.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/pwa/sw.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/pwa/installPWA.js') }}"></script>
 </html>
