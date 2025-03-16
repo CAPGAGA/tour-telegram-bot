@@ -71,22 +71,22 @@ app.mount('/sitemap.xml', sitemap)
 @app.get('/', response_class=HTMLResponse)
 async def landing(
         request: Request,
-        user: str = Depends(get_current_creator)
+        user: Optional[tuple] = Depends(get_current_creator)
 ):
     return templates.TemplateResponse(
         request=request,
-        context={"user_id": user[0], "is_creator": user[1]},
+        context={"user_id": user[0], "is_creator": user[1]} if user else None,
         name='landing.html'
     )
 
 @app.get('/shop')
 async def shop(
         request: Request,
-        user: str = Depends(get_current_creator)
+        user: Optional[tuple] = Depends(get_current_creator)
 ):
     return templates.TemplateResponse(
         request=request,
-        context={"user_id": user[0], "is_creator": user[1]},
+        context={"user_id": user[0], "is_creator": user[1]} if user else None,
         name='shop.html'
     )
 
@@ -94,7 +94,7 @@ async def shop(
 async def tour_page(
         request: Request,
         rout_id: int,
-        user: str = Depends(get_current_creator),
+        user: Optional[tuple] = Depends(get_current_creator),
         session: AsyncSession = Depends(get_session)
 ):
     query = select(Rout).where(Rout.id == rout_id)
@@ -154,7 +154,7 @@ async def my_tours_page(
     return templates.TemplateResponse(
         request=request,
         context={
-            "user_id": user[0],
+            "user_id": user[0] if user else None,
             "routs": user_owned_routs
         },
         name='my_tours_page.html'
