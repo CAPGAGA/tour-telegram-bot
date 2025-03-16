@@ -1,15 +1,19 @@
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi_babel import BabelMiddleware, lazy_gettext as _, BabelConfigs
+from babel import Locale
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.middleware.sessions import SessionMiddleware
 
-from api.handlers import get_auth_token, get_current_creator, get_current_user
+from api.handlers import get_auth_token, get_current_creator, get_current_user, get_locale
 from api.routs.creator import creator_rout_router
 from api.routs.auth_v2 import auth_router
 from api.routs.media import point_media_router
@@ -17,14 +21,14 @@ from api.routs.orders import order_router
 from api.routs.routs import rout_router, get_rout as get_rout_without_points
 from api.routs.rout_points import rout_points_router, get_rout as get_rout_with_points
 from api.routs.search import search_router
-from api.routs.users import user_routs_router, get_user_routs
+from api.routs.user_routs import user_routs_router, get_user_routs
 
 from api.sitemap import sitemap
 
 from db.database import Base, engine, get_session
 from db.models import BaseUser, Rout
 
-from settings import DEBUG
+from settings import DEBUG, SECRET_KEY
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +56,22 @@ app.mount("/static", StaticFiles(directory="web/static"), name="static")
 app.mount('/media', StaticFiles(directory='web/media'), name='media')
 templates = Jinja2Templates(directory="web/templates")
 
+# Babel config
+babel_configs = BabelConfigs(
+    ROOT_DIR=Path(__file__).parent,
+    BABEL_DEFAULT_LOCALE="en",
+    BABEL_TRANSLATION_DIRECTORY="lang",
+)
+
+
+# middleware
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+app.add_middleware(
+    BabelMiddleware,
+    babel_configs=babel_configs,
+    jinja2_templates=templates
+)
+
 
 # base routs of api
 app.include_router(creator_rout_router, prefix='/apiV1')
@@ -71,11 +91,16 @@ app.mount('/sitemap.xml', sitemap)
 @app.get('/', response_class=HTMLResponse)
 async def landing(
         request: Request,
-        user: Optional[tuple] = Depends(get_current_creator)
+        user: Optional[tuple] = Depends(get_current_creator),
+        locale: str = Depends(get_locale)
 ):
+    print(locale)
     return templates.TemplateResponse(
         request=request,
-        context={"user_id": user[0], "is_creator": user[1]} if user else {},
+        context={
+            "user_id": user[0],
+            "is_creator": user[1]
+        } if user else {},
         name='landing.html'
     )
 

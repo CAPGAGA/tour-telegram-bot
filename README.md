@@ -13,7 +13,27 @@ Feel free to **clone**, **modify** it for your needs, or create **pull requests*
 
 ## 📄 Documentation
 
-*In development*
+### Adding new language
+
+### Translating to new language
+To translate to new language first:
+
+Run to extract all needed for translation strings from py and html (with jinja2) templates :
+
+```shell
+pybabel extract -F babel.cfg -o messages.pot .
+```
+
+Then initialize your translation file with:
+```shell
+pybabel init -i messages.pot -d lang -l <lang>
+```
+
+Translate in lang/<lang>/LC_MESSAGES/messages.po and compile with
+
+```shell
+pybabel compile -d lang
+```
 
 ---
 

@@ -3,6 +3,8 @@ requests
 aiohttp
 python-multipart
 pydub
+Babel==2.17.0
+itsdangerous==2.2.0
 
 # api's backend and frontend
 fastapi
@@ -11,6 +13,7 @@ bcrypt
 pyjwt
 jinja2
 asgi-sitemaps==1.*
+fastapi-babel==1.0.0
 
 # telegram bot
 python-telegram-bot

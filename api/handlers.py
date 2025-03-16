@@ -127,7 +127,6 @@ def generate_hashed_filename(filename: str) -> str:
     return f"{hash_digest}{ext}"
 
 
-
 async def haversine(lon1, lat1, lon2, lat2):
     """
     Calculate the great circle distance between two points
@@ -145,3 +144,6 @@ async def haversine(lon1, lat1, lon2, lat2):
     r = 6371 # Radius of earth in kilometers. Use 3956 for miles
 
     return c * r
+
+async def get_locale(request: Request):
+    return request.session.get("language", "en")
