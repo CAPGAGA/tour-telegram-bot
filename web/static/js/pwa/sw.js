@@ -3,8 +3,8 @@ const urlsToCache = [
     "/",
     "/static/css/styles.css",
     "/static/js/main.js",
-    "/logos/favicon/icon-192x192.png",
-    "/logos/favicon/icon-512x512.png"
+    "/static/logo/favicon/icon-192x192.png",
+    "/static/logo/favicon/icon-512x512.png"
 ];
 
 // Install Service Worker & Cache Files
