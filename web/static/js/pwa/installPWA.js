@@ -1,31 +1,27 @@
-let deferredPrompt;
+let deferredPrompt; // Store the event
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
     const installButton = document.getElementById("install-pwa");
 
-    // Listen for the PWA install prompt event
     window.addEventListener("beforeinstallprompt", (event) => {
         event.preventDefault();
         deferredPrompt = event;
+        installButton.classList.remove("is-hidden"); // Show button
+    });
 
-        // Show install button
-        installButton.classList.remove("is-hidden");
+    installButton.addEventListener("click", async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt(); // Show prompt
 
-        installButton.addEventListener("click", () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt(); // Show install prompt
-
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === "accepted") {
-                        console.log("User accepted the install prompt");
-                    } else {
-                        console.log("User dismissed the install prompt");
-                    }
-                    deferredPrompt = null; // Reset prompt
-                    installButton.classList.add("is-hidden"); // Hide button
-                });
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === "accepted") {
+                console.log("User accepted the PWA installation");
+            } else {
+                console.log("User dismissed the PWA installation");
             }
-        });
+            deferredPrompt = null; // Reset
+            installButton.classList.add("is-hidden");
+        }
     });
 
     // Hide button if app is already installed
@@ -33,4 +29,10 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("PWA installed");
         installButton.classList.add("is-hidden");
     });
+
+    // Force show install button on desktop Chrome
+    if (window.matchMedia("(display-mode: browser)").matches) {
+        console.log("Running in a browser, showing install button");
+        installButton.classList.remove("is-hidden");
+    }
 });

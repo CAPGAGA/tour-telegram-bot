@@ -1,6 +1,8 @@
 {
  "name":"Pocketour",
  "short_name":"Pocketour",
+ "description": "Discover the World, Pocket-Sized",
+ "start_url": "/",
  "icons":[
     {
         "src":"/static/logo/favicon/android-chrome-192x192.png",
