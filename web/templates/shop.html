@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PockeTour: Tours Shop</title>
+    <title>PockeTour: {{ _( "Tours Shop" ) }}</title>
     <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/bulma.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/revolver-msg.css') }}" rel="stylesheet">
@@ -27,17 +27,17 @@
 
 <section class="section">
     <div class="container">
-        <h1 class="title">Tour Store</h1>
+        <h1 class="title">{{ _( "Tour Store" ) }}</h1>
 
         <!-- Search and Filter Bar -->
         <div class="box">
             <div class="field">
-                <label class="label">Search</label>
+                <label class="label">{{ _( "Search" ) }}</label>
                 <div class="control">
-                    <input class="input" type="text" id="search-input" placeholder="Search for a tour...">
+                    <input class="input" type="text" id="search-input" placeholder="{{ _( 'Search for a tour...' ) }}">
                 </div>
             </div>
-            <button class="button is-primary" id="search-btn">Search</button>
+            <button class="button is-primary" id="search-btn">{{ _( "Search" ) }}</button>
         </div>
 
         <!-- Tour Listing -->
@@ -45,8 +45,8 @@
 
         <!-- Pagination -->
         <div class="pagination">
-            <button class="button is-link" id="prev-page">Previous</button>
-            <button class="button is-link" id="next-page">Next</button>
+            <button class="button is-link" id="prev-page">{{ _( "Previous" ) }}</button>
+            <button class="button is-link" id="next-page">{{ _( "Next" ) }}</button>
         </div>
     </div>
 </section>

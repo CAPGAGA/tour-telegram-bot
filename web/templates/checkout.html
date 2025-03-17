@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='logo/favicon/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='logo/favicon/favicon-16x16.png') }}">
     <link rel="manifest" href="{{ url_for('static', path='logo/favicon/site.webmanifest') }}">
-    <title>PockeTour: Checkout for {{ tour.rout_name }}</title>
+    <title>PockeTour: {{ _("Checkout for" ) }} {{ tour.rout_name }}</title>
     <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/bulma.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/revolver-msg.css') }}" rel="stylesheet">
@@ -29,17 +29,17 @@
 {% include "modules/landing/navbar.html" %}
   <section class="section">
       <div class="container">
-          <h1 class="title">Checkout</h1>
+          <h1 class="title">{{ _("Checkout") }}</h1>
           <div class="box">
-              <h2 class="subtitle">Tour Details</h2>
+              <h2 class="subtitle">{{ _("Tour Details" ) }}</h2>
               <p><strong>Tour:</strong> <span id="tour-name">{{ tour.rout_name }}</span></p>
               <p><strong>Price:</strong> <span id="tour-price">{{ tour.base_price }}</span> USD</p>
               <p><strong>Description:</strong> <span id="tour-description">{{ tour.rout_description }}</span></p>
           </div>
 
           <div class="box">
-              <h2 class="subtitle">Choose Payment Method</h2>
-              <button class="button is-primary" id="pay-with-paypal" data-user-id="{{ user_id }}" data-tour-id="{{ tour.id }}">Pay with PayPal</button>
+              <h2 class="subtitle">{{ _("Choose Payment Method" ) }}</h2>
+              <button class="button is-primary" id="pay-with-paypal" data-user-id="{{ user_id }}" data-tour-id="{{ tour.id }}">{{ _("Card with PayPal") }}</button>
 <!--              <button class="button is-link" id="pay-with-other">Other Payment Methods</button>-->
           </div>
       </div>

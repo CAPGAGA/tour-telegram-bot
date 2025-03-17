@@ -48,14 +48,14 @@
                     <p id="tour-description">{{ rout.rout_description }}</p>
                     <br>
                     <div class="buttons">
-                        <a class="button is-success" id="buy-for-me" href="/tour/{{ rout.id }}/buy?target=self">Buy for Me</a>
-                        <a class="button is-info" id="buy-for-friend" href="/tour/{{ rout.id }}/buy?target=friend">Gift to Friend</a>
+                        <a class="button is-success" id="buy-for-me" href="/tour/{{ rout.id }}/buy?target=self">{{ _( "Buy for Me" ) }}</a>
+<!--                        <a class="button is-info" id="buy-for-friend" href="/tour/{{ rout.id }}/buy?target=friend">Gift to Friend</a>-->
                     </div>
                 </div>
             </div>
             <!-- Tour Points -->
             <div class="box">
-                <h2 class="title">Tour Points</h2>
+                <h2 class="title">{{ _( "Tour Points" ) }}</h2>
                 <div id="tour-points">
                     {% for rout in rout_points[:3] %}
                     <div class="box">
