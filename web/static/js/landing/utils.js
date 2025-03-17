@@ -20,3 +20,20 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+
+// Language dropdown
+document.addEventListener("DOMContentLoaded", function () {
+    const langDropdown = document.getElementById("lang-dropdown");
+    const langToggle = document.getElementById("lang-dropdown-toggle");
+
+    langToggle.addEventListener("click", function (event) {
+        event.stopPropagation();
+        langDropdown.classList.toggle("is-active");
+    });
+
+    document.addEventListener("click", function (event) {
+        if (!langDropdown.contains(event.target)) {
+            langDropdown.classList.remove("is-active");
+        }
+    });
+});

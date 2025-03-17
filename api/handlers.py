@@ -9,7 +9,7 @@ from fastapi import Request, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from settings import SECRET_KEY, ALGORITHM
+from settings import SECRET_KEY, ALGORITHM, SUPPORTED_LANGUAGES
 from db.database import get_session
 from db.models import BaseUser
 
@@ -147,3 +147,25 @@ async def haversine(lon1, lat1, lon2, lat2):
 
 async def get_locale(request: Request):
     return request.session.get("language", "en")
+
+def get_lang_from_session(request: Request) -> str:
+    # If user logged in, we stored locale in session:
+    session_lang= request.session.get("language", None)
+
+    if session_lang and session_lang in SUPPORTED_LANGUAGES:
+        return session_lang
+
+    # Fallback to Accept-Language header, or Babel default locale
+    accept_language = request.headers.get("accept-language", "")
+
+    if accept_language:
+        languages = [lang.split(";")[0] for lang in accept_language.split(",")]
+
+        # Check if any of the user's preferred languages match supported ones
+        for lang in languages:
+            if lang in SUPPORTED_LANGUAGES:
+                print("get_locale: ", lang)
+                return lang
+
+    return "en"
+

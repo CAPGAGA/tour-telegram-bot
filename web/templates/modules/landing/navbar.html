@@ -24,6 +24,15 @@
                 {% else %}
                 <a class="navbar-item" href="/login">{{ _("Login") }}</a>
                 {% endif %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link" id="lang-dropdown-toggle">{{ _("Language") }}</a>
+                    <div class="navbar-dropdown">
+                        <form>
+                            <button type="button" class="navbar-item change-lang" data-lang="en" value="en">🇬🇧 English</button>
+                            <button type="button" class="navbar-item change-lang" data-lang="ru" value="ru">🇷🇺 Русский</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

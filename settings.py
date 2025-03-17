@@ -5,6 +5,8 @@ BASE_DIR: Path = Path(__file__).parent
 
 DEBUG = True if str(os.getenv("DEBUG", "False")) == "True" else False
 
+SUPPORTED_LANGUAGES = ['ru', 'en']
+
 # auth settings
 SECRET_KEY: str = os.getenv('SECRET_KEY')
 ALGORITHM = "HS256"
