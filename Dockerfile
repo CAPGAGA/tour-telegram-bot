@@ -25,6 +25,7 @@ COPY ./web /app/web
 COPY ./alembic /app/alembic
 COPY ./alembic.ini /app/alembic.ini
 COPY ./babel.cfg /app/babel.cfg
+COPY ./lang /app/lang
 
 
 # Copy needed files for bot
@@ -36,3 +37,4 @@ WORKDIR /app
 
 COPY ./bot /app/bot
 COPY ./babel.cfg /app/babel.cfg
+COPY ./lang /app/lang
