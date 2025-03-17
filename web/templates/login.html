@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ lang }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM Login</title>
+    <title>PockeTour: {{ _("Login") }}</title>
     <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
 <!--    <link href="{{ url_for('static', path='css/auth-page.css') }}" rel="stylesheet">-->
     <link href="{{ url_for('static', path='css/bulma.min.css') }}" rel="stylesheet">
@@ -16,27 +16,27 @@
         <div class="hero-body">
             <div class="container has-text-centered">
                 <div class="column is-4 is-offset-4">
-                    <h3 class="title is-4">Login</h3>
+                    <h3 class="title is-4">{{ _("Login" ) }}</h3>
                     <div class="box">
                         <form id="login-form">
                             <div class="field">
-                                <label class="label">Username</label>
+                                <label class="label">{{ _("Username" ) }}</label>
                                 <div class="control">
-                                    <input class="input" type="text" id="username" placeholder="Enter your username" required>
+                                    <input class="input" type="text" id="username" placeholder="{{ _('Enter your username') }}" required>
                                 </div>
                             </div>
 
                             <div class="field">
                                 <label class="label">Password</label>
                                 <div class="control">
-                                    <input class="input" type="password" id="password" placeholder="Enter your password" required>
+                                    <input class="input" type="password" id="password" placeholder="{{ _('Enter your password') }}" required>
                                 </div>
                             </div>
-                            <button type="submit" class="button is-info is-fullwidth">Login</button>
+                            <button type="submit" class="button is-info is-fullwidth">{{ _("Login" ) }}</button>
                         </form>
                     </div>
                     <p class="has-text-grey">
-                        <a href="/register">Don't have an account? Register</a>
+                        <a href="/register">{{ _("Don't have an account? Register") }}</a>
                     </p>
                 </div>
             </div>
@@ -47,4 +47,5 @@
 <script type="module" src="{{ url_for('static', path='js/landing/auth.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/revolver.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/landing/utils.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/landing/changeLanguage.js') }}"></script>
 </html>

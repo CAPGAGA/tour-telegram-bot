@@ -13,17 +13,26 @@
         </div>
         <div id="navMenu" class="navbar-menu">
             <div class="navbar-end">
-                <a class="navbar-item" href="/for-creators">For Creators</a>
-                <a class="navbar-item" href="/shop">Shop</a>
-                <button id="install-pwa" class="navbar-item is-hidden">Install App</button>
+                <a class="navbar-item" href="/for-creators">{{ _("For Creators") }}</a>
+                <a class="navbar-item" href="/shop">{{ _("Shop") }}</a>
+                <button id="install-pwa" class="navbar-item is-hidden">{{ _("Install App") }}</button>
                 {% if user_id %}
-                <a class="navbar-item" href="/my-tours">My Tours</a>
+                <a class="navbar-item" href="/my-tours">{{ _("My Tours") }}</a>
                     {% if is_creator %}
-                        <a class="navbar-item" href="/tour-admin">Creator's cabinet</a>
+                        <a class="navbar-item" href="/tour-admin">{{ _("Creator's cabinet") }}</a>
                     {% endif %}
                 {% else %}
-                <a class="navbar-item" href="/login">Login</a>
+                <a class="navbar-item" href="/login">{{ _("Login") }}</a>
                 {% endif %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link" id="lang-dropdown-toggle">{{ _("Language") }}</a>
+                    <div class="navbar-dropdown">
+                        <form>
+                            <button type="button" class="navbar-item change-lang" data-lang="en" value="en">🇬🇧 English</button>
+                            <button type="button" class="navbar-item change-lang" data-lang="ru" value="ru">🇷🇺 Русский</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

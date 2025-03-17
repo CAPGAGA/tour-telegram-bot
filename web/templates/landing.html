@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ lang }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -50,4 +50,5 @@ if ("serviceWorker" in navigator) {
 <script type="module" src="{{ url_for('static', path='js/landing/utils.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/pwa/sw.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/pwa/installPWA.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/landing/changeLanguage.js') }}"></script>
 </html>

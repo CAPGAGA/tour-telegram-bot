@@ -1,7 +1,17 @@
-let deferredPrompt; // Store the event
-
+// Simple script to install PWA on Android and ignore IOS
 document.addEventListener("DOMContentLoaded", () => {
     const installButton = document.getElementById("install-pwa");
+
+    function isIos() {
+        return /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+    }
+
+    if (isIos()) {
+        installButton.classList.add("is-hidden"); // Hide button for iOS
+        return;
+    }
+
+    let deferredPrompt; // Store the event
 
     window.addEventListener("beforeinstallprompt", (event) => {
         event.preventDefault();

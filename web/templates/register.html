@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ lang }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM Registration</title>
+    <title>PockeTour: {{ _("Register") }}</title>
     <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
 <!--    <link href="{{ url_for('static', path='css/auth-page.css') }}" rel="stylesheet">-->
     <link href="{{ url_for('static', path='css/bulma.min.css') }}" rel="stylesheet">
@@ -16,39 +16,39 @@
         <div class="hero-body">
             <div class="container has-text-centered">
                 <div class="column is-6 is-offset-3">
-                    <h3 class="title is-4">Register</h3>
+                    <h3 class="title is-4">{{ _("Register" ) }}</h3>
 
                     <!-- Toggle Registration Type -->
                     <div class="buttons has-addons is-centered">
-                        <button id="user-btn" class="button is-info is-light">Register as User</button>
-                        <button id="creator-btn" class="button is-info">Register as Creator</button>
+                        <button id="user-btn" class="button is-info is-light">{{ _("Register as User") }}</button>
+                        <button id="creator-btn" class="button is-info">{{ _("Register as Creator" ) }}</button>
                     </div>
 
                     <!-- User Registration Form -->
                     <div id="user-form" class="box">
-                        <h4 class="title is-5">Register as a User</h4>
+                        <h4 class="title is-5">{{ _( "Register as a User" ) }}</h4>
                         <form id="register-user">
                             <div class="field">
-                                <label class="label">Username</label>
+                                <label class="label">{{ _( "Username" ) }}</label>
                                 <div class="control">
-                                    <input class="input" type="text" id="user-username" placeholder="Enter username" required>
+                                    <input class="input" type="text" id="user-username" placeholder="{{ _('Enter username') }}" required>
                                 </div>
                             </div>
 
                             <div class="field">
-                                <label class="label">Password</label>
+                                <label class="label">{{ _( "Password" ) }}</label>
                                 <div class="control">
-                                    <input class="input" type="password" id="user-password" placeholder="Enter password" required>
+                                    <input class="input" type="password" id="user-password" placeholder="{{ _('Enter password') }}" required>
                                 </div>
                             </div>
 
-                            <button type="submit" class="button is-info is-fullwidth">Register</button>
+                            <button type="submit" class="button is-info is-fullwidth">{{ _("Register") }}</button>
                         </form>
                     </div>
 
                     <!-- Creator Registration Form -->
                     <div id="creator-form" class="box" style="display: none;">
-                        <h4 class="title is-5">Register as a Creator</h4>
+                        <h4 class="title is-5">{{ _("Register as a Creator") }}</h4>
                         <form id="register-creator">
                             <div class="field">
                                 <label class="label">Email</label>
@@ -65,15 +65,15 @@
                             <div class="field">
                                 <label class="label">Password</label>
                                 <div class="control">
-                                    <input class="input" type="password" id="creator-password" placeholder="Enter password" required>
+                                    <input class="input" type="password" id="creator-password" placeholder="{{ _('Enter password') }}" required>
                                 </div>
                             </div>
-                            <button type="submit" class="button is-info is-fullwidth">Register</button>
+                            <button type="submit" class="button is-info is-fullwidth">{{ _("Register" ) }}</button>
                         </form>
                     </div>
 
                     <p class="has-text-grey">
-                        <a href="/login">Already have an account? Login</a>
+                        <a href="/login">{{ _("Already have an account? Login") }}</a>
                     </p>
                 </div>
             </div>
@@ -84,4 +84,5 @@
 <script type="module" src="{{ url_for('static', path='js/revolver.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/landing/auth.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/landing/utils.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/landing/changeLanguage.js') }}"></script>
 </html>

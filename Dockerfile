@@ -24,6 +24,7 @@ COPY ./db  /app/db
 COPY ./web /app/web
 COPY ./alembic /app/alembic
 COPY ./alembic.ini /app/alembic.ini
+COPY ./babel.cfg /app/babel.cfg
 
 
 # Copy needed files for bot
@@ -34,3 +35,4 @@ ENV PYTHONPATH=.
 WORKDIR /app
 
 COPY ./bot /app/bot
+COPY ./babel.cfg /app/babel.cfg

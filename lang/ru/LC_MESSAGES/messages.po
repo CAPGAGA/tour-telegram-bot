@@ -1,0 +1,209 @@
+# Russian translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-03-17 18:26+0100\n"
+"PO-Revision-Date: 2025-03-17 18:27+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: web/templates/checkout.html:10
+msgid "Checkout for"
+msgstr "Оформление заказа для"
+
+#: web/templates/checkout.html:32
+msgid "Checkout"
+msgstr "Оформление заказа"
+
+#: web/templates/checkout.html:34
+msgid "Tour Details"
+msgstr "Детали тура"
+
+#: web/templates/checkout.html:41
+msgid "Choose Payment Method"
+msgstr "Выберите способ оплаты"
+
+#: web/templates/checkout.html:42
+msgid "Card with PayPal"
+msgstr "Карта через PayPal"
+
+#: web/templates/login.html:6 web/templates/login.html:19
+#: web/templates/login.html:35 web/templates/modules/landing/navbar.html:25
+msgid "Login"
+msgstr "Войти"
+
+#: web/templates/login.html:23 web/templates/register.html:32
+msgid "Username"
+msgstr "Имя пользователя"
+
+#: web/templates/login.html:25
+msgid "Enter your username"
+msgstr "Введите имя пользователя"
+
+#: web/templates/login.html:32
+msgid "Enter your password"
+msgstr "Введите пароль"
+
+#: web/templates/login.html:39
+msgid "Don't have an account? Register"
+msgstr "Нет аккаунта? Зарегистрируйтесь"
+
+#: web/templates/my_tours_page.html:12
+msgid "Your Tours"
+msgstr "Ваши туры"
+
+#: web/templates/my_tours_page.html:34
+msgid "My Purchased Tours"
+msgstr "Мои купленные туры"
+
+#: web/templates/my_tours_page.html:58
+msgid "Nothing here yet"
+msgstr "Здесь пока ничего нет"
+
+#: web/templates/my_tours_page.html:59
+msgid "Start exploring by purchasing your first tour"
+msgstr "Начните исследование, купив свой первый тур"
+
+#: web/templates/modules/landing/hero_section.html:6
+#: web/templates/my_tours_page.html:60
+msgid "Browse Tours"
+msgstr "Просмотреть туры"
+
+#: web/templates/register.html:6 web/templates/register.html:19
+#: web/templates/register.html:45 web/templates/register.html:71
+msgid "Register"
+msgstr "Регистрация"
+
+#: web/templates/register.html:23
+msgid "Register as User"
+msgstr "Зарегистрироваться как пользователь"
+
+#: web/templates/register.html:24
+msgid "Register as Creator"
+msgstr "Зарегистрироваться как создатель"
+
+#: web/templates/register.html:29
+msgid "Register as a User"
+msgstr "Регистрация как пользователь"
+
+#: web/templates/register.html:34
+msgid "Enter username"
+msgstr "Введите имя пользователя"
+
+#: web/templates/register.html:39
+msgid "Password"
+msgstr "Пароль"
+
+#: web/templates/register.html:41 web/templates/register.html:68
+msgid "Enter password"
+msgstr "Введите пароль"
+
+#: web/templates/register.html:51
+msgid "Register as a Creator"
+msgstr "Регистрация как создатель"
+
+#: web/templates/register.html:76
+msgid "Already have an account? Login"
+msgstr "Уже есть аккаунт? Войти"
+
+#: web/templates/shop.html:6
+msgid "Tours Shop"
+msgstr "Магазин туров"
+
+#: web/templates/shop.html:30
+msgid "Tour Store"
+msgstr "Магазин туров"
+
+#: web/templates/shop.html:35 web/templates/shop.html:40
+msgid "Search"
+msgstr "Поиск"
+
+#: web/templates/shop.html:37
+msgid "Search for a tour..."
+msgstr "Ищите тур..."
+
+#: web/templates/shop.html:48
+msgid "Previous"
+msgstr "Предыдущая"
+
+#: web/templates/shop.html:49
+msgid "Next"
+msgstr "Следующая"
+
+#: web/templates/tour_page.html:51
+msgid "Buy for Me"
+msgstr "Купить для себя"
+
+#: web/templates/tour_page.html:58
+msgid "Tour Points"
+msgstr "Точки тура"
+
+#: web/templates/modules/landing/features.html:5
+msgid "Unique Destinations"
+msgstr "Уникальные направления"
+
+#: web/templates/modules/landing/features.html:6
+msgid "Choose from hundreds of carefully crafted tour experiences."
+msgstr "Выбирайте из сотен тщательно продуманных туров."
+
+#: web/templates/modules/landing/features.html:9
+msgid "Easy Booking"
+msgstr "Легкое бронирование"
+
+#: web/templates/modules/landing/features.html:10
+msgid "Simple checkout and secure payments with PayPal & Stripe."
+msgstr "Простой заказ и безопасные платежи через PayPal и Stripe."
+
+#: web/templates/modules/landing/features.html:13
+msgid "Interactive Routes"
+msgstr "Интерактивные маршруты"
+
+#: web/templates/modules/landing/features.html:14
+msgid "View real-time maps and track your adventure as you go."
+msgstr "Просматривайте карты в реальном времени и отслеживайте свое приключение."
+
+#: web/templates/modules/landing/hero_section.html:4
+msgid "Explore the World with Our Tours"
+msgstr "Исследуйте мир с нашими турами"
+
+#: web/templates/modules/landing/hero_section.html:5
+msgid "Discover, Book, and Experience Amazing Travel Destinations"
+msgstr "Открывайте, бронируйте и наслаждайтесь потрясающими путешествиями"
+
+#: web/templates/modules/landing/mini_shop.html:3
+msgid "Featured Tours"
+msgstr "Рекомендуемые туры"
+
+#: web/templates/modules/landing/navbar.html:16
+msgid "For Creators"
+msgstr "Для создателей"
+
+#: web/templates/modules/landing/navbar.html:17
+msgid "Shop"
+msgstr "Магазин"
+
+#: web/templates/modules/landing/navbar.html:18
+msgid "Install App"
+msgstr "Установить приложение"
+
+#: web/templates/modules/landing/navbar.html:20
+msgid "My Tours"
+msgstr "Мои туры"
+
+#: web/templates/modules/landing/navbar.html:22
+msgid "Creator's cabinet"
+msgstr "Кабинет создателя"
+
+
