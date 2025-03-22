@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-17 18:26+0100\n"
-"PO-Revision-Date: 2025-03-17 18:27+0100\n"
+"POT-Creation-Date: 2025-03-22 14:35+0100\n"
+"PO-Revision-Date: 2025-03-22 14:36+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -33,18 +33,156 @@ msgstr "Детали тура"
 
 #: web/templates/checkout.html:41
 msgid "Choose Payment Method"
-msgstr "Выберите способ оплаты"
+msgstr "Выберете способ оплаты"
 
 #: web/templates/checkout.html:42
 msgid "Card with PayPal"
-msgstr "Карта через PayPal"
+msgstr "Оплата картой через PayPal"
 
-#: web/templates/login.html:6 web/templates/login.html:19
-#: web/templates/login.html:35 web/templates/modules/landing/navbar.html:25
+#: web/templates/for_creators_page.html:8
+msgid "Join our platform and start earning by creating interactive audio and visual tours."
+msgstr "Присоединяйтесь к нашей платформе и начинайте зарабатывать, создавая интерактивные аудио- и визуальные туры."
+
+#: web/templates/for_creators_page.html:11
+#: web/templates/for_creators_page.html:17
+#: web/templates/for_creators_page.html:39
+#: web/templates/for_creators_page.html:61
+msgid "Become a Creator with PockeTour"
+msgstr "Станьте автором с PockeTour"
+
+#: web/templates/for_creators_page.html:12
+#: web/templates/for_creators_page.html:18
+msgid "Create interactive travel experiences and earn forever."
+msgstr "Создавайте интерактивные туры и зарабатывайте постоянно."
+
+#: web/templates/for_creators_page.html:27
+msgid "Become a Creator"
+msgstr "Стать автором"
+
+#: web/templates/for_creators_page.html:40
+msgid "Create interactive audio and visual travel tours and earn income from global travelers."
+msgstr "Создавайте интерактивные аудио- и визуальные туры и получайте доход от путешественников со всего мира."
+
+#: web/templates/for_creators_page.html:64
+msgid "Join our platform and start earning by creating interactive audio and visual tours for travelers worldwide. Here's why you should become a PockeTour creator:"
+msgstr "Присоединяйтесь к нашей платформе и начинайте зарабатывать, создавая интерактивные аудио- и визуальные туры для путешественников по всему миру. Вот почему стоит стать автором PockeTour:"
+
+#: web/templates/for_creators_page.html:71
+msgid "Create Once, Earn Forever"
+msgstr "Создай один раз — зарабатывай всегда"
+
+#: web/templates/for_creators_page.html:72
+msgid "Upload your tour once and earn from it continuously as travelers explore your content."
+msgstr "Загрузите свой тур один раз и получайте доход каждый раз, когда путешественники исследуют его."
+
+#: web/templates/for_creators_page.html:78
+msgid "Global Reach"
+msgstr "Мировой охват"
+
+#: web/templates/for_creators_page.html:79
+msgid "Your tours are instantly available to travelers around the world."
+msgstr "Ваши туры мгновенно доступны путешественникам по всему миру."
+
+#: web/templates/for_creators_page.html:85
+msgid "Built-in Promotion"
+msgstr "Встроенное продвижение"
+
+#: web/templates/for_creators_page.html:86
+msgid "We handle marketing and drive traffic to your tour using powerful SEO tools and our growing platform audience."
+msgstr "Мы занимаемся маркетингом и привлекаем трафик к вашему туру с помощью мощных SEO-инструментов и растущей аудитории платформы."
+
+#: web/templates/for_creators_page.html:92
+msgid "Multilingual Support"
+msgstr "Поддержка нескольких языков"
+
+#: web/templates/for_creators_page.html:93
+msgid "Create in your language, and we will translate it to reach a global audience. (coming soon)"
+msgstr "Создавайте на своем языке, а мы переведем — чтобы достичь глобальной аудитории. (скоро)"
+
+#: web/templates/for_creators_page.html:98
+msgid "How It Works"
+msgstr "Как это работает"
+
+msgid "Step 1: Create Your Tour"
+msgstr "Шаг 1: Создайте свой тур"
+
+#: web/templates/for_creators_page.html:103
+msgid "Start by adding general information: a compelling title, a detailed description, and a price that fits your experience."
+msgstr "Начните с добавления общей информации: привлекательного названия, подробного описания и цены, соответствующей вашему туру."
+
+#: web/templates/for_creators_page.html:104
+msgid "Then, use our intuitive editor to place points on the map, attach photos and audio to bring your story to life."
+msgstr "Затем используйте наш интуитивно понятный редактор, чтобы разместить точки на карте и добавить фото и аудио, оживляя вашу историю."
+
+#: web/templates/for_creators_page.html:120
+msgid "Step 2: Add details"
+msgstr "Шаг 2: Добавьте детали"
+
+#: web/templates/for_creators_page.html:121
+msgid "Set up each point on the map with images and/or audio, then publish it to the world."
+msgstr "Настройте каждую точку на карте с изображениями и/или аудио, затем опубликуйте тур для всего мира."
+
+#: web/templates/for_creators_page.html:122
+msgid "We promote your tour on our platform using advanced SEO and community channels."
+msgstr "Мы продвигаем ваш тур через платформу, используя современные SEO и каналы сообщества."
+
+#: web/templates/for_creators_page.html:128
+msgid "Step 3: Manage and earn with Every Tour"
+msgstr "Шаг 3: Управляйте и зарабатывайте с каждым туром"
+
+#: web/templates/for_creators_page.html:129
+msgid "Toggle visibility, edit tours, add new languages and more"
+msgstr "Управляйте видимостью, редактируйте туры, добавляйте новые языки и многое другое"
+
+#: web/templates/for_creators_page.html:138
+msgid "Roadmap"
+msgstr "План развития"
+
+#: web/templates/for_creators_page.html:140
+msgid "Q1:"
+msgstr "Q1:"
+
+#: web/templates/for_creators_page.html:140
+msgid "Launch Creator Tools ✅"
+msgstr "Запуск инструментов для авторов ✅"
+
+#: web/templates/for_creators_page.html:141
+msgid "Q2:"
+msgstr "Q2:"
+
+#: web/templates/for_creators_page.html:141
+msgid "Mobile Support + PWA"
+msgstr "Мобильная поддержка + PWA"
+
+#: web/templates/for_creators_page.html:142
+msgid "Q3:"
+msgstr "Q3:"
+
+#: web/templates/for_creators_page.html:142
+msgid "Analytics Dashboard"
+msgstr "Панель аналитики"
+
+#: web/templates/for_creators_page.html:143
+msgid "Q4:"
+msgstr "Q4:"
+
+#: web/templates/for_creators_page.html:143
+msgid "Affiliate Program"
+msgstr "Партнёрская программа"
+
+#: web/templates/for_creators_page.html:147
+msgid "Start Creating"
+msgstr "Начать создавать"
+
+#: web/templates/login.html:6
+#: web/templates/login.html:19
+#: web/templates/login.html:35
+#: web/templates/modules/landing/navbar.html:25
 msgid "Login"
 msgstr "Войти"
 
-#: web/templates/login.html:23 web/templates/register.html:32
+#: web/templates/login.html:23
+#: web/templates/register.html:32
 msgid "Username"
 msgstr "Имя пользователя"
 
@@ -70,29 +208,31 @@ msgstr "Мои купленные туры"
 
 #: web/templates/my_tours_page.html:58
 msgid "Nothing here yet"
-msgstr "Здесь пока ничего нет"
+msgstr "Пока ничего нет"
 
 #: web/templates/my_tours_page.html:59
 msgid "Start exploring by purchasing your first tour"
-msgstr "Начните исследование, купив свой первый тур"
+msgstr "Начните исследовать, купив свой первый тур"
 
-#: web/templates/modules/landing/hero_section.html:6
 #: web/templates/my_tours_page.html:60
+#: web/templates/modules/landing/hero_section.html:6
 msgid "Browse Tours"
-msgstr "Просмотреть туры"
+msgstr "Просмотр туров"
 
-#: web/templates/register.html:6 web/templates/register.html:19
-#: web/templates/register.html:45 web/templates/register.html:71
+#: web/templates/register.html:6
+#: web/templates/register.html:19
+#: web/templates/register.html:45
+#: web/templates/register.html:71
 msgid "Register"
 msgstr "Регистрация"
 
 #: web/templates/register.html:23
 msgid "Register as User"
-msgstr "Зарегистрироваться как пользователь"
+msgstr "Регистрация как пользователь"
 
 #: web/templates/register.html:24
 msgid "Register as Creator"
-msgstr "Зарегистрироваться как создатель"
+msgstr "Регистрация как автор"
 
 #: web/templates/register.html:29
 msgid "Register as a User"
@@ -106,13 +246,14 @@ msgstr "Введите имя пользователя"
 msgid "Password"
 msgstr "Пароль"
 
-#: web/templates/register.html:41 web/templates/register.html:68
+#: web/templates/register.html:41
+#: web/templates/register.html:68
 msgid "Enter password"
 msgstr "Введите пароль"
 
 #: web/templates/register.html:51
 msgid "Register as a Creator"
-msgstr "Регистрация как создатель"
+msgstr "Регистрация как автор"
 
 #: web/templates/register.html:76
 msgid "Already have an account? Login"
@@ -124,23 +265,24 @@ msgstr "Магазин туров"
 
 #: web/templates/shop.html:30
 msgid "Tour Store"
-msgstr "Магазин туров"
+msgstr "Каталог туров"
 
-#: web/templates/shop.html:35 web/templates/shop.html:40
+#: web/templates/shop.html:35
+#: web/templates/shop.html:40
 msgid "Search"
 msgstr "Поиск"
 
 #: web/templates/shop.html:37
 msgid "Search for a tour..."
-msgstr "Ищите тур..."
+msgstr "Найдите тур..."
 
 #: web/templates/shop.html:48
 msgid "Previous"
-msgstr "Предыдущая"
+msgstr "Назад"
 
 #: web/templates/shop.html:49
 msgid "Next"
-msgstr "Следующая"
+msgstr "Вперёд"
 
 #: web/templates/tour_page.html:51
 msgid "Buy for Me"
@@ -148,7 +290,7 @@ msgstr "Купить для себя"
 
 #: web/templates/tour_page.html:58
 msgid "Tour Points"
-msgstr "Точки тура"
+msgstr "Точки маршрута"
 
 #: web/templates/modules/landing/features.html:5
 msgid "Unique Destinations"
@@ -156,15 +298,15 @@ msgstr "Уникальные направления"
 
 #: web/templates/modules/landing/features.html:6
 msgid "Choose from hundreds of carefully crafted tour experiences."
-msgstr "Выбирайте из сотен тщательно продуманных туров."
+msgstr "Выбирайте из сотен тщательно разработанных туров."
 
 #: web/templates/modules/landing/features.html:9
 msgid "Easy Booking"
-msgstr "Легкое бронирование"
+msgstr "Простое бронирование"
 
 #: web/templates/modules/landing/features.html:10
 msgid "Simple checkout and secure payments with PayPal & Stripe."
-msgstr "Простой заказ и безопасные платежи через PayPal и Stripe."
+msgstr "Простой процесс оплаты и безопасные платежи через PayPal и Stripe."
 
 #: web/templates/modules/landing/features.html:13
 msgid "Interactive Routes"
@@ -172,7 +314,7 @@ msgstr "Интерактивные маршруты"
 
 #: web/templates/modules/landing/features.html:14
 msgid "View real-time maps and track your adventure as you go."
-msgstr "Просматривайте карты в реальном времени и отслеживайте свое приключение."
+msgstr "Смотрите маршруты в реальном времени и отслеживайте своё путешествие."
 
 #: web/templates/modules/landing/hero_section.html:4
 msgid "Explore the World with Our Tours"
@@ -180,15 +322,15 @@ msgstr "Исследуйте мир с нашими турами"
 
 #: web/templates/modules/landing/hero_section.html:5
 msgid "Discover, Book, and Experience Amazing Travel Destinations"
-msgstr "Открывайте, бронируйте и наслаждайтесь потрясающими путешествиями"
+msgstr "Откройте, забронируйте и испытайте удивительные места путешествий"
 
 #: web/templates/modules/landing/mini_shop.html:3
 msgid "Featured Tours"
-msgstr "Рекомендуемые туры"
+msgstr "Избранные туры"
 
 #: web/templates/modules/landing/navbar.html:16
 msgid "For Creators"
-msgstr "Для создателей"
+msgstr "Для авторов"
 
 #: web/templates/modules/landing/navbar.html:17
 msgid "Shop"
@@ -204,6 +346,9 @@ msgstr "Мои туры"
 
 #: web/templates/modules/landing/navbar.html:22
 msgid "Creator's cabinet"
-msgstr "Кабинет создателя"
+msgstr "Кабинет автора"
 
+#: web/templates/modules/landing/navbar.html:28
+msgid "Language"
+msgstr "Язык"
 
