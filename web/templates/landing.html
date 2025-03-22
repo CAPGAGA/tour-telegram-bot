@@ -2,6 +2,22 @@
 <html lang="{{ lang }}">
 <head>
     <meta charset="UTF-8">
+    <!--SEO-->
+    <link rel="canonical" href="https://pocketour.online/">
+    <meta name="author" content="PockeTour: {{ _('Discover Unique Audio Tours Around the World' ) }}">
+    <meta name="robots" content="index, follow">
+    <meta name="description" content="{{ _('Browse and explore immersive self-guided tours powered by audio, images, and maps. Discover new destinations and travel at your own pace.') }}">
+    <meta name="keywords" content="audio tours, walking tours, self-guided travel, city tours, virtual travel, cultural tourism, travel app, PockeTour">
+    <meta property="og:title" content="PockeTour: {{ _('Discover Unique Audio Tours Around the World' ) }}">
+    <meta property="og:description" content="{{ _('Browse and explore immersive self-guided tours powered by audio, images, and maps. Discover new destinations and travel at your own pace.') }}">
+    <meta property="og:image" content="{{ url_for('static', path='images/preview.jpg') }}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PockeTour: {{ _('Discover Unique Audio Tours Around the World' ) }}">
+    <meta name="twitter:description" content="{{ _('Browse and explore immersive self-guided tours powered by audio, images, and maps. Discover new destinations and travel at your own pace.') }}">
+    <meta name="twitter:image" content="{{ url_for('static', path='images/preview.jpg') }}">
+    <!--End of SEO-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', path='logo/favicon/apple-touch-icon.png') }}">
     <meta name="mobile-web-app-capable" content="yes">

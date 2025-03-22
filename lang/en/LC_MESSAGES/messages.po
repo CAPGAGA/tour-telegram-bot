@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-22 14:35+0100\n"
-"PO-Revision-Date: 2025-03-22 14:36+0100\n"
+"POT-Creation-Date: 2025-03-22 17:09+0100\n"
+"PO-Revision-Date: 2025-03-22 17:09+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
 "Language-Team: en <LL@li.org>\n"
@@ -44,15 +44,16 @@ msgid ""
 "visual tours."
 msgstr ""
 
-#: web/templates/for_creators_page.html:11
-#: web/templates/for_creators_page.html:17
+#: web/templates/for_creators_page.html:10
+#: web/templates/for_creators_page.html:16
 #: web/templates/for_creators_page.html:39
 #: web/templates/for_creators_page.html:61
 msgid "Become a Creator with PockeTour"
 msgstr ""
 
-#: web/templates/for_creators_page.html:12
-#: web/templates/for_creators_page.html:18
+#: web/templates/for_creators_page.html:11
+#: web/templates/for_creators_page.html:17 web/templates/landing.html:12
+#: web/templates/landing.html:18
 msgid "Create interactive travel experiences and earn forever."
 msgstr ""
 
@@ -195,6 +196,17 @@ msgstr ""
 msgid "Start Creating"
 msgstr ""
 
+#: web/templates/landing.html:7 web/templates/landing.html:11
+#: web/templates/landing.html:17
+msgid "Discover Unique Audio Tours Around the World"
+msgstr ""
+
+#: web/templates/landing.html:9
+msgid ""
+"Browse and explore immersive self-guided tours powered by audio, images, "
+"and maps. Discover new destinations and travel at your own pace."
+msgstr ""
+
 #: web/templates/login.html:6 web/templates/login.html:19
 #: web/templates/login.html:35 web/templates/modules/landing/navbar.html:25
 msgid "Login"
@@ -319,7 +331,7 @@ msgid "Easy Booking"
 msgstr ""
 
 #: web/templates/modules/landing/features.html:10
-msgid "Simple checkout and secure payments with PayPal & Stripe."
+msgid "Simple checkout and secure payments with PayPal"
 msgstr ""
 
 #: web/templates/modules/landing/features.html:13
