@@ -2,7 +2,22 @@
 <html lang="{{ lang }}">
 <head>
     <meta charset="UTF-8">
+    <!--SEO-->
+    <meta name="author" content="PockeTour">
+    <meta name="robots" content="index, follow">
+    <meta name="description" content="{{ _('Join our platform and start earning by creating interactive audio and visual tours.') }}">
+    <meta name="keywords" content="create tours, travel creator, interactive travel, audio guide, visual tours, PockeTour, earn from tours">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="{{ _('Become a Creator with PockeTour') }}">
+    <meta property="og:description" content="{{ _('Create interactive travel experiences and earn forever.') }}">
+    <meta property="og:image" content="{{ url_for('static', path='images/preview.jpg') }}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ _('Become a Creator with PockeTour') }}">
+    <meta name="twitter:description" content="{{ _('Create interactive travel experiences and earn forever.') }}">
+    <meta name="twitter:image" content="{{ url_for('static', path='images/preview.jpg') }}">
+    <!--End of SEO-->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', path='logo/favicon/apple-touch-icon.png') }}">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,6 +32,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "{{ _('Become a Creator with PockeTour') }}",
+        "description": "{{ _('Create interactive audio and visual travel tours and earn income from global travelers.') }}",
+        "url": "{{ request.url }}",
+        "inLanguage": "{{ lang }}"
+      }
+    </script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YH9DBEETFV"></script>
     <script>
@@ -110,16 +135,16 @@
             </div>
         </div>
 
-        <h2 class="title is-3 mt-6">Roadmap</h2>
+        <h2 class="title is-3 mt-6">{{ _("Roadmap") }}</h2>
         <ul>
-            <li><strong>Q1:</strong> Launch Creator Tools ✅</li>
-            <li><strong>Q2:</strong> Mobile Support + PWA</li>
-            <li><strong>Q3:</strong> Analytics Dashboard</li>
-            <li><strong>Q4:</strong> Affiliate Program</li>
+            <li><strong>{{ _("Q1:") }}</strong> {{ _("Launch Creator Tools ✅") }}</li>
+            <li><strong>{{ _("Q2:") }}</strong> {{ _("Mobile Support + PWA") }}</li>
+            <li><strong>{{ _("Q3:") }}</strong> {{ _("Analytics Dashboard") }}</li>
+            <li><strong>{{ _("Q4:") }}</strong> {{ _("Affiliate Program") }}</li>
         </ul>
 
         <div class="has-text-centered mt-6">
-            <a href="/register" class="button is-primary is-large">Start Creating</a>
+            <a href="/register" class="button is-primary is-large">{{ _("Start Creating") }}</a>
         </div>
     </div>
 </section>
