@@ -100,6 +100,24 @@ async def landing(
         name='landing.html'
     )
 
+@app.get("/for-creators", response_class=HTMLResponse)
+async def for_creators(
+        request: Request,
+        user: Optional[tuple] = Depends(get_current_creator),
+        lang: str = Depends(get_locale),
+):
+    return templates.TemplateResponse(
+        request=request,
+        context={
+            "user_id": user[0],
+            "is_creator": user[1],
+            "lang": lang,
+        } if user else {
+            "lang": lang
+        },
+        name='for_creators_page.html'
+    )
+
 @app.get('/shop')
 async def shop(
         request: Request,

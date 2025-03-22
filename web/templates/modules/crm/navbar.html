@@ -1,13 +1,13 @@
 <nav class="navbar">
     <div class="navbar-container">
         <a href="/" class="navbar-logo">
-            <img src="{{ url_for('static', path='logo/main.png') }}">
+            <img src="{{ url_for('static', path='logo/logo.png') }}">
         </a>
         <ul class="navbar-menu">
             <li><button class="nav-button active" id="tours">Routs</button></li>
-            <li><button class="nav-button" id="setting" disabled>Settings</button></li>
             <li><button class="nav-button" id="dashboard" disabled>Dashboard</button></li>
             <li><button class="nav-button" id="finances" disabled>Finances</button></li>
+            <li><button class="nav-button" id="setting" disabled>Settings</button></li>
         </ul>
         <div class="navbar-user">
             <span id="username" data-creator-id="{{ creator_id }}">{{ username }}</span>
