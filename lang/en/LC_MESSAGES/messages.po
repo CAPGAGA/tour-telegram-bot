@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-22 13:38+0100\n"
-"PO-Revision-Date: 2025-03-22 13:38+0100\n"
+"POT-Creation-Date: 2025-03-22 14:35+0100\n"
+"PO-Revision-Date: 2025-03-22 14:36+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
 "Language-Team: en <LL@li.org>\n"
@@ -38,101 +38,161 @@ msgstr ""
 msgid "Card with PayPal"
 msgstr ""
 
-#: web/templates/for_creators_page.html:12
-msgid "Become a Creator"
+#: web/templates/for_creators_page.html:8
+msgid ""
+"Join our platform and start earning by creating interactive audio and "
+"visual tours."
 msgstr ""
 
-#: web/templates/for_creators_page.html:36
+#: web/templates/for_creators_page.html:11
+#: web/templates/for_creators_page.html:17
+#: web/templates/for_creators_page.html:39
+#: web/templates/for_creators_page.html:61
 msgid "Become a Creator with PockeTour"
 msgstr ""
 
-#: web/templates/for_creators_page.html:39
+#: web/templates/for_creators_page.html:12
+#: web/templates/for_creators_page.html:18
+msgid "Create interactive travel experiences and earn forever."
+msgstr ""
+
+#: web/templates/for_creators_page.html:27
+msgid "Become a Creator"
+msgstr ""
+
+#: web/templates/for_creators_page.html:40
+msgid ""
+"Create interactive audio and visual travel tours and earn income from "
+"global travelers."
+msgstr ""
+
+#: web/templates/for_creators_page.html:64
 msgid ""
 "Join our platform and start earning by creating interactive audio and "
 "visual tours for travelers worldwide. Here's why you should become a "
 "PockeTour creator:"
 msgstr ""
 
-#: web/templates/for_creators_page.html:46
+#: web/templates/for_creators_page.html:71
 msgid "Create Once, Earn Forever"
 msgstr ""
 
-#: web/templates/for_creators_page.html:47
+#: web/templates/for_creators_page.html:72
 msgid ""
 "Upload your tour once and earn from it continuously as travelers explore "
 "your content."
 msgstr ""
 
-#: web/templates/for_creators_page.html:53
+#: web/templates/for_creators_page.html:78
 msgid "Global Reach"
 msgstr ""
 
-#: web/templates/for_creators_page.html:54
+#: web/templates/for_creators_page.html:79
 msgid "Your tours are instantly available to travelers around the world."
 msgstr ""
 
-#: web/templates/for_creators_page.html:60
+#: web/templates/for_creators_page.html:85
 msgid "Built-in Promotion"
 msgstr ""
 
-#: web/templates/for_creators_page.html:61
+#: web/templates/for_creators_page.html:86
 msgid ""
 "We handle marketing and drive traffic to your tour using powerful SEO "
 "tools and our growing platform audience."
 msgstr ""
 
-#: web/templates/for_creators_page.html:67
+#: web/templates/for_creators_page.html:92
 msgid "Multilingual Support"
 msgstr ""
 
-#: web/templates/for_creators_page.html:68
+#: web/templates/for_creators_page.html:93
 msgid ""
 "Create in your language, and we will translate it to reach a global "
 "audience. (coming soon)"
 msgstr ""
 
-#: web/templates/for_creators_page.html:73
+#: web/templates/for_creators_page.html:98
 msgid "How It Works"
 msgstr ""
 
-#: web/templates/for_creators_page.html:77
+#: web/templates/for_creators_page.html:102
 msgid "Step 1: Create Your Tour"
 msgstr ""
 
-#: web/templates/for_creators_page.html:78
+#: web/templates/for_creators_page.html:103
 msgid ""
 "Start by adding general information: a compelling title, a detailed "
 "description, and a price that fits your experience."
 msgstr ""
 
-#: web/templates/for_creators_page.html:79
+#: web/templates/for_creators_page.html:104
 msgid ""
 "Then, use our intuitive editor to place points on the map, attach photos "
 "and audio to bring your story to life."
 msgstr ""
 
-#: web/templates/for_creators_page.html:95
+#: web/templates/for_creators_page.html:120
 msgid "Step 2: Add details"
 msgstr ""
 
-#: web/templates/for_creators_page.html:96
+#: web/templates/for_creators_page.html:121
 msgid ""
 "Set up each point on the map with images and/or audio, then publish it to"
 " the world."
 msgstr ""
 
-#: web/templates/for_creators_page.html:97
+#: web/templates/for_creators_page.html:122
 msgid ""
 "We promote your tour on our platform using advanced SEO and community "
 "channels."
 msgstr ""
 
-#: web/templates/for_creators_page.html:103
+#: web/templates/for_creators_page.html:128
 msgid "Step 3: Manage and earn with Every Tour"
 msgstr ""
 
-#: web/templates/for_creators_page.html:104
+#: web/templates/for_creators_page.html:129
 msgid "Toggle visibility, edit tours, add new languages and more"
+msgstr ""
+
+#: web/templates/for_creators_page.html:138
+msgid "Roadmap"
+msgstr ""
+
+#: web/templates/for_creators_page.html:140
+msgid "Q1:"
+msgstr ""
+
+#: web/templates/for_creators_page.html:140
+msgid "Launch Creator Tools ✅"
+msgstr ""
+
+#: web/templates/for_creators_page.html:141
+msgid "Q2:"
+msgstr ""
+
+#: web/templates/for_creators_page.html:141
+msgid "Mobile Support + PWA"
+msgstr ""
+
+#: web/templates/for_creators_page.html:142
+msgid "Q3:"
+msgstr ""
+
+#: web/templates/for_creators_page.html:142
+msgid "Analytics Dashboard"
+msgstr ""
+
+#: web/templates/for_creators_page.html:143
+msgid "Q4:"
+msgstr ""
+
+#: web/templates/for_creators_page.html:143
+msgid "Affiliate Program"
+msgstr ""
+
+#: web/templates/for_creators_page.html:147
+msgid "Start Creating"
 msgstr ""
 
 #: web/templates/login.html:6 web/templates/login.html:19
