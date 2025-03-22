@@ -15,7 +15,14 @@ export function initMap(routId) {
     }).addTo(map);
 
     map.on('click', function(e) {
-        addRoutePoint(e.latlng, routId);
+        fetch(`/apiV1/geocode/reverse?lat=${e.latlng.lat}&lng=${e.latlng.lng}`)
+        .then(response => response.json())
+        .then(data => {
+            let pointName = data.street + " " + data.house_number
+            addRoutePoint(e.latlng, pointName, routId);
+        })
+        .catch(err => console.error("Geocoding error:", err));
+
     });
 }
 
@@ -30,11 +37,12 @@ export function addDraggableSave(marker, point) {
 }
 
 // Add new point to map, points list and point list in modal
-function addRoutePoint(latlng, routId) {
+function addRoutePoint(latlng, pointName, routId) {
     const newPoint = {
         rout_id: routId,
         latitude: latlng.lat,
         longitude: latlng.lng,
+        point_name: pointName,
         point_text: "" // Empty text by default
     };
 

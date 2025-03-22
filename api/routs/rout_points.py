@@ -25,6 +25,7 @@ class RoutPointCreate(BaseModel):
     latitude: float
     longitude: float
     point_text: Optional[str] = None
+    point_name: Optional[str] = None
 
 
 class RoutPointEdit(BaseModel):
@@ -32,6 +33,7 @@ class RoutPointEdit(BaseModel):
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     point_text: Optional[str] = None
+    point_name: Optional[str] = None
 
 class RoutPointResponse(BaseModel):
 
@@ -40,6 +42,7 @@ class RoutPointResponse(BaseModel):
     latitude: float
     longitude: float
     point_text: str
+    point_name: Optional[str] = None
     image: Optional[list[str]] = None
     audio: Optional[list[str]] = None
 
@@ -50,6 +53,7 @@ class DetailedRoutPointResponse(BaseModel):
     latitude: float
     longitude: float
     point_text: str
+    point_name: Optional[str] = None
     image: Optional[list[str]] = None
     audio: Optional[list[str]] = None
     next_point: Optional[int] = None

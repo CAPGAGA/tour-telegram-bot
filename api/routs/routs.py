@@ -212,8 +212,6 @@ async def upload_rout_image(
     return {"image_url": f"/media/images/{hashed_filename}", "message": "Image uploaded successfully"}
 
 
-
-
 @rout_router.put("/display-rout/{rout_id}", response_model=dict)
 async def display_rout(
         rout_id: int,
@@ -235,7 +233,8 @@ async def display_rout(
 
     if not db_rout:
         raise HTTPException(status_code=404, detail="Rout not found")
-    if rout.is_displayed:
+
+    if not rout.is_displayed:
         # check if rout can be displayed
         point_query = (
             select(RoutPoint.id, RoutPoint.point_text, PointsAudio.audio_name)

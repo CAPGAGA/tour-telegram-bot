@@ -17,6 +17,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from api.handlers import get_auth_token, get_current_creator, get_current_user, get_locale, get_lang_from_session
 from api.routs.creator import creator_rout_router
 from api.routs.auth_v2 import auth_router
+from api.routs.geo import geocode_router
 from api.routs.media import point_media_router
 from api.routs.orders import order_router
 from api.routs.routs import rout_router, get_rout as get_rout_without_points
@@ -75,6 +76,7 @@ app.include_router(point_media_router, prefix='/apiV1')
 app.include_router(order_router, prefix='/apiV1')
 app.include_router(search_router, prefix='/apiV1')
 app.include_router(user_router, prefix='/apiV1')
+app.include_router(geocode_router, prefix='/apiV1')
 
 # util urls
 app.mount('/sitemap.xml', sitemap)
