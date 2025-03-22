@@ -7,7 +7,6 @@
     <meta name="robots" content="index, follow">
     <meta name="description" content="{{ _('Join our platform and start earning by creating interactive audio and visual tours.') }}">
     <meta name="keywords" content="create tours, travel creator, interactive travel, audio guide, visual tours, PockeTour, earn from tours">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:title" content="{{ _('Become a Creator with PockeTour') }}">
     <meta property="og:description" content="{{ _('Create interactive travel experiences and earn forever.') }}">
     <meta property="og:image" content="{{ url_for('static', path='images/preview.jpg') }}">
@@ -18,6 +17,7 @@
     <meta name="twitter:description" content="{{ _('Create interactive travel experiences and earn forever.') }}">
     <meta name="twitter:image" content="{{ url_for('static', path='images/preview.jpg') }}">
     <!--End of SEO-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', path='logo/favicon/apple-touch-icon.png') }}">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -54,7 +54,7 @@
     <script src="https://kit.fontawesome.com/2efd9ba489.js" crossorigin="anonymous"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
-<body>
+<body style="overflow-x: hidden;">
 {% include "modules/landing/navbar.html" %}
 <section class="section">
     <div class="container content">
