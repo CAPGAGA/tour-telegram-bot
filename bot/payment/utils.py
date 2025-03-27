@@ -26,3 +26,15 @@ async def fetch_tour_payment_details(
                 return await response.json()
         except aiohttp.ClientError:
             return None
+
+async def complete_order(
+    token: str
+) -> bool:
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.post(f"{API_BASE_URL}/order/complete/telegram/success/{token}") as response:
+                if response.status != 200:
+                    return False
+                return True
+        except aiohttp.ClientError:
+            return False

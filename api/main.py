@@ -31,7 +31,7 @@ from api.sitemap import sitemap
 from db.database import Base, engine, get_session
 from db.models import BaseUser, Rout
 
-from settings import DEBUG, SECRET_KEY
+from settings import DEBUG, SECRET_KEY, HEADLESS_MODE
 
 logger = logging.getLogger(__name__)
 
@@ -78,128 +78,131 @@ app.include_router(search_router, prefix='/apiV1')
 app.include_router(user_router, prefix='/apiV1')
 app.include_router(geocode_router, prefix='/apiV1')
 
-# util urls
-app.mount('/sitemap.xml', sitemap)
+if not HEADLESS_MODE:
 
+    logger.info('Running with head mode')
+    print('Running with head mode')
+    # util urls
+    app.mount('/sitemap.xml', sitemap)
 
-# functions to output pages
-@app.get('/', response_class=HTMLResponse)
-async def landing(
-        request: Request,
-        user: Optional[tuple] = Depends(get_current_creator),
-        lang: str = Depends(get_locale),
-):
-    return templates.TemplateResponse(
-        request=request,
-        context={
-            "user_id": user[0],
-            "is_creator": user[1],
-            "lang": lang,
+    # functions to output pages
+    @app.get('/', response_class=HTMLResponse)
+    async def landing(
+            request: Request,
+            user: Optional[tuple] = Depends(get_current_creator),
+            lang: str = Depends(get_locale),
+    ):
+        return templates.TemplateResponse(
+            request=request,
+            context={
+                "user_id": user[0],
+                "is_creator": user[1],
+                "lang": lang,
 
-        } if user else {
-            "lang": lang,
-        },
-        name='landing.html'
-    )
+            } if user else {
+                "lang": lang,
+            },
+            name='landing.html'
+        )
 
-@app.get("/for-creators", response_class=HTMLResponse)
-async def for_creators(
-        request: Request,
-        user: Optional[tuple] = Depends(get_current_creator),
-        lang: str = Depends(get_locale),
-):
-    return templates.TemplateResponse(
-        request=request,
-        context={
-            "user_id": user[0],
-            "is_creator": user[1],
-            "lang": lang,
-        } if user else {
-            "lang": lang
-        },
-        name='for_creators_page.html'
-    )
+    @app.get("/for-creators", response_class=HTMLResponse)
+    async def for_creators(
+            request: Request,
+            user: Optional[tuple] = Depends(get_current_creator),
+            lang: str = Depends(get_locale),
+    ):
+        return templates.TemplateResponse(
+            request=request,
+            context={
+                "user_id": user[0],
+                "is_creator": user[1],
+                "lang": lang,
+            } if user else {
+                "lang": lang
+            },
+            name='for_creators_page.html'
+        )
 
-@app.get('/shop')
-async def shop(
-        request: Request,
-        user: Optional[tuple] = Depends(get_current_creator)
-):
-    return templates.TemplateResponse(
-        request=request,
-        context={"user_id": user[0], "is_creator": user[1]} if user else {},
-        name='shop.html'
-    )
+    @app.get('/shop')
+    async def shop(
+            request: Request,
+            user: Optional[tuple] = Depends(get_current_creator)
+    ):
+        return templates.TemplateResponse(
+            request=request,
+            context={"user_id": user[0], "is_creator": user[1]} if user else {},
+            name='shop.html'
+        )
 
-@app.get('/tour/{rout_id}')
-async def tour_page(
-        request: Request,
-        rout_id: int,
-        user: Optional[tuple] = Depends(get_current_creator),
-        session: AsyncSession = Depends(get_session)
-):
-    query = select(Rout).where(Rout.id == rout_id)
-    result = await session.execute(query)
-    rout = result.scalars().first()
-    if not rout:
-        raise HTTPException(status_code=404, detail="Rout not found")
+    @app.get('/tour/{rout_id}')
+    async def tour_page(
+            request: Request,
+            rout_id: int,
+            user: Optional[tuple] = Depends(get_current_creator),
+            session: AsyncSession = Depends(get_session)
+    ):
+        query = select(Rout).where(Rout.id == rout_id)
+        result = await session.execute(query)
+        rout = result.scalars().first()
+        if not rout:
+            raise HTTPException(status_code=404, detail="Rout not found")
 
-    rout_points = await get_rout_with_points(rout_id, session)
+        rout_points = await get_rout_with_points(rout_id, session)
 
-    return templates.TemplateResponse(
-        request=request,
-        context={
-            'rout': rout.to_dict(),
-            'rout_points': rout_points
-        },
-        name='tour_page.html'
-    )
+        return templates.TemplateResponse(
+            request=request,
+            context={
+                'rout': rout.to_dict(),
+                'rout_points': rout_points
+            },
+            name='tour_page.html'
+        )
 
-@app.get('/tour/{rout_id}/buy')
-async def tour_purchase_page(
-        request: Request,
-        rout_id: int,
-        user: Optional[tuple] = Depends(get_current_creator),
-        session: AsyncSession = Depends(get_session)
-):
-    if not user:
-        return RedirectResponse(url="/login?next=/tour/{rout_id}/buy")
+    @app.get('/tour/{rout_id}/buy')
+    async def tour_purchase_page(
+            request: Request,
+            rout_id: int,
+            user: Optional[tuple] = Depends(get_current_creator),
+            session: AsyncSession = Depends(get_session)
+    ):
+        if not user:
+            return RedirectResponse(url="/login?next=/tour/{rout_id}/buy")
 
-    rout = await get_rout_without_points(
-        rout_id=rout_id,
-        session=session
-    )
+        rout = await get_rout_without_points(
+            rout_id=rout_id,
+            session=session
+        )
 
-    return templates.TemplateResponse(
-        request=request,
-        context={
-            "user_id": user[0],
-            "tour": rout
-        },
-        name='checkout.html'
-    )
+        return templates.TemplateResponse(
+            request=request,
+            context={
+                "user_id": user[0],
+                "tour": rout
+            },
+            name='checkout.html'
+        )
 
-@app.get('/my-tours', response_class=HTMLResponse)
-async def my_tours_page(
-        request: Request,
-        user: Optional[tuple] = Depends(get_current_creator),
-        session: AsyncSession = Depends(get_session)
-):
-    if not user:
-        return RedirectResponse(url='login?next=/my-tours')
-    try:
-        user_owned_routs = await get_user_routs(user_id=user[0], session=session)
-    except:
-        user_owned_routs = []
+    @app.get('/my-tours', response_class=HTMLResponse)
+    async def my_tours_page(
+            request: Request,
+            user: Optional[tuple] = Depends(get_current_creator),
+            session: AsyncSession = Depends(get_session)
+    ):
+        if not user:
+            return RedirectResponse(url='login?next=/my-tours')
+        try:
+            user_owned_routs = await get_user_routs(user_id=user[0], session=session)
+        except:
+            user_owned_routs = []
 
-    return templates.TemplateResponse(
-        request=request,
-        context={
-            "user_id": user[0],
-            "routs": user_owned_routs
-        },
-        name='my_tours_page.html'
-    )
+        return templates.TemplateResponse(
+            request=request,
+            context={
+                "user_id": user[0],
+                "routs": user_owned_routs
+            },
+            name='my_tours_page.html'
+        )
 
 @app.get('/login', response_class=HTMLResponse)
 async def login_page(

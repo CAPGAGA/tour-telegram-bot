@@ -145,18 +145,13 @@ async def create_order_telegram(
         "invoice_payload": invoice_data['invoice_payload']
     }
 
-@order_router.get('/complete/telegram/success/{token}')
+@order_router.post('/complete/telegram/success/{token}')
 async def complete_order_telegram_success(
         token: str,
         session: AsyncSession = Depends(get_session)
 ):
-    user_id, tour_id, invoice_id = decode_payment_token(token)
-
-    if not user_id or not tour_id or not invoice_id:
-        raise HTTPException(status_code=500, detail="Failed to decode payment token")
-
     result = await session.execute(
-        select(Order).where(Order.invoice_id == invoice_id)
+        select(Order).where(Order.invoice_id == token)
         )
     order = result.scalars().first()
 
@@ -167,12 +162,12 @@ async def complete_order_telegram_success(
     await session.commit()
 
     result = await session.execute(
-        select(UserRout).where(UserRout.user_id == user_id, UserRout.rout_id == tour_id)
+        select(UserRout).where(UserRout.user_id == order.user_id, UserRout.rout_id == order.rout_id)
     )
     user_rout = result.scalars().first()
 
     if not user_rout:
-        new_user_rout = UserRout(user_id=user_id, rout_id=tour_id)
+        new_user_rout = UserRout(user_id=order.user_id, rout_id=order.rout_id)
         session.add(new_user_rout)
         await session.commit()
 

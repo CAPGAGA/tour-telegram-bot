@@ -7,6 +7,10 @@ DEBUG = True if str(os.getenv("DEBUG", "False")) == "True" else False
 
 SUPPORTED_LANGUAGES = ['ru', 'en']
 
+HEADLESS_MODE: bool = True if str(os.getenv("HEADLESS_MODE", "False")) == "True" else False
+
+SUPPORTED_PAYMENT_METHODS = {'paypal', 'yuukassa_telegram'}
+
 # auth settings
 SECRET_KEY: str = os.getenv('SECRET_KEY')
 ALGORITHM = "HS256"
