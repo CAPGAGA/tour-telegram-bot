@@ -4,7 +4,13 @@ from telegram.ext import CallbackContext
 # todo: move to persistent storage
 LAST_MESSAGES = {}
 
-async def send_message(update: Update, context: CallbackContext, text: str, reply_markup = None, clear_previous=False):
+async def send_message(
+        update: Update,
+        context: CallbackContext,
+        text: str,
+        reply_markup = None,
+        clear_previous=False
+):
     """Sends a message and deletes the previous one if needed."""
     chat_id = update.effective_chat.id
 

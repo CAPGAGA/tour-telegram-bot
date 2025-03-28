@@ -1,16 +1,25 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 
+from settings import SUPPORTED_PAYMENT_METHODS
+
 
 def get_gateway_menu(tour_id: int, subject: str):
     """
     Keyboard with all available payment methods.
     """
-    keyboard = [
-        [InlineKeyboardButton('Pay with card', callback_data=f'buy_world_{subject}_paypal_{tour_id}')],
-        [InlineKeyboardButton('Pay with russian card', callback_data=f'buy_ru_{subject}_{tour_id}')],
-        [InlineKeyboardButton('🔙 Back to Tour Page', callback_data=f'view_tour_{subject}_{tour_id}')]
-    ]
+
+    keyboard = []
+    if 'paypal' in SUPPORTED_PAYMENT_METHODS:
+        keyboard.append(
+            [InlineKeyboardButton('Pay with card', callback_data=f'buy_world_{subject}_paypal_{tour_id}')]
+        )
+    if 'yuukassa_telegram' in SUPPORTED_PAYMENT_METHODS:
+        keyboard.append(
+            [InlineKeyboardButton('Pay with russian card', callback_data=f'buy_ru_{subject}_{tour_id}')]
+        )
+
+    keyboard.append([InlineKeyboardButton('🔙 Back to Tour Page', callback_data=f'view_tour_{subject}_{tour_id}')])
 
     return InlineKeyboardMarkup(keyboard)
 

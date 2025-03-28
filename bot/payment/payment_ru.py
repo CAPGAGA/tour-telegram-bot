@@ -1,15 +1,21 @@
-import aiohttp
 import os
+import aiohttp
+import logging
+
+
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice
 from telegram.ext import CallbackContext, CallbackQueryHandler
 
-from bot.payment.utils import fetch_tour_payment_details
+from bot.payment.utils import fetch_tour_payment_details, complete_order
 from bot.decorators.auth import user_auth
 from bot.utils.messages import send_message
 
 
+
 # API Base URL
 API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000/apiV1")
+
+logger = logging.getLogger(__name__)
 
 async def construct_invoice(
         chat_id: int,
@@ -29,8 +35,13 @@ async def construct_invoice(
     prices = [
         LabeledPrice(
             label=invoice_data['invoice_payload']["prices"]['label'],
-            amount=int(float(invoice_data['invoice_payload']["prices"]['price']) * 100)
+            amount=int(float(invoice_data['invoice_payload']["prices"]['price']) * 1000)
         )
+    ]
+
+    keyboard = [
+        [InlineKeyboardButton("Pay", pay=True)],
+        [InlineKeyboardButton("❌ Cancel Payment", callback_data=f"cancel_payment_{data['tour_id']}")],
     ]
 
     invoice = {
@@ -41,14 +52,15 @@ async def construct_invoice(
         'is_flexible': invoice_data['invoice_payload']['is_flexible'],
         'currency': invoice_data['invoice_payload']['currency'],
         'prices': prices,
-        'starter_parameter': invoice_data['order_sign'],
+        'payload': invoice_data['invoice_payload']['payload'],
         'need_email': invoice_data['invoice_payload']['need_email'],
         'need_phone_number': invoice_data['invoice_payload']['need_phone_number'],
         'send_email_to_provider': invoice_data['invoice_payload']['send_email_to_provider'],
         'send_phone_number_to_provider': invoice_data['invoice_payload']['send_phone_number_to_provider'],
-        'protect_content': invoice_data['invoice_payload']['protect_content']
+        'protect_content': invoice_data['invoice_payload']['protect_content'],
+        'reply_markup': InlineKeyboardMarkup(keyboard)
     }
-    return {}
+    return invoice
 
 @user_auth
 async def redner_youkassa_payment_menu(
@@ -56,4 +68,83 @@ async def redner_youkassa_payment_menu(
         context: CallbackContext,
         user: dict
 ):
-    raise NotImplementedError
+    """
+        Renders and sends the YouKassa payment menu.
+    """
+    query = update.callback_query
+    await query.answer()
+
+    tour_id = query.data.split("_")[-1]
+    data = {
+        "user_id": user['user_id'],
+        "tour_id": tour_id
+    }
+    invoice = await construct_invoice(update.effective_chat.id, data)
+    logger.info(invoice)
+    if not invoice:
+        keyboard = [[InlineKeyboardButton('🛒 Back to tour page', callback_data=f"view_tour_{tour_id}")]]
+        await query.message.edit_text(
+            "❌ Failed to generate payment details. Try again later.",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+        return
+    await context.bot.send_invoice(
+        **invoice
+    )
+    return
+
+
+async def pre_checkout_handler(update: Update, context: CallbackContext):
+    """Handles the pre-checkout query and approves it."""
+    query = update.pre_checkout_query
+    await query.answer(ok=True)
+
+@user_auth
+async def successful_payment_handler(update: Update, context: CallbackContext, user):
+    """
+    Handles successful payment and sends to my-tours
+    """
+    payment = update.message.successful_payment
+    payment_token = payment.invoice_payload
+
+    completed = await complete_order(payment_token)
+
+    if completed:
+        keyboard = [
+            [InlineKeyboardButton('🛒 Shop more', callback_data='buy_tours')],
+            [InlineKeyboardButton('🔙 To your tours', callback_data='my_tours')]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await update.message.reply_text("✅ Payment successful! Your order has been confirmed.",
+                                        reply_markup=reply_markup)
+    else:
+        keyboard = [
+            [InlineKeyboardButton('🔙 Return to Main Menu', callback_data='main_menu')]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        contact_info = (f"⚠️ Payment successful, but order confirmation failed.\n\n"
+                        f"📞 Contact Support: @your_support \n\n"
+                        f"Your payment token: {payment_token}")
+        await update.message.reply_text(contact_info, reply_markup=reply_markup)
+
+async def handle_cancel_payment(
+        update: Update,
+        context: CallbackContext
+):
+    query = update.callback_query
+    await query.answer()
+
+    tour_id = query.data.split('_')[-1]
+
+    # Delete the invoice message
+    try:
+        await context.bot.delete_message(chat_id=query.message.chat_id, message_id=query.message.message_id)
+    except Exception as e:
+        logger.error(f"Failed to delete invoice message: {e}")
+
+    # Send cancellation confirmation
+    keyboard = [[InlineKeyboardButton("🔙 Return to tour page", callback_data=f"view_tour_{tour_id}")]]
+    await query.message.reply_text(
+        "❌ Payment has been canceled.\n\nYou can try again later.",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )

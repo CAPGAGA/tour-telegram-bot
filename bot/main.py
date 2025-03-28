@@ -2,13 +2,16 @@ import os
 import logging
 
 from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext, CallbackQueryHandler
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext, CallbackQueryHandler, \
+    PreCheckoutQueryHandler
 
 from bot.modules.shop import show_tour_menu, handle_tour_pagination, handle_main_menu_return
 from bot.modules.tour import show_tour_point
 from bot.modules.tour_card import show_tour_details
 from bot.modules.users_tours import users_tours
 from bot.payment.payment_gateway import render_gateway_menu
+from bot.payment.payment_ru import redner_youkassa_payment_menu, handle_cancel_payment, pre_checkout_handler, \
+    successful_payment_handler
 from bot.payment.payment_world import render_paypal_payment_menu
 # import modules
 from modules.start import start
@@ -48,7 +51,10 @@ def main():
     application.add_handler(CallbackQueryHandler(render_gateway_menu, pattern="buy_me_.*"))
     application.add_handler(CallbackQueryHandler(render_gateway_menu, pattern="buy_friend_.*"))
     application.add_handler(CallbackQueryHandler(render_paypal_payment_menu, pattern="buy_world_.*"))
-
+    application.add_handler(CallbackQueryHandler(redner_youkassa_payment_menu, pattern="buy_ru_.*"))
+    application.add_handler(CallbackQueryHandler(handle_cancel_payment, pattern="cancel_payment_.*"))
+    application.add_handler(PreCheckoutQueryHandler(pre_checkout_handler))
+    application.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT, successful_payment_handler))
 
     # --- Handlers for "My Tours" button in main menu ---
     application.add_handler(CallbackQueryHandler(users_tours, pattern="my_tours"))
