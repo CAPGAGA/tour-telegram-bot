@@ -49,7 +49,7 @@ async def show_tour_details(
 
     tour_id = query.data.split("_")[-1]
     tour = await fetch_tour_details(tour_id)
-    user_tours = await fetch_users_tours(user.get("user_id"))
+    user_tours = await fetch_users_tours(user.get("id"))
     is_owned = False
 
     if user_tours:
