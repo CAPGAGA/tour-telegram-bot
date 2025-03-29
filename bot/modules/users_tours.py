@@ -30,7 +30,7 @@ async def users_tours(
 ):
     """Displays a list of routes owned by the user"""
     _ = context._
-    user_id = user["user_id"]
+    user_id = user["id"]
     routs = await fetch_user_routs(user_id)
 
     if not routs:

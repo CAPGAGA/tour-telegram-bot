@@ -79,7 +79,7 @@ async def redner_youkassa_payment_menu(
 
     tour_id = query.data.split("_")[-1]
     data = {
-        "user_id": user['user_id'],
+        "user_id": user['id'],
         "tour_id": tour_id
     }
     invoice = await construct_invoice(update.effective_chat.id, data, _)
@@ -103,7 +103,11 @@ async def pre_checkout_handler(update: Update, context: CallbackContext):
     await query.answer(ok=True)
 
 @user_auth
-async def successful_payment_handler(update: Update, context: CallbackContext, user):
+async def successful_payment_handler(
+        update: Update,
+        context: CallbackContext,
+        user
+):
     """
     Handles successful payment and sends to my-tours
     """
