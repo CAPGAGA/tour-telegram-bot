@@ -23,25 +23,30 @@ async def fetch_user_routs(user_id):
 
 
 @user_auth
-async def users_tours(update: Update, context: CallbackContext, user):
+async def users_tours(
+        update: Update,
+        context: CallbackContext,
+        user
+):
     """Displays a list of routes owned by the user"""
+    _ = context._
     user_id = user["user_id"]
     routs = await fetch_user_routs(user_id)
 
     if not routs:
         keyboard = [
-            [InlineKeyboardButton("🛒 Buy your first tour", callback_data="buy_tours")],
-            [InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")]
+            [InlineKeyboardButton("🛒 " + _("Buy your first tour"), callback_data="buy_tours")],
+            [InlineKeyboardButton("🔙 " + _("Back to Menu"), callback_data="main_menu")]
         ]
         if update.callback_query:
             query = update.callback_query
             await query.answer()
-            await query.message.edit_text("❌ You have no purchased routes yet.", reply_markup=InlineKeyboardMarkup(keyboard))
+            await query.message.edit_text("❌ " + _("You have no purchased routes yet."), reply_markup=InlineKeyboardMarkup(keyboard))
             return
         await send_message(
             update,
             context,
-            "❌ You have no purchased routes yet.",
+            "❌ " + _("You have no purchased routes yet."),
             reply_markup=InlineKeyboardMarkup(keyboard),
             clear_previous=True
         )
@@ -51,19 +56,11 @@ async def users_tours(update: Update, context: CallbackContext, user):
     keyboard = [[InlineKeyboardButton(route["rout_name"], callback_data=f"start_mytour_{route['id']}")] for route in routs]
     keyboard.append([InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")])
 
-    if update.callback_query:
-        query = update.callback_query
-        await query.answer()
 
-        await query.message.edit_text(
-            "📁 Your Purchased Routes:",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
-        return
+    query = update.callback_query
+    await query.answer()
 
-    await send_message(update, context, "📁 Your Purchased Routes:", clear_previous=True)
-    await update.message.reply_text(
-        "Select a tour to view details:",
-        reply_markup=InlineKeyboardMarkup(keyboard),
+    await query.message.edit_text(
+        "📁 " + _("Your Purchased Routes:"),
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
-    return

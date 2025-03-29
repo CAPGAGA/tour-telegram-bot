@@ -75,6 +75,20 @@ class BaseUser(BaseTable):
     username: Mapped[str] = mapped_column(String, nullable=True)
     # users that registered with telegram won't have password
     password: Mapped[str] = mapped_column(String, nullable=True)
+    lang: Mapped[str] = mapped_column(String, nullable=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'is_creator': self.is_creator,
+            'is_admin': self.is_admin,
+            'creator_id': self.creator_id,
+            'username': self.username,
+            'lang': self.lang
+        }
+
+
 
 
 class Order(BaseTable):

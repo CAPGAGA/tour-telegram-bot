@@ -36,8 +36,14 @@ async def fetch_users_tours(user_id):
 
 
 @user_auth
-async def show_tour_details(update: Update, context: CallbackContext, user):
+async def show_tour_details(
+        update: Update,
+        context: CallbackContext,
+        user
+):
     """Display details of a selected tour."""
+    _ = context._
+
     query = update.callback_query
     await query.answer()
 
@@ -51,12 +57,10 @@ async def show_tour_details(update: Update, context: CallbackContext, user):
             if user_tour['rout_id'] == int(tour_id):
                 is_owned = True
 
-
-
     if not tour:
-        keyboard = [[InlineKeyboardButton('🛒 Back to shop', callback_data="buy_tours")]]
+        keyboard = [[InlineKeyboardButton("🛒 " + _("Back to shop"), callback_data="buy_tours")]]
         await query.message.edit_text(
-            "❌ Failed to load tour details. Try again later.",
+            "❌ " + _("Failed to load tour details. Try again later."),
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
         return
@@ -79,16 +83,16 @@ async def show_tour_details(update: Update, context: CallbackContext, user):
 
     # Create tour card message
     tour_text = (f"🗺 **{rout_name}**"
-                 f"\n\n💵 **Price:** {base_price}$"
-                 f"\n\n📖 **Description:** {description} "
-                 f"\n\n📢 **Points:** {points} ┃ 📏 **Distance:** {distance} km  ")
+                 f"\n\n💵 **" + _("Base Price") + f":** {base_price}$"
+                 f"\n\n📖 **" + _("Description") + f":** {description} "
+                 f"\n\n📢 **" + _("Points") + f":** {points} ┃ 📏 **" + _("Distance" ) + f":** {distance} km  ")
 
     # Create purchase buttons
     keyboard = [
-        [InlineKeyboardButton("🛍 Buy for Me", callback_data=f"buy_me_{tour_id}")],
-        [InlineKeyboardButton("🎁 Buy for Friend", callback_data=f"buy_friend_{tour_id}")],
-        [InlineKeyboardButton("💵 I have promo code", callback_data=f"buy_promo_{tour_id}")],
-        [InlineKeyboardButton("🔙 Back to Tour List", callback_data="buy_tours")]
+        [InlineKeyboardButton("🛍 " + _("Buy for Me"), callback_data=f"buy_me_{tour_id}")],
+        [InlineKeyboardButton("🎁 " + _("Buy for Friend"), callback_data=f"buy_friend_{tour_id}")],
+        [InlineKeyboardButton("💵 " + _("I have promo code"), callback_data=f"buy_promo_{tour_id}")],
+        [InlineKeyboardButton("🔙 " + _("Back to Tour List"), callback_data="buy_tours")]
     ]
 
     if is_owned:

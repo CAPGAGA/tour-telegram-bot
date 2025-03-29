@@ -1,6 +1,7 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 
+from bot.decorators.auth import user_auth
 from settings import SUPPORTED_PAYMENT_METHODS
 
 
@@ -23,9 +24,11 @@ def get_gateway_menu(tour_id: int, subject: str):
 
     return InlineKeyboardMarkup(keyboard)
 
+@user_auth
 async def render_gateway_menu(
         update: Update,
-        context: CallbackContext
+        context: CallbackContext,
+        user
 ):
     """
     Render for gateway message

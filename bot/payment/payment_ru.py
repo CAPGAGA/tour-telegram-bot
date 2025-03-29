@@ -127,6 +127,7 @@ async def successful_payment_handler(update: Update, context: CallbackContext, u
                         f"Your payment token: {payment_token}")
         await update.message.reply_text(contact_info, reply_markup=reply_markup)
 
+@user_auth
 async def handle_cancel_payment(
         update: Update,
         context: CallbackContext

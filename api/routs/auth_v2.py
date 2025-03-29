@@ -104,7 +104,7 @@ async def register_telegram_user(
     existing_user = result.scalars().first()
 
     if existing_user:
-        return {"message": "User already registered", "user_id": existing_user.id}
+        return {"message": "User already registered", **existing_user.to_dict()}
 
     # Register new Telegram user (No password required)
     new_user = BaseUser(
@@ -117,7 +117,7 @@ async def register_telegram_user(
     await session.commit()
     await session.refresh(new_user)
 
-    return {"message": "Telegram user registered successfully", "user_id": new_user.id}
+    return {"message": "Telegram user registered successfully", **new_user}
 
 class LoginRequest(BaseModel):
     username: str

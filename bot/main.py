@@ -14,8 +14,8 @@ from bot.payment.payment_ru import redner_youkassa_payment_menu, handle_cancel_p
     successful_payment_handler
 from bot.payment.payment_world import render_paypal_payment_menu
 # import modules
-from modules.start import start
-from modules.main_menu import main_menu, handle_menu_callbacks
+from modules.start import start, set_language_first
+from modules.main_menu import main_menu
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -35,7 +35,10 @@ async def error(update: Update, context: CallbackContext) -> None:
 def main():
     application = Application.builder().token(BOT_TOKEN).build()
 
+    # start sequence
     application.add_handler(CommandHandler("start", start))
+    application.add_handler(CallbackQueryHandler(set_language_first, pattern="set_language_.*"))
+
     application.add_handler(CommandHandler('menu', main_menu))
     # --- Handlers for "Buy Tours" button in main menu ---
     # Opens the tour shop list
