@@ -8,7 +8,7 @@ from sqlalchemy import (
     Float,
     Text,
     Boolean,
-    func,
+    func, BigInteger,
 )
 from sqlalchemy.dialects.postgresql import NUMERIC
 from sqlalchemy.orm import Mapped
@@ -68,7 +68,7 @@ class BaseUser(BaseTable):
     __tablename__ = 'user'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(Integer, unique=True, index=True, nullable=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, unique=True, index=True, nullable=True)
     is_creator: Mapped[bool] = mapped_column(Boolean,default=False)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     creator_id: Mapped[int] = mapped_column(ForeignKey('creator.id'), nullable=True)
