@@ -131,7 +131,7 @@ async def create_order_telegram(
     new_order = Order(
         user_id=order.user_id,
         rout_id=order.rout_id,
-        amount=invoice_data['amount'],
+        amount=str(invoice_data['amount']),
         payment_method=invoice_data['payment_method'],
         invoice_id=invoice_data['invoice_id'],
         payment_link=None
