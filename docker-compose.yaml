@@ -2,30 +2,12 @@ version: "3.4"
 
 services:
 
-  reverse-proxy:
-    image: traefik:3.1
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.reverse-proxy.rule=Host(`proxy.localhost`)"
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker"
-      - "--providers.docker.exposedbydefault=false"
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
-    volumes:
-      - letsencrypt:/letsencrypt
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      app_network:
-
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: web
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      target: web
+    image: capgaga/pocketour:web-latest
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.web.rule=Host(`app.localhost`)"
@@ -35,8 +17,11 @@ services:
       replicas: 3
     command: >
       bash -c '
-        uvicorn api.main:app --host 0.0.0.0 --port 80 --proxy-headers
+        alembic upgrade head && \
+        uvicorn api.main:app --host 0.0.0.0 --port 80 --proxy-headers --forwarded-allow-ips "*"
       '
+    ports:
+      - "8000:80"
     env_file:
       - .env
     volumes:
@@ -47,10 +32,11 @@ services:
       app_network:
 
   bot:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: bot
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      target: bot
+    image: capgaga/pocketour:bot-latest
     labels:
       - "traefik.enable=false"
     container_name: bot

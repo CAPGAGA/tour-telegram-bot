@@ -127,7 +127,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 // Store JWT token in cookies
-                document.cookie = `auth_token=${body.token}; path=/; max-age=${7 * 24 * 60 * 60}; Secure`;
+                let cookieStr = `auth_token=${body.token}; path=/; max-age=${7 * 24 * 60 * 60};`;
+                if (location.protocol === 'https:') {
+                    cookieStr += " Secure";
+                }
+                document.cookie = cookieStr;
 
                 showMessage("Login successful!", "success");
 
