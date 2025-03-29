@@ -9,7 +9,12 @@ SUPPORTED_LANGUAGES = ['ru', 'en']
 
 HEADLESS_MODE: bool = True if str(os.getenv("HEADLESS_MODE", "False")) == "True" else False
 
-SUPPORTED_PAYMENT_METHODS = {'paypal', 'yuukassa_telegram'}
+SUPPORTED_PAYMENT_METHODS = []
+if os.getenv("IS_PAYPAL_ON", "False") == "True":
+    SUPPORTED_PAYMENT_METHODS.append("paypal")
+
+if os.getenv("IS_YUUKASSA_TELEGRAM_ON", "False") == "True":
+    SUPPORTED_PAYMENT_METHODS.append("yuukassa_telegram")
 
 # auth settings
 SECRET_KEY: str = os.getenv('SECRET_KEY')
@@ -31,3 +36,5 @@ POSTGRES_USER= os.getenv('POSTGRES_USER', 'postgres')
 POSTGRES_PASSWORD= os.getenv('POSTGRES_PASSWORD', 'postgres')
 POSTGRES_PORT= os.getenv('POSTGRES_PORT', '5432')
 POSTGRES_DB= os.getenv('POSTGRES_DB', 'pocketour')
+
+CURRENCY_CONVERTER_API_KEY = os.getenv('CURRENCY_CONVERTER_API_KEY')

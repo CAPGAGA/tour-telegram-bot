@@ -5,6 +5,7 @@ from telegram import Update, InputMediaPhoto, InlineKeyboardButton, InlineKeyboa
 from telegram.constants import ParseMode
 from telegram.ext import CallbackContext
 
+from bot.decorators.auth import user_auth
 from settings import BASE_DIR
 
 API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000/apiV1")
@@ -59,11 +60,16 @@ async def fetch_tour_point(point_id):
         except aiohttp.ClientError:
             return None
 
-
-async def show_tour_point(update: Update, context: CallbackContext):
+@user_auth
+async def show_tour_point(
+        update: Update,
+        context: CallbackContext,
+        user
+):
     """
      Shows each tour point in recursion
     """
+    _ = context._
     query = update.callback_query
     await query.answer()
     # start, mid, finish
@@ -88,9 +94,9 @@ async def show_tour_point(update: Update, context: CallbackContext):
     if point:
         # render point
         if state == 'mid' or state == 'start':
-            await show_tour_point_map(update, context, point)
+            await show_tour_point_map(update, context, point, _)
         elif state == 'info':
-            await show_tour_point_materials(update, context, point)
+            await show_tour_point_materials(update, context, point, _)
         return
 
     # render last message
@@ -100,13 +106,18 @@ async def show_tour_point(update: Update, context: CallbackContext):
         [InlineKeyboardButton(text="⭐⭐⭐", callback_data="review_{data}_3")],
         [InlineKeyboardButton(text="⭐⭐⭐⭐", callback_data="review_{data}_4")],
         [InlineKeyboardButton(text="⭐⭐⭐⭐⭐", callback_data="review_{data}_5")],
-        [InlineKeyboardButton(text="🔙 Back to Menu", callback_data="main_menu")]
+        [InlineKeyboardButton(text="🔙 "+ _("Back to Menu"), callback_data="main_menu")]
     ]
-    await update.callback_query.message.edit_text('Rate this tour', reply_markup=InlineKeyboardMarkup(keyboard))
+    await update.callback_query.message.edit_text(_("Rate this tour"), reply_markup=InlineKeyboardMarkup(keyboard))
     return
 
 
-async def show_tour_point_map(update: Update, context: CallbackContext, point: dict):
+async def show_tour_point_map(
+        update: Update,
+        context: CallbackContext,
+        point: dict,
+        _
+):
     """
         Renders point message
     """
@@ -115,7 +126,7 @@ async def show_tour_point_map(update: Update, context: CallbackContext, point: d
     upper_border = '➖' * MAP_MESSAGE_WITH_EMOJI
     # send point description
     description = (f"{upper_border}"
-                   f"\n           <a href="">&#8204;</a>🧭 <b>Map of next point</b>")
+                   f"\n           <a href="">&#8204;</a>🧭 <b>"+ _("Map of next point") + "</b>")
     await context.bot.send_message(
         chat_id=chat_id,
         text=description,
@@ -131,7 +142,7 @@ async def show_tour_point_map(update: Update, context: CallbackContext, point: d
             [
                 [
                     InlineKeyboardButton(
-                        'I am here!',
+                        _("I am here!"),
                         callback_data=f"info_mytour_{point['id']}"
                     )
                  ]
@@ -145,10 +156,12 @@ async def show_tour_point_map(update: Update, context: CallbackContext, point: d
         )
     return
 
+
 async def show_tour_point_materials(
         update: Update,
         context: CallbackContext,
-        point: dict
+        point: dict,
+        _
 ):
     chat_id = update.effective_chat.id
 
@@ -166,8 +179,6 @@ async def show_tour_point_materials(
                 protect_content=True
             )
 
-
-
     # check and send images if needed
     images = point.get("image", [])
     if isinstance(images, list) and images:
@@ -181,11 +192,11 @@ async def show_tour_point_materials(
     # setup controller
     keyboard = []
     if point.get("next_point"):
-        keyboard.append([InlineKeyboardButton("➡️ Next Point", callback_data=f"mid_mytour_{point['next_point']}")])
+        keyboard.append([InlineKeyboardButton("➡️ " + _("Next Point"), callback_data=f"mid_mytour_{point['next_point']}")])
     else:
-        keyboard.append([InlineKeyboardButton("⭐ Leave review!", callback_data=f"review_mytour_{point['rout_id']}")])
-        keyboard.append([InlineKeyboardButton("✅ To main menu", callback_data="main_menu")])
+        keyboard.append([InlineKeyboardButton("⭐ " + _("Leave review!"), callback_data=f"review_mytour_{point['rout_id']}")])
+        keyboard.append([InlineKeyboardButton("✅ " + _("To main menu"), callback_data="main_menu")])
 
     # send controller
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await context.bot.send_message(chat_id, text='🔄 Tour navigation:', reply_markup=reply_markup)
+    await context.bot.send_message(chat_id, text="🔄 " + _("Tour navigation:"), reply_markup=reply_markup)

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-22 17:09+0100\n"
+"POT-Creation-Date: 2025-03-29 21:09+0100\n"
 "PO-Revision-Date: 2025-03-22 17:09+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -19,249 +19,586 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
+#: bot/modules/main_menu.py:8
+msgid "Buy Tour"
+msgstr "Купить тур"
+
+#: bot/modules/main_menu.py:9
+msgid "Browse My Tours"
+msgstr "Мои купленные туры"
+
+#: bot/modules/main_menu.py:10
+msgid "Help"
+msgstr "Помощь"
+
+#: bot/modules/main_menu.py:11
+msgid "About this bot"
+msgstr "О боте"
+
+#: bot/modules/main_menu.py:31 bot/modules/main_menu.py:41
+msgid ""
+"Main menu\n"
+"\n"
+"Choose one of the options:"
+msgstr ""
+"Главное меню\n"
+"\n"
+"Выберите один из вариантов:"
+
+#: bot/modules/shop.py:50
+msgid "Prev"
+msgstr "Назад"
+
+#: bot/modules/shop.py:52 web/templates/shop.html:49
+msgid "Next"
+msgstr "Вперёд"
+
+#: bot/modules/shop.py:58 bot/modules/shop.py:78
+msgid "Back to Main Menu"
+msgstr "Назад в главное меню"
+
+#: bot/modules/shop.py:85 bot/modules/shop.py:92
+msgid "Failed to load tours. Try again later."
+msgstr "Не удалось загрузить туры. Попробуйте позже."
+
+#: bot/modules/shop.py:107
+msgid " Available Tours:"
+msgstr " Доступные туры:"
+
+#: bot/modules/shop.py:114
+msgid "Available Tours:"
+msgstr "Доступные туры:"
+
+#: bot/modules/tour.py:109 bot/modules/users_tours.py:39
+msgid "Back to Menu"
+msgstr "Назад в меню"
+
+#: bot/modules/tour.py:111
+msgid "Rate this tour"
+msgstr "Оцените этот тур"
+
+#: bot/modules/tour.py:129
+msgid "Map of next point"
+msgstr "Карта следующей точки"
+
+#: bot/modules/tour.py:145
+msgid "I am here!"
+msgstr "Я здесь!"
+
+#: bot/modules/tour.py:195
+msgid "Next Point"
+msgstr "Следующая точка"
+
+#: bot/modules/tour.py:197
+msgid "Leave review!"
+msgstr "Оставить отзыв!"
+
+#: bot/modules/tour.py:198
+msgid "To main menu"
+msgstr "В главное меню"
+
+#: bot/modules/tour.py:202
+msgid "Tour navigation:"
+msgstr "Навигация по туру:"
+
+#: bot/modules/tour_card.py:61
+msgid "Back to shop"
+msgstr "Назад в магазин"
+
+#: bot/modules/tour_card.py:63
+msgid "Failed to load tour details. Try again later."
+msgstr "Не удалось загрузить детали тура. Попробуйте позже."
+
+#: bot/modules/tour_card.py:86
+msgid "Base Price"
+msgstr "Базовая цена"
+
+#: bot/modules/tour_card.py:87
+msgid "Description"
+msgstr "Описание"
+
+#: bot/modules/tour_card.py:88
+msgid "Points"
+msgstr "Точки маршрута"
+
+#: bot/modules/tour_card.py:88
+msgid "Distance"
+msgstr "Расстояние"
+
+#: bot/modules/tour_card.py:92 web/templates/tour_page.html:51
+msgid "Buy for Me"
+msgstr "Купить для себя"
+
+#: bot/modules/tour_card.py:93
+msgid "Buy for Friend"
+msgstr "Купить для друга"
+
+#: bot/modules/tour_card.py:94
+msgid "I have promo code"
+msgstr "У меня есть промокод"
+
+#: bot/modules/tour_card.py:95
+msgid "Back to Tour List"
+msgstr "Назад к списку туров"
+
+#: bot/modules/users_tours.py:38
+msgid "Buy your first tour"
+msgstr "Купите свой первый тур"
+
+#: bot/modules/users_tours.py:44 bot/modules/users_tours.py:49
+msgid "You have no purchased routes yet."
+msgstr "У вас ещё нет купленных маршрутов."
+
+#: bot/modules/users_tours.py:64
+msgid "Your Purchased Routes:"
+msgstr "Ваши купленные маршруты:"
+
+#: bot/payment/payment_gateway.py:16
+msgid "Pay with card"
+msgstr "Оплата кратой"
+
+#: bot/payment/payment_gateway.py:20
+msgid "Pay with russian card"
+msgstr "Оплата российской картой"
+
+#: bot/payment/payment_gateway.py:23
+#, fuzzy
+msgid " Back to Tour Page"
+msgstr "Назад к списку туров"
+
+#: bot/payment/payment_gateway.py:44
+msgid "Choose how you want to pay:"
+msgstr "Выберете способ оплаты:"
+
+#: bot/payment/payment_ru.py:44
+msgid "Pay"
+msgstr "Оплатить"
+
+#: bot/payment/payment_ru.py:45
+msgid " Cancel Payment"
+msgstr "Отмена оплаты"
+
+#: bot/payment/payment_ru.py:88
+#, fuzzy
+msgid "Back to tour page"
+msgstr "Назад к списку туров"
+
+#: bot/payment/payment_ru.py:90
+#, fuzzy
+msgid "Failed to generate payment details. Try again later."
+msgstr "Не удалось загрузить детали тура. Попробуйте позже."
+
+#: bot/payment/payment_ru.py:120
+#, fuzzy
+msgid "Shop more"
+msgstr "Магазин"
+
+#: bot/payment/payment_ru.py:121
+#, fuzzy
+msgid "To your tours"
+msgstr "Ваши туры"
+
+#: bot/payment/payment_ru.py:124
+msgid "Payment successful! Your order has been confirmed."
+msgstr "Платеж прошёл успешно! Ваш заказ подтверждён."
+
+#: bot/payment/payment_ru.py:131
+msgid "Payment successful, but order confirmation failed."
+msgstr "Платеж прошёл успешно, но подтверждение заказа не удалось."
+
+#: bot/payment/payment_ru.py:132
+msgid "Contact Support: @your_support"
+msgstr "Свяжитесь с нашей поддержкой: @your_support"
+
+#: bot/payment/payment_ru.py:133
+msgid "Your payment token"
+msgstr "Ваш платежный индификатор"
+
+#: bot/payment/payment_ru.py:155
+msgid "Return to tour page"
+msgstr "Вернутся на страницу тура"
+
+#: bot/payment/payment_ru.py:157
+msgid "Payment has been canceled."
+msgstr "Платеж отменен"
+
+#: web/templates/checkout.html:10
 msgid "Checkout for"
 msgstr "Оформление для"
 
+#: web/templates/checkout.html:32
 msgid "Checkout"
 msgstr "Оформление"
 
+#: web/templates/checkout.html:34
 msgid "Tour Details"
 msgstr "Детали тура"
 
+#: web/templates/checkout.html:41
 msgid "Choose Payment Method"
 msgstr "Выберите способ оплаты"
 
+#: web/templates/checkout.html:42
 msgid "Card with PayPal"
 msgstr "Карта через PayPal"
 
-msgid "Join our platform and start earning by creating interactive audio and visual tours."
-msgstr "Присоединяйтесь к нашей платформе и зарабатывайте, создавая интерактивные аудио- и визуальные туры."
+#: web/templates/for_creators_page.html:8
+msgid ""
+"Join our platform and start earning by creating interactive audio and "
+"visual tours."
+msgstr ""
+"Присоединяйтесь к нашей платформе и зарабатывайте, создавая интерактивные"
+" аудио- и визуальные туры."
 
+#: web/templates/for_creators_page.html:10
+#: web/templates/for_creators_page.html:16
+#: web/templates/for_creators_page.html:39
+#: web/templates/for_creators_page.html:61
 msgid "Become a Creator with PockeTour"
 msgstr "Станьте создателем с PockeTour"
 
+#: web/templates/for_creators_page.html:11
+#: web/templates/for_creators_page.html:17
 msgid "Create interactive travel experiences and earn forever."
 msgstr "Создавайте интерактивные путешествия и зарабатывайте постоянно."
 
+#: web/templates/for_creators_page.html:27
 msgid "Become a Creator"
 msgstr "Стать создателем"
 
-msgid "Create interactive audio and visual travel tours and earn income from global travelers."
-msgstr "Создавайте интерактивные аудио- и визуальные туры и получайте доход от путешественников со всего мира."
+#: web/templates/for_creators_page.html:40
+msgid ""
+"Create interactive audio and visual travel tours and earn income from "
+"global travelers."
+msgstr ""
+"Создавайте интерактивные аудио- и визуальные туры и получайте доход от "
+"путешественников со всего мира."
 
-msgid "Join our platform and start earning by creating interactive audio and visual tours for travelers worldwide. Here's why you should become a PockeTour creator:"
-msgstr "Присоединяйтесь к нашей платформе и начните зарабатывать, создавая интерактивные аудио- и визуальные туры для путешественников по всему миру. Вот почему стоит стать создателем на PockeTour:"
+#: web/templates/for_creators_page.html:64
+msgid ""
+"Join our platform and start earning by creating interactive audio and "
+"visual tours for travelers worldwide. Here's why you should become a "
+"PockeTour creator:"
+msgstr ""
+"Присоединяйтесь к нашей платформе и начните зарабатывать, создавая "
+"интерактивные аудио- и визуальные туры для путешественников по всему "
+"миру. Вот почему стоит стать создателем на PockeTour:"
 
+#: web/templates/for_creators_page.html:71
 msgid "Create Once, Earn Forever"
 msgstr "Создайте один раз, зарабатывайте всегда"
 
-msgid "Upload your tour once and earn from it continuously as travelers explore your content."
-msgstr "Загрузите свой тур один раз и зарабатывайте на нем постоянно, пока путешественники исследуют ваш контент."
+#: web/templates/for_creators_page.html:72
+msgid ""
+"Upload your tour once and earn from it continuously as travelers explore "
+"your content."
+msgstr ""
+"Загрузите свой тур один раз и зарабатывайте на нем постоянно, пока "
+"путешественники исследуют ваш контент."
 
+#: web/templates/for_creators_page.html:78
 msgid "Global Reach"
 msgstr "Глобальный охват"
 
+#: web/templates/for_creators_page.html:79
 msgid "Your tours are instantly available to travelers around the world."
 msgstr "Ваши туры сразу доступны путешественникам по всему миру."
 
+#: web/templates/for_creators_page.html:85
 msgid "Built-in Promotion"
 msgstr "Встроенное продвижение"
 
-msgid "We handle marketing and drive traffic to your tour using powerful SEO tools and our growing platform audience."
-msgstr "Мы занимаемся маркетингом и привлекаем трафик к вашему туру с помощью мощных SEO-инструментов и растущей аудитории нашей платформы."
+#: web/templates/for_creators_page.html:86
+msgid ""
+"We handle marketing and drive traffic to your tour using powerful SEO "
+"tools and our growing platform audience."
+msgstr ""
+"Мы занимаемся маркетингом и привлекаем трафик к вашему туру с помощью "
+"мощных SEO-инструментов и растущей аудитории нашей платформы."
 
+#: web/templates/for_creators_page.html:92
 msgid "Multilingual Support"
 msgstr "Многоязычная поддержка"
 
-msgid "Create in your language, and we will translate it to reach a global audience. (coming soon)"
-msgstr "Создавайте на своем языке, а мы переведем — чтобы достичь глобальной аудитории. (скоро)"
+#: web/templates/for_creators_page.html:93
+msgid ""
+"Create in your language, and we will translate it to reach a global "
+"audience. (coming soon)"
+msgstr ""
+"Создавайте на своем языке, а мы переведем — чтобы достичь глобальной "
+"аудитории. (скоро)"
 
+#: web/templates/for_creators_page.html:98
 msgid "How It Works"
 msgstr "Как это работает"
 
+#: web/templates/for_creators_page.html:102
 msgid "Step 1: Create Your Tour"
 msgstr "Шаг 1: Создайте свой тур"
 
-msgid "Start by adding general information: a compelling title, a detailed description, and a price that fits your experience."
-msgstr "Начните с добавления основной информации: привлекательного названия, подробного описания и подходящей цены."
+#: web/templates/for_creators_page.html:103
+msgid ""
+"Start by adding general information: a compelling title, a detailed "
+"description, and a price that fits your experience."
+msgstr ""
+"Начните с добавления основной информации: привлекательного названия, "
+"подробного описания и подходящей цены."
 
-msgid "Then, use our intuitive editor to place points on the map, attach photos and audio to bring your story to life."
-msgstr "Затем воспользуйтесь нашим интуитивным редактором, чтобы разместить точки на карте, прикрепить фотографии и аудио, оживляя ваш рассказ."
+#: web/templates/for_creators_page.html:104
+msgid ""
+"Then, use our intuitive editor to place points on the map, attach photos "
+"and audio to bring your story to life."
+msgstr ""
+"Затем воспользуйтесь нашим интуитивным редактором, чтобы разместить точки"
+" на карте, прикрепить фотографии и аудио, оживляя ваш рассказ."
 
+#: web/templates/for_creators_page.html:120
 msgid "Step 2: Add details"
 msgstr "Шаг 2: Добавьте детали"
 
-msgid "Set up each point on the map with images and/or audio, then publish it to the world."
-msgstr "Настройте каждую точку на карте с изображениями и/или аудио, затем опубликуйте тур для всего мира."
+#: web/templates/for_creators_page.html:121
+msgid ""
+"Set up each point on the map with images and/or audio, then publish it to"
+" the world."
+msgstr ""
+"Настройте каждую точку на карте с изображениями и/или аудио, затем "
+"опубликуйте тур для всего мира."
 
-msgid "We promote your tour on our platform using advanced SEO and community channels."
-msgstr "Мы продвигаем ваш тур на нашей платформе, используя современные SEO и каналы сообщества."
+#: web/templates/for_creators_page.html:122
+msgid ""
+"We promote your tour on our platform using advanced SEO and community "
+"channels."
+msgstr ""
+"Мы продвигаем ваш тур на нашей платформе, используя современные SEO и "
+"каналы сообщества."
 
+#: web/templates/for_creators_page.html:128
 msgid "Step 3: Manage and earn with Every Tour"
 msgstr "Шаг 3: Управляйте и зарабатывайте на каждом туре"
 
+#: web/templates/for_creators_page.html:129
 msgid "Toggle visibility, edit tours, add new languages and more"
-msgstr "Управляйте видимостью, редактируйте туры, добавляйте новые языки и многое другое"
+msgstr ""
+"Управляйте видимостью, редактируйте туры, добавляйте новые языки и многое"
+" другое"
 
+#: web/templates/for_creators_page.html:138
 msgid "Roadmap"
 msgstr "Дорожная карта"
 
+#: web/templates/for_creators_page.html:140
 msgid "Q1:"
 msgstr "Q1:"
 
+#: web/templates/for_creators_page.html:140
 msgid "Launch Creator Tools ✅"
 msgstr "Запуск инструментов для создателей ✅"
 
+#: web/templates/for_creators_page.html:141
 msgid "Q2:"
 msgstr "Q2:"
 
+#: web/templates/for_creators_page.html:141
 msgid "Mobile Support + PWA"
 msgstr "Мобильная поддержка + PWA"
 
+#: web/templates/for_creators_page.html:142
 msgid "Q3:"
 msgstr "Q3:"
 
+#: web/templates/for_creators_page.html:142
 msgid "Analytics Dashboard"
 msgstr "Панель аналитики"
 
+#: web/templates/for_creators_page.html:143
 msgid "Q4:"
 msgstr "Q4:"
 
+#: web/templates/for_creators_page.html:143
 msgid "Affiliate Program"
 msgstr "Партнёрская программа"
 
+#: web/templates/for_creators_page.html:147
 msgid "Start Creating"
 msgstr "Начать создание"
 
+#: web/templates/landing.html:7 web/templates/landing.html:11
+#: web/templates/landing.html:17
 msgid "Discover Unique Audio Tours Around the World"
 msgstr "Откройте для себя уникальные аудиотуры по всему миру"
 
-msgid "Browse and explore immersive self-guided tours powered by audio, images, and maps. Discover new destinations and travel at your own pace."
-msgstr "Просматривайте и исследуйте увлекательные самостоятельные туры с аудио, изображениями и картами. Открывайте новые места и путешествуйте в своем ритме."
+#: web/templates/landing.html:9 web/templates/landing.html:12
+#: web/templates/landing.html:18
+msgid ""
+"Browse and explore immersive self-guided tours powered by audio, images, "
+"and maps. Discover new destinations and travel at your own pace."
+msgstr ""
+"Просматривайте и исследуйте увлекательные самостоятельные туры с аудио, "
+"изображениями и картами. Открывайте новые места и путешествуйте в своем "
+"ритме."
 
+#: web/templates/login.html:6 web/templates/login.html:19
+#: web/templates/login.html:35 web/templates/modules/landing/navbar.html:25
 msgid "Login"
 msgstr "Вход"
 
+#: web/templates/login.html:23 web/templates/register.html:32
 msgid "Username"
 msgstr "Имя пользователя"
 
+#: web/templates/login.html:25
 msgid "Enter your username"
 msgstr "Введите имя пользователя"
 
+#: web/templates/login.html:32
 msgid "Enter your password"
 msgstr "Введите пароль"
 
+#: web/templates/login.html:39
 msgid "Don't have an account? Register"
 msgstr "Нет аккаунта? Зарегистрируйтесь"
 
+#: web/templates/my_tours_page.html:12
 msgid "Your Tours"
 msgstr "Ваши туры"
 
+#: web/templates/my_tours_page.html:34
 msgid "My Purchased Tours"
 msgstr "Мои купленные туры"
 
+#: web/templates/my_tours_page.html:58
 msgid "Nothing here yet"
 msgstr "Здесь пока ничего нет"
 
+#: web/templates/my_tours_page.html:59
 msgid "Start exploring by purchasing your first tour"
 msgstr "Начните исследовать, купив свой первый тур"
 
+#: web/templates/modules/landing/hero_section.html:6
+#: web/templates/my_tours_page.html:60
 msgid "Browse Tours"
 msgstr "Смотреть туры"
 
+#: web/templates/register.html:6 web/templates/register.html:19
+#: web/templates/register.html:45 web/templates/register.html:71
 msgid "Register"
 msgstr "Регистрация"
 
+#: web/templates/register.html:23
 msgid "Register as User"
 msgstr "Регистрация как пользователь"
 
+#: web/templates/register.html:24
 msgid "Register as Creator"
 msgstr "Регистрация как создатель"
 
+#: web/templates/register.html:29
 msgid "Register as a User"
 msgstr "Зарегистрироваться как пользователь"
 
+#: web/templates/register.html:34
 msgid "Enter username"
 msgstr "Введите имя пользователя"
 
+#: web/templates/register.html:39
 msgid "Password"
 msgstr "Пароль"
 
+#: web/templates/register.html:41 web/templates/register.html:68
 msgid "Enter password"
 msgstr "Введите пароль"
 
+#: web/templates/register.html:51
 msgid "Register as a Creator"
 msgstr "Зарегистрироваться как создатель"
 
+#: web/templates/register.html:76
 msgid "Already have an account? Login"
 msgstr "Уже есть аккаунт? Войти"
 
+#: web/templates/shop.html:6
 msgid "Tours Shop"
 msgstr "Магазин туров"
 
+#: web/templates/shop.html:30
 msgid "Tour Store"
 msgstr "Каталог туров"
 
+#: web/templates/shop.html:35 web/templates/shop.html:40
 msgid "Search"
 msgstr "Поиск"
 
+#: web/templates/shop.html:37
 msgid "Search for a tour..."
 msgstr "Поиск тура..."
 
+#: web/templates/shop.html:48
 msgid "Previous"
 msgstr "Назад"
 
-msgid "Next"
-msgstr "Вперед"
-
-msgid "Buy for Me"
-msgstr "Купить для меня"
-
+#: web/templates/tour_page.html:58
 msgid "Tour Points"
 msgstr "Точки маршрута"
 
+#: web/templates/modules/landing/features.html:5
 msgid "Unique Destinations"
 msgstr "Уникальные направления"
 
+#: web/templates/modules/landing/features.html:6
 msgid "Choose from hundreds of carefully crafted tour experiences."
 msgstr "Выбирайте из сотен тщательно разработанных туров."
 
+#: web/templates/modules/landing/features.html:9
 msgid "Easy Booking"
 msgstr "Простой заказ"
 
+#: web/templates/modules/landing/features.html:10
 msgid "Simple checkout and secure payments with PayPal"
 msgstr "Простой процесс покупки и безопасные платежи через PayPal"
 
+#: web/templates/modules/landing/features.html:13
 msgid "Interactive Routes"
 msgstr "Интерактивные маршруты"
 
+#: web/templates/modules/landing/features.html:14
 msgid "View real-time maps and track your adventure as you go."
-msgstr "Смотрите карты в реальном времени и отслеживайте свое путешествие по ходу маршрута."
+msgstr ""
+"Смотрите карты в реальном времени и отслеживайте свое путешествие по ходу"
+" маршрута."
 
+#: web/templates/modules/landing/hero_section.html:4
 msgid "Explore the World with Our Tours"
 msgstr "Исследуйте мир с нашими турами"
 
+#: web/templates/modules/landing/hero_section.html:5
 msgid "Discover, Book, and Experience Amazing Travel Destinations"
 msgstr "Откройте, забронируйте и испробуйте удивительные путешествия"
 
+#: web/templates/modules/landing/mini_shop.html:3
 msgid "Featured Tours"
 msgstr "Избранные туры"
 
+#: web/templates/modules/landing/navbar.html:16
 msgid "For Creators"
 msgstr "Для создателей"
 
+#: web/templates/modules/landing/navbar.html:17
 msgid "Shop"
 msgstr "Магазин"
 
+#: web/templates/modules/landing/navbar.html:18
 msgid "Install App"
 msgstr "Установить приложение"
 
+#: web/templates/modules/landing/navbar.html:20
 msgid "My Tours"
 msgstr "Мои туры"
 
+#: web/templates/modules/landing/navbar.html:22
 msgid "Creator's cabinet"
 msgstr "Кабинет создателя"
 
+#: web/templates/modules/landing/navbar.html:28
 msgid "Language"
 msgstr "Язык"
 

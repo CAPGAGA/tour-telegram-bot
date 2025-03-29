@@ -4,6 +4,8 @@ from functools import wraps
 from telegram import Update
 from telegram.ext import CallbackContext
 
+from bot.translation.loader import get_translator
+
 API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000/apiV1")
 
 
@@ -32,6 +34,11 @@ def user_auth(func):
             except aiohttp.ClientError as e:
                 await update.message.reply_text("❌ Network error. Please try again later.")
                 return
+
+        lang = user.get("lang", "en")
+        if not lang:
+            lang = "en"
+        context._ = get_translator(lang)
 
         # Pass user data to the handler
         return await func(update, context, user, *args, **kwargs)

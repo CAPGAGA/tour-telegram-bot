@@ -1,4 +1,5 @@
 import logging
+from typing import AsyncGenerator
 
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm.decl_api import DeclarativeMeta
