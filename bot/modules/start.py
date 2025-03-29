@@ -40,7 +40,7 @@ async def set_language_first(
 
     lang = query.data.split("_")[-1]
 
-    await set_language(user['user_id'], lang)
+    await set_language(user['id'], lang)
 
     await main_menu(update, context)
 

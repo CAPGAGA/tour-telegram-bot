@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-22 17:09+0100\n"
+"POT-Creation-Date: 2025-03-29 20:32+0100\n"
 "PO-Revision-Date: 2025-03-22 17:09+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -17,6 +17,137 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
+
+#: bot/modules/main_menu.py:8
+msgid "Buy Tour"
+msgstr ""
+
+#: bot/modules/main_menu.py:9
+msgid "Browse My Tours"
+msgstr ""
+
+#: bot/modules/main_menu.py:10
+msgid "Help"
+msgstr ""
+
+#: bot/modules/main_menu.py:11
+msgid "About this bot"
+msgstr ""
+
+#: bot/modules/main_menu.py:31 bot/modules/main_menu.py:41
+msgid ""
+"Main menu\n"
+"\n"
+"Choose one of the options:"
+msgstr ""
+
+#: bot/modules/shop.py:50
+msgid "Prev"
+msgstr ""
+
+#: bot/modules/shop.py:52 web/templates/shop.html:49
+msgid "Next"
+msgstr ""
+
+#: bot/modules/shop.py:58 bot/modules/shop.py:78
+msgid "Back to Main Menu"
+msgstr ""
+
+#: bot/modules/shop.py:85 bot/modules/shop.py:92
+msgid "Failed to load tours. Try again later."
+msgstr ""
+
+#: bot/modules/shop.py:107
+msgid " Available Tours:"
+msgstr ""
+
+#: bot/modules/shop.py:114
+msgid "Available Tours:"
+msgstr ""
+
+#: bot/modules/tour.py:109 bot/modules/users_tours.py:39
+msgid "Back to Menu"
+msgstr ""
+
+#: bot/modules/tour.py:111
+msgid "Rate this tour"
+msgstr ""
+
+#: bot/modules/tour.py:129
+msgid "Map of next point"
+msgstr ""
+
+#: bot/modules/tour.py:145
+msgid "I am here!"
+msgstr ""
+
+#: bot/modules/tour.py:195
+msgid "Next Point"
+msgstr ""
+
+#: bot/modules/tour.py:197
+msgid "Leave review!"
+msgstr ""
+
+#: bot/modules/tour.py:198
+msgid "To main menu"
+msgstr ""
+
+#: bot/modules/tour.py:202
+msgid "Tour navigation:"
+msgstr ""
+
+#: bot/modules/tour_card.py:61
+msgid "Back to shop"
+msgstr ""
+
+#: bot/modules/tour_card.py:63
+msgid "Failed to load tour details. Try again later."
+msgstr ""
+
+#: bot/modules/tour_card.py:86
+msgid "Base Price"
+msgstr ""
+
+#: bot/modules/tour_card.py:87
+msgid "Description"
+msgstr ""
+
+#: bot/modules/tour_card.py:88
+msgid "Points"
+msgstr ""
+
+#: bot/modules/tour_card.py:88
+msgid "Distance"
+msgstr ""
+
+#: bot/modules/tour_card.py:92 web/templates/tour_page.html:51
+msgid "Buy for Me"
+msgstr ""
+
+#: bot/modules/tour_card.py:93
+msgid "Buy for Friend"
+msgstr ""
+
+#: bot/modules/tour_card.py:94
+msgid "I have promo code"
+msgstr ""
+
+#: bot/modules/tour_card.py:95
+msgid "Back to Tour List"
+msgstr ""
+
+#: bot/modules/users_tours.py:38
+msgid "Buy your first tour"
+msgstr ""
+
+#: bot/modules/users_tours.py:44 bot/modules/users_tours.py:49
+msgid "You have no purchased routes yet."
+msgstr ""
+
+#: bot/modules/users_tours.py:64
+msgid "Your Purchased Routes:"
+msgstr ""
 
 #: web/templates/checkout.html:10
 msgid "Checkout for"
@@ -52,8 +183,7 @@ msgid "Become a Creator with PockeTour"
 msgstr ""
 
 #: web/templates/for_creators_page.html:11
-#: web/templates/for_creators_page.html:17 web/templates/landing.html:12
-#: web/templates/landing.html:18
+#: web/templates/for_creators_page.html:17
 msgid "Create interactive travel experiences and earn forever."
 msgstr ""
 
@@ -201,7 +331,8 @@ msgstr ""
 msgid "Discover Unique Audio Tours Around the World"
 msgstr ""
 
-#: web/templates/landing.html:9
+#: web/templates/landing.html:9 web/templates/landing.html:12
+#: web/templates/landing.html:18
 msgid ""
 "Browse and explore immersive self-guided tours powered by audio, images, "
 "and maps. Discover new destinations and travel at your own pace."
@@ -304,14 +435,6 @@ msgstr ""
 
 #: web/templates/shop.html:48
 msgid "Previous"
-msgstr ""
-
-#: web/templates/shop.html:49
-msgid "Next"
-msgstr ""
-
-#: web/templates/tour_page.html:51
-msgid "Buy for Me"
 msgstr ""
 
 #: web/templates/tour_page.html:58
