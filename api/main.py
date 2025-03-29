@@ -8,12 +8,16 @@ from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi_babel import BabelMiddleware, BabelConfigs, Babel, use_babel, lazy_gettext as _
-from babel import Locale
+from fastapi_babel import BabelMiddleware, BabelConfigs
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware.sessions import SessionMiddleware
 
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+
+from api.cron.update_currency_rates import fetch_and_store_currency_rates, ensure_currency_rates
 from api.handlers import get_auth_token, get_current_creator, get_current_user, get_locale, get_lang_from_session
 from api.routs.creator import creator_rout_router
 from api.routs.auth_v2 import auth_router
@@ -35,6 +39,8 @@ from settings import DEBUG, SECRET_KEY, HEADLESS_MODE
 
 logger = logging.getLogger(__name__)
 
+scheduler = BackgroundScheduler()
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
@@ -50,7 +56,15 @@ async def lifespan(app: FastAPI):
             logger.error(f'Error while starting api: {e}')
     else:
         logger.info('Running in production mode')
+    await ensure_currency_rates()
+
+    scheduler.start()
+    # update currencies every day at 6 AM UTC
+    scheduler.add_job(
+        fetch_and_store_currency_rates, CronTrigger(hour=6, minute=0)
+    )
     yield
+    scheduler.shutdown()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -80,8 +94,6 @@ app.include_router(geocode_router, prefix='/apiV1')
 
 if not HEADLESS_MODE:
 
-    logger.info('Running with head mode')
-    print('Running with head mode')
     # util urls
     app.mount('/sitemap.xml', sitemap)
 

@@ -164,7 +164,6 @@ def get_lang_from_session(request: Request) -> str:
         # Check if any of the user's preferred languages match supported ones
         for lang in languages:
             if lang in SUPPORTED_LANGUAGES:
-                print("get_locale: ", lang)
                 return lang
 
     return "en"

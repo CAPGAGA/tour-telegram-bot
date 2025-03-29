@@ -13,6 +13,31 @@ Feel free to **clone**, **modify** it for your needs, or create **pull requests*
 
 ## 📄 Documentation
 
+### Preparing environment 
+First we need to set up python development environment.
+
+If you are using IDE with auto project setup (e.g. PyCharm) use it's built in setup process.
+
+Otherwise, you can use following commands to set up development stand:
+
+1. Clone repository:
+```shell
+  git clone https://github.com/CAPGAGA/tour-telegram-bot.git && cd tour-telegram-bot
+```
+2. Setup python virtual environment:
+```shell
+  python -m venv venv
+```
+3. Install needed dependencies 
+```shell
+  pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r requirements.txt
+```
+4. Setup `.env` file with `.env.example`
+5. Export env into your virtual environment:
+```shell
+  export $(xargs < .env)
+```
+
 ### Adding new language
 
 ### Translating to new language

@@ -9,7 +9,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from telegram import LabeledPrice
 
-from db.models import Rout, BaseUser
+from db.database import get_session
+from db.models import Rout, BaseUser, CurrencyRates
 from api.handlers import create_payment_token
 from settings import PAYPAL_API_URL, PAYPAL_SECRET, PAYPAL_CLIENT_ID, TELEGRAM_PAYMENT_PROVIDER, TELEGRAM_CURRENCY
 
@@ -18,6 +19,36 @@ logger = logging.getLogger(__name__)
 API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000/apiV1")
 
 class InvoiceConstructor:
+
+    @staticmethod
+    async def _convert_currency(
+            amount_usd: float,
+            target_currency: str
+    ) -> float:
+        """
+        Converts price to other currency
+        """
+        target_currency = target_currency.upper()
+        if target_currency not in ["USD", "EUR", "RUB"]:
+            raise ValueError(f"Unsupported currency: {target_currency}")
+
+        async for session in get_session():
+            async with session.begin():
+                result = await session.execute(
+                    select(CurrencyRates)
+                    .order_by(CurrencyRates.created_at.desc()).limit(1)
+                )
+                rates: CurrencyRates = result.scalar_one_or_none()
+
+                if not rates:
+                    raise Exception("Currency rates not found")
+
+                if target_currency == "USD":
+                    return amount_usd * float(rates.usd_usd)
+                elif target_currency == "EUR":
+                    return amount_usd * float(rates.usd_eur)
+                elif target_currency == "RUB":
+                    return amount_usd * float(rates.usd_rub)
 
     @staticmethod
     async def _fetch_tour_details(tour_id: int, session: AsyncSession):
@@ -162,7 +193,7 @@ class InvoiceConstructor:
             "currency": TELEGRAM_CURRENCY,
             "prices": {
                 'label': tour_data.rout_name,
-                'price': tour_data.base_price,
+                'price': await InvoiceConstructor._convert_currency(tour_data.base_price, TELEGRAM_CURRENCY),
             },
             "start_parameter": f"buy_tour_{tour_id}",
             "need_email": True,

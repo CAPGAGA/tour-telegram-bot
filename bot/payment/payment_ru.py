@@ -35,7 +35,7 @@ async def construct_invoice(
     prices = [
         LabeledPrice(
             label=invoice_data['invoice_payload']["prices"]['label'],
-            amount=int(float(invoice_data['invoice_payload']["prices"]['price']) * 1000)
+            amount=int(float(invoice_data['invoice_payload']["prices"]['price']) * 100)
         )
     ]
 

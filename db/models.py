@@ -10,6 +10,7 @@ from sqlalchemy import (
     Boolean,
     func,
 )
+from sqlalchemy.dialects.postgresql import NUMERIC
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm._orm_constructors import mapped_column
 
@@ -183,3 +184,17 @@ class PointMedia(BaseTable):
     rout_point_id: Mapped[int] = mapped_column(ForeignKey('rout_point.id'))
     media_name: Mapped[str] = mapped_column(String, nullable=False)
 
+class CurrencyRates(Base):
+    """
+        Table to store currency rates, updates once a day
+    """
+
+    __tablename__ = 'currency_rates'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    usd_usd: Mapped[float] = mapped_column(NUMERIC(10,5))
+    usd_eur: Mapped[float] = mapped_column(NUMERIC(10,5))
+    usd_rub: Mapped[float] = mapped_column(NUMERIC(10,5))
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True),
+        server_default=func.now()
+    )
