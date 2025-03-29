@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-29 20:32+0100\n"
+"POT-Creation-Date: 2025-03-29 21:09+0100\n"
 "PO-Revision-Date: 2025-03-22 17:09+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -147,6 +147,70 @@ msgstr ""
 
 #: bot/modules/users_tours.py:64
 msgid "Your Purchased Routes:"
+msgstr ""
+
+#: bot/payment/payment_gateway.py:16
+msgid "Pay with card"
+msgstr ""
+
+#: bot/payment/payment_gateway.py:20
+msgid "Pay with russian card"
+msgstr ""
+
+#: bot/payment/payment_gateway.py:23
+msgid " Back to Tour Page"
+msgstr ""
+
+#: bot/payment/payment_gateway.py:44
+msgid "Choose how you want to pay:"
+msgstr ""
+
+#: bot/payment/payment_ru.py:44
+msgid "Pay"
+msgstr ""
+
+#: bot/payment/payment_ru.py:45
+msgid " Cancel Payment"
+msgstr ""
+
+#: bot/payment/payment_ru.py:88
+msgid "Back to tour page"
+msgstr ""
+
+#: bot/payment/payment_ru.py:90
+msgid "Failed to generate payment details. Try again later."
+msgstr ""
+
+#: bot/payment/payment_ru.py:120
+msgid "Shop more"
+msgstr ""
+
+#: bot/payment/payment_ru.py:121
+msgid "To your tours"
+msgstr ""
+
+#: bot/payment/payment_ru.py:124
+msgid "Payment successful! Your order has been confirmed."
+msgstr ""
+
+#: bot/payment/payment_ru.py:131
+msgid "Payment successful, but order confirmation failed."
+msgstr ""
+
+#: bot/payment/payment_ru.py:132
+msgid "Contact Support: @your_support"
+msgstr ""
+
+#: bot/payment/payment_ru.py:133
+msgid "Your payment token"
+msgstr ""
+
+#: bot/payment/payment_ru.py:155
+msgid "Return to tour page"
+msgstr ""
+
+#: bot/payment/payment_ru.py:157
+msgid "Payment has been canceled."
 msgstr ""
 
 #: web/templates/checkout.html:10

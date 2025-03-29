@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-29 20:32+0100\n"
+"POT-Creation-Date: 2025-03-29 21:09+0100\n"
 "PO-Revision-Date: 2025-03-22 17:09+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -40,7 +40,10 @@ msgid ""
 "Main menu\n"
 "\n"
 "Choose one of the options:"
-msgstr "Главное меню\n\nВыберите один из вариантов:"
+msgstr ""
+"Главное меню\n"
+"\n"
+"Выберите один из вариантов:"
 
 #: bot/modules/shop.py:50
 msgid "Prev"
@@ -149,6 +152,75 @@ msgstr "У вас ещё нет купленных маршрутов."
 #: bot/modules/users_tours.py:64
 msgid "Your Purchased Routes:"
 msgstr "Ваши купленные маршруты:"
+
+#: bot/payment/payment_gateway.py:16
+msgid "Pay with card"
+msgstr "Оплата кратой"
+
+#: bot/payment/payment_gateway.py:20
+msgid "Pay with russian card"
+msgstr "Оплата российской картой"
+
+#: bot/payment/payment_gateway.py:23
+#, fuzzy
+msgid " Back to Tour Page"
+msgstr "Назад к списку туров"
+
+#: bot/payment/payment_gateway.py:44
+msgid "Choose how you want to pay:"
+msgstr "Выберете способ оплаты:"
+
+#: bot/payment/payment_ru.py:44
+msgid "Pay"
+msgstr "Оплатить"
+
+#: bot/payment/payment_ru.py:45
+msgid " Cancel Payment"
+msgstr "Отмена оплаты"
+
+#: bot/payment/payment_ru.py:88
+#, fuzzy
+msgid "Back to tour page"
+msgstr "Назад к списку туров"
+
+#: bot/payment/payment_ru.py:90
+#, fuzzy
+msgid "Failed to generate payment details. Try again later."
+msgstr "Не удалось загрузить детали тура. Попробуйте позже."
+
+#: bot/payment/payment_ru.py:120
+#, fuzzy
+msgid "Shop more"
+msgstr "Магазин"
+
+#: bot/payment/payment_ru.py:121
+#, fuzzy
+msgid "To your tours"
+msgstr "Ваши туры"
+
+#: bot/payment/payment_ru.py:124
+msgid "Payment successful! Your order has been confirmed."
+msgstr "Платеж прошёл успешно! Ваш заказ подтверждён."
+
+#: bot/payment/payment_ru.py:131
+msgid "Payment successful, but order confirmation failed."
+msgstr "Платеж прошёл успешно, но подтверждение заказа не удалось."
+
+#: bot/payment/payment_ru.py:132
+msgid "Contact Support: @your_support"
+msgstr "Свяжитесь с нашей поддержкой: @your_support"
+
+#: bot/payment/payment_ru.py:133
+msgid "Your payment token"
+msgstr "Ваш платежный индификатор"
+
+#: bot/payment/payment_ru.py:155
+msgid "Return to tour page"
+msgstr "Вернутся на страницу тура"
+
+#: bot/payment/payment_ru.py:157
+msgid "Payment has been canceled."
+msgstr "Платеж отменен"
 
 #: web/templates/checkout.html:10
 msgid "Checkout for"

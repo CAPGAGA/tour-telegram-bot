@@ -19,7 +19,8 @@ logger = logging.getLogger(__name__)
 
 async def construct_invoice(
         chat_id: int,
-        data: dict
+        data: dict,
+        _
 ):
     """
         Fetch raw invoice data and transforms it into telegram invoice
@@ -40,8 +41,8 @@ async def construct_invoice(
     ]
 
     keyboard = [
-        [InlineKeyboardButton("Pay", pay=True)],
-        [InlineKeyboardButton("❌ Cancel Payment", callback_data=f"cancel_payment_{data['tour_id']}")],
+        [InlineKeyboardButton(_("Pay"), pay=True)],
+        [InlineKeyboardButton("❌" + _(" Cancel Payment"), callback_data=f"cancel_payment_{data['tour_id']}")],
     ]
 
     invoice = {
@@ -71,6 +72,8 @@ async def redner_youkassa_payment_menu(
     """
         Renders and sends the YouKassa payment menu.
     """
+    _ = context._
+
     query = update.callback_query
     await query.answer()
 
@@ -79,12 +82,12 @@ async def redner_youkassa_payment_menu(
         "user_id": user['user_id'],
         "tour_id": tour_id
     }
-    invoice = await construct_invoice(update.effective_chat.id, data)
+    invoice = await construct_invoice(update.effective_chat.id, data, _)
     logger.info(invoice)
     if not invoice:
-        keyboard = [[InlineKeyboardButton('🛒 Back to tour page', callback_data=f"view_tour_{tour_id}")]]
+        keyboard = [[InlineKeyboardButton('🛒' + _('Back to tour page'), callback_data=f"view_tour_{tour_id}")]]
         await query.message.edit_text(
-            "❌ Failed to generate payment details. Try again later.",
+            "❌ " + _("Failed to generate payment details. Try again later."),
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
         return
@@ -104,6 +107,9 @@ async def successful_payment_handler(update: Update, context: CallbackContext, u
     """
     Handles successful payment and sends to my-tours
     """
+
+    _ = context._
+
     payment = update.message.successful_payment
     payment_token = payment.invoice_payload
 
@@ -111,27 +117,29 @@ async def successful_payment_handler(update: Update, context: CallbackContext, u
 
     if completed:
         keyboard = [
-            [InlineKeyboardButton('🛒 Shop more', callback_data='buy_tours')],
-            [InlineKeyboardButton('🔙 To your tours', callback_data='my_tours')]
+            [InlineKeyboardButton('🛒 ' + _('Shop more'), callback_data='buy_tours')],
+            [InlineKeyboardButton('🔙 ' + _('To your tours'), callback_data='my_tours')]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await update.message.reply_text("✅ Payment successful! Your order has been confirmed.",
+        await update.message.reply_text("✅ " + _("Payment successful! Your order has been confirmed."),
                                         reply_markup=reply_markup)
     else:
         keyboard = [
             [InlineKeyboardButton('🔙 Return to Main Menu', callback_data='main_menu')]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        contact_info = (f"⚠️ Payment successful, but order confirmation failed.\n\n"
-                        f"📞 Contact Support: @your_support \n\n"
-                        f"Your payment token: {payment_token}")
+        contact_info = (f"⚠️ " + _("Payment successful, but order confirmation failed.") + "\n\n" +
+                        f"📞 " + _("Contact Support: @your_support") + "\n\n" +
+                        _("Your payment token") + f": {payment_token}")
         await update.message.reply_text(contact_info, reply_markup=reply_markup)
 
 @user_auth
 async def handle_cancel_payment(
         update: Update,
-        context: CallbackContext
+        context: CallbackContext,
+        user
 ):
+    _ = context._
     query = update.callback_query
     await query.answer()
 
@@ -144,8 +152,8 @@ async def handle_cancel_payment(
         logger.error(f"Failed to delete invoice message: {e}")
 
     # Send cancellation confirmation
-    keyboard = [[InlineKeyboardButton("🔙 Return to tour page", callback_data=f"view_tour_{tour_id}")]]
+    keyboard = [[InlineKeyboardButton("🔙 " + _("Return to tour page"), callback_data=f"view_tour_{tour_id}")]]
     await query.message.reply_text(
-        "❌ Payment has been canceled.\n\nYou can try again later.",
+        "❌ " + _("Payment has been canceled."),
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
