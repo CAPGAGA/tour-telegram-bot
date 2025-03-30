@@ -117,7 +117,7 @@ async def register_telegram_user(
     await session.commit()
     await session.refresh(new_user)
 
-    return {"message": "Telegram user registered successfully", **new_user}
+    return {"message": "Telegram user registered successfully", **new_user.to_dict()}
 
 class LoginRequest(BaseModel):
     username: str

@@ -99,9 +99,10 @@ services:
       app_network:
 
 volumes:
+  shared_media:
   postgres_data:
   letsencrypt:
-  shared_media:
+
 
 networks:
   app_network:
