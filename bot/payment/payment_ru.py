@@ -45,6 +45,23 @@ async def construct_invoice(
         [InlineKeyboardButton("❌" + _(" Cancel Payment"), callback_data=f"cancel_payment_{data['tour_id']}")],
     ]
 
+    provider_data = {
+        "receipt": {
+            "items": [
+                {
+                    "description": invoice_data['invoice_payload']['description'],
+                    "quantity": "1.00",
+                    "amount": {
+                        "value": invoice_data['invoice_payload']['prices']['price'],
+                        "currency": invoice_data['invoice_payload']['currency']
+                    },
+                    "vat_code": 1,
+                    "payment_mode": "full_payment"
+                }
+            ]
+        }
+    }
+
     invoice = {
         'chat_id': chat_id,
         'title': invoice_data['invoice_payload']['title'],
@@ -58,6 +75,7 @@ async def construct_invoice(
         'need_phone_number': invoice_data['invoice_payload']['need_phone_number'],
         'send_email_to_provider': invoice_data['invoice_payload']['send_email_to_provider'],
         'send_phone_number_to_provider': invoice_data['invoice_payload']['send_phone_number_to_provider'],
+        'provider_data': provider_data,
         'protect_content': invoice_data['invoice_payload']['protect_content'],
         'reply_markup': InlineKeyboardMarkup(keyboard)
     }

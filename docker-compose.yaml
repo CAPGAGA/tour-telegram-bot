@@ -22,7 +22,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./web/media:/web/media
+      - shared_media:/app/web/media
     depends_on:
       - postgres
     networks:
@@ -45,6 +45,8 @@ services:
       - .env
     environment:
       - API_BASE_URL=http://web/apiV1
+    volumes:
+      - shared_media:/app/web/media
     depends_on:
       - web
     networks:
