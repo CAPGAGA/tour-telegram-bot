@@ -53,7 +53,7 @@ async def users_tours(
         return
 
     # Generate inline buttons for user’s routes
-    keyboard = [[InlineKeyboardButton(route["rout_name"], callback_data=f"start_mytour_{route['id']}")] for route in routs]
+    keyboard = [[InlineKeyboardButton(route["rout_name"], callback_data=f"start_mytour_{route['rout_id']}")] for route in routs]
     keyboard.append([InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")])
 
 
