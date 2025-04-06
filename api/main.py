@@ -246,7 +246,6 @@ async def tour_admin(
 ):
     if not user:
         return RedirectResponse(url="/login")
-    print(user)
     user_id, is_creator = user
     if not is_creator:
         raise HTTPException(status_code=403, detail="Forbidden")

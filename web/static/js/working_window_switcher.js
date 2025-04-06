@@ -1,4 +1,5 @@
 import { fetchTours } from "./fetch_tours.js";
+import { fetchCreatorTopStats } from "./admin/dashboard/getTopStats.js"
 
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".nav-button").forEach(button => {
@@ -12,6 +13,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 btn.classList.remove("active");
             });
             this.classList.add("active");
+
+            if (this.id == "dashboard") {
+                fetchCreatorTopStats();
+            }
         });
     });
     if (document.getElementById("tours-window")) {

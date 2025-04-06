@@ -89,7 +89,6 @@ async def get_current_creator(request: Request):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: int = payload.get("user_id")
         is_creator: bool = payload.get('is_creator')
-
         return user_id, is_creator
     except jwt.PyJWTError:
         return None

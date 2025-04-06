@@ -11,10 +11,14 @@
     <link href="{{ url_for('static', path='css/crm-general.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/tour-card.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/modals.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/dashboard/top-metrics.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/dashboard/charts.css') }}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <!-- Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     {% include "modules/crm/navbar.html" %}
@@ -23,8 +27,8 @@
         <div id="tours-window" class="working-window active">
             {% include "modules/crm/tours_window.html" %}
         </div>
-        <div id="clients-window" class="working-window">
-            {% include "modules/crm/clients_window.html" %}
+        <div id="dashboard-window" class="working-window">
+            {% include "modules/crm/dashboard.html" %}
         </div>
         <div id="admins-window" class="working-window">
             {% include "modules/crm/admins_window.html" %}
@@ -46,4 +50,6 @@
 <script type="module" src="{{ url_for('static', path='js/working_window_switcher.js' ) }}"></script>
 <script type="module" src="{{ url_for('static', path='js/logout.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/landing/changeLanguage.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/admin/dashboard/getTopStats.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/admin/dashboard/charts.js') }}"></script>
 </html>

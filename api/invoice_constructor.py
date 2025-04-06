@@ -82,7 +82,6 @@ class InvoiceConstructor:
         Construct an invoice for PayPal payments
         """
         # Get data from db
-
         tour_data = await InvoiceConstructor._fetch_tour_details(tour_id, session)
         user_data = await InvoiceConstructor._fetch_user_details(user_id, session)
 

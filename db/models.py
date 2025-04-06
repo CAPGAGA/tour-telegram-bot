@@ -109,6 +109,20 @@ class Order(BaseTable):
     payment_link: Mapped[str] = mapped_column(String, nullable=True)
 
 
+class WithdrawRequest(BaseTable):
+
+    """
+        Table to store withdraw requests of creators
+    """
+
+    __tablename__ = 'withdraw_request'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    creator_id: Mapped[int] = mapped_column(ForeignKey("creator.id"))
+    amount: Mapped[float] = mapped_column(NUMERIC(10, 2), nullable=False)
+    status: Mapped[str] = mapped_column(String, nullable=False, default='pending')
+    method: Mapped[str] = mapped_column(String, nullable=False)
+
 class Rout(BaseTable):
 
     """

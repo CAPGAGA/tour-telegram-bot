@@ -21,7 +21,7 @@ async def render_paypal_payment_menu(
 
     tour_id = int(query.data.split("_")[-1])
     method = query.data.split("_")[-2]
-    user_id = user.get('user_id')
+    user_id = user.get('id')
 
     invoice_data = await fetch_tour_payment_details(
         tour_id=tour_id,
@@ -29,7 +29,7 @@ async def render_paypal_payment_menu(
         method=method
     )
 
-    if not  invoice_data:
+    if not invoice_data:
         keyboard = [[InlineKeyboardButton('🛒 Back to tour page', callback_data=f"view_tour_{tour_id}")]]
         await query.message.edit_text(
             "❌ Failed to generate payment details. Try again later.",
