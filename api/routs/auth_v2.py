@@ -19,7 +19,7 @@ auth_router = APIRouter(
 )
 
 class UserRegisterRequest(BaseModel):
-    username: str
+    username: Optional[str] = None
     password: str
     is_creator: bool
     email: Optional[str] = None
@@ -29,8 +29,22 @@ async def register_user(
     user_data: UserRegisterRequest,
     session: AsyncSession = Depends(get_session)
 ):
+    # Check if user password suitable for registration
+    if len(user_data.password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters long")
+
+    if not any(char.isdigit() for char in user_data.password):
+        raise HTTPException(status_code=400, detail="Password must contain at least one digit")
+
+    if not any(char.isalpha() for char in user_data.password):
+        raise HTTPException(status_code=400, detail="Password must contain at least one letter")
+
+    if not any(char.isupper() for char in user_data.password):
+        raise HTTPException(status_code=400, detail="Password must contain at least one uppercase letter")
+
+
     # Check if user exists
-    query = select(BaseUser).where(BaseUser.username == user_data.username)
+    query = select(BaseUser).where(BaseUser.email == user_data.email)
     result = await session.execute(query)
     existing_user = result.scalars().first()
 
@@ -54,7 +68,6 @@ async def register_user(
         await session.commit()
         await session.refresh(new_creator)
 
-
     # Hash the password
     hashed_password = await hash_password(user_data.password)
 
@@ -70,13 +83,16 @@ async def register_user(
     else:
         new_user = BaseUser(
             username=user_data.username,
+            email=user_data.email,
             password=hashed_password,
             is_admin=False
         )
-
-    session.add(new_user)
-    await session.commit()
-    await session.refresh(new_user)
+    try:
+        session.add(new_user)
+        await session.commit()
+        await session.refresh(new_user)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
     # Generate token
     token = await create_token(

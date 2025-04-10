@@ -74,6 +74,7 @@ services:
 volumes:
   postgres_data:
   letsencrypt:
+  shared_media:
 
 networks:
   app_network:

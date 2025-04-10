@@ -73,6 +73,7 @@ class BaseUser(BaseTable):
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     creator_id: Mapped[int] = mapped_column(ForeignKey('creator.id'), nullable=True)
     username: Mapped[str] = mapped_column(String, nullable=True)
+    email: Mapped[str] = mapped_column(String, nullable=True)
     # users that registered with telegram won't have password
     password: Mapped[str] = mapped_column(String, nullable=True)
     lang: Mapped[str] = mapped_column(String, nullable=True)

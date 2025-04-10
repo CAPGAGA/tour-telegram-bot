@@ -4,8 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PockeTour: {{ _("Register") }}</title>
+    <meta name="robots" content="index, follow">
+    <meta name="description" content="{{ _('Browse and explore immersive self-guided tours powered by audio, images, and maps. Discover new destinations and travel at your own pace.') }}">
+    <meta name="keywords" content="audio tours, walking tours, self-guided travel, city tours, virtual travel, cultural tourism, travel app, PockeTour">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', path='logo/favicon/apple-touch-icon.png') }}">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='logo/favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='logo/favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', path='logo/favicon/site.webmanifest') }}">
     <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
-<!--    <link href="{{ url_for('static', path='css/auth-page.css') }}" rel="stylesheet">-->
+    <link href="{{ url_for('static', path='css/auth/common.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/bulma.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/revolver-msg.css') }}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -29,9 +39,9 @@
                         <h4 class="title is-5">{{ _( "Register as a User" ) }}</h4>
                         <form id="register-user">
                             <div class="field">
-                                <label class="label">{{ _( "Username" ) }}</label>
+                                <label class="label">{{ _( "Email" ) }}</label>
                                 <div class="control">
-                                    <input class="input" type="text" id="user-username" placeholder="{{ _('Enter username') }}" required>
+                                    <input class="input" type="email" id="user-email" placeholder="user@user.user" required>
                                 </div>
                             </div>
 
@@ -40,8 +50,13 @@
                                 <div class="control">
                                     <input class="input" type="password" id="user-password" placeholder="{{ _('Enter password') }}" required>
                                 </div>
+                                <ul class="password-checklist" id="user-password-checklist">
+                                    <li data-check="length">❌ {{ _( "At least 8 characters" ) }}</li>
+                                    <li data-check="uppercase">❌ {{ _( "One uppercase letter" ) }}</li>
+                                    <li data-check="digit">❌ {{ _( "One number" ) }}</li>
+                                    <li data-check="letter">❌ {{ _( "One letter" ) }}</li>
+                                </ul>
                             </div>
-
                             <button type="submit" class="button is-info is-fullwidth">{{ _("Register") }}</button>
                         </form>
                     </div>
@@ -51,27 +66,33 @@
                         <h4 class="title is-5">{{ _("Register as a Creator") }}</h4>
                         <form id="register-creator">
                             <div class="field">
-                                <label class="label">Email</label>
+                                <label class="label">{{ _( "Email" ) }}</label>
                                 <div class="control">
                                     <input class="input" type="text" id="creator-email" placeholder="example@example.com" required>
                                 </div>
                             </div>
                             <div class="field">
-                                <label class="label">Username</label>
+                                <label class="label">{{ _( "Username" ) }}</label>
                                 <div class="control">
                                     <input class="input" type="text" id="creator-username" placeholder="ExampleTours DOO." required>
                                 </div>
                             </div>
                             <div class="field">
-                                <label class="label">Password</label>
+                                <label class="label">{{ _( "Password" ) }}</label>
                                 <div class="control">
                                     <input class="input" type="password" id="creator-password" placeholder="{{ _('Enter password') }}" required>
                                 </div>
+                                <ul class="password-checklist" id="creator-password-checklist">
+                                    <li data-check="length">❌ {{ _( "At least 8 characters" ) }}</li>
+                                    <li data-check="uppercase">❌ {{ _( "One uppercase letter" ) }}</li>
+                                    <li data-check="digit">❌ {{ _( "One number" ) }}</li>
+                                    <li data-check="letter">❌ {{ _( "One letter" ) }}</li>
+                                </ul>
                             </div>
+
                             <button type="submit" class="button is-info is-fullwidth">{{ _("Register" ) }}</button>
                         </form>
                     </div>
-
                     <p class="has-text-grey">
                         <a href="/login">{{ _("Already have an account? Login") }}</a>
                     </p>
