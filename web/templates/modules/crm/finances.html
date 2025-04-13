@@ -1,0 +1,86 @@
+<h1 class="window-title">Finance Control</h1>
+<div class="dashboard-metrics">
+    <div class="metric-card">
+        <span class="metric-label">Balance</span>
+        <div class="metric-value-wrapper">
+            <span id="finances-metric-balance" class="metric-value">–</span>
+            <button id="finances-withdraw-btn" class="withdraw-btn">Withdraw</button>
+        </div>
+    </div>
+    <div class="metric-card">
+        <span class="metric-label">Total Withdraws</span>
+        <span id="finances-metric-withdraw" class="metric-value">–</span>
+    </div>
+</div>
+<!-- Promo Section -->
+<div class="promo-section">
+    <h2 class="promo-title">Promo Codes</h2>
+
+    <!-- Promo List -->
+    <div class="promo-list" id="promo-list">
+        <!-- Sample Promo Item -->
+        <div class="promo-card">
+            <div class="promo-info">
+                <strong>SPRING10</strong><br>
+                Flat discount of 10€<br>
+                Valid until: 2025-06-01
+            </div>
+            <div class="promo-actions">
+                <button class="edit-promo">Edit</button>
+                <button class="deactivate-promo">Deactivate</button>
+            </div>
+        </div>
+
+        <div class="promo-card inactive">
+            <div class="promo-info">
+                <strong>OLD50</strong><br>
+                50% off<br>
+                Expired on: 2024-12-31
+            </div>
+            <div class="promo-actions">
+                <button class="edit-promo">Edit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add New Promo Button -->
+    <button class="add-promo-button" id="openPromoModal">+ Add New Promo</button>
+</div>
+<!-- Modal -->
+<div id="promoModal" class="modal" style="display: none;">
+    <div class="modal-content promo-modal">
+        <button class="close-modal" id="closePromoModal">✕</button>
+        <h3>Create New Promo Code</h3>
+        <form id="promoForm">
+            <label>Promo Code</label>
+            <input type="text" name="code" placeholder="SUMMER20" id="promo-code" required>
+
+            <label>Discount Type</label>
+            <select name="promo_type" id="promo-type" >
+                <option value="flat">Flat ($)</option>
+                <option value="percent">Percent (%)</option>
+            </select>
+
+            <label>Discount Value</label>
+            <input type="number" name="discount" placeholder="10" id="promo-discount" required>
+
+            <div class="field">
+              <label>Select Routes</label>
+              <div class="checkbox-list" id="checkbox-list">
+                <!--Dynamically populated from API-->
+              </div>
+            </div>
+
+            <label>Start Date</label>
+            <input type="date" name="promo_start" id="promo-start">
+
+            <label>End Date</label>
+            <input type="date" name="promo_end" id="promo-end">
+
+            <label>Use Limit</label>
+            <input type="number" name="use_limit" placeholder="100 (or blank for unlimited)" id="promo-limit">
+
+            <button class="submit-button" id="createPromoBtn">Create Promo</button>
+        </form>
+    </div>
+</div>

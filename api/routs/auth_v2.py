@@ -8,6 +8,8 @@ import bcrypt
 import jwt
 from datetime import datetime, timedelta
 
+from starlette.responses import RedirectResponse
+
 from db.database import get_session
 from db.models import BaseUser, Creator
 
@@ -76,6 +78,7 @@ async def register_user(
         new_user = BaseUser(
             username=user_data.username,
             password=hashed_password,
+            email=user_data.email,
             is_creator=True,
             is_admin=False,
             creator_id=new_creator.id
@@ -85,7 +88,8 @@ async def register_user(
             username=user_data.username,
             email=user_data.email,
             password=hashed_password,
-            is_admin=False
+            is_admin=False,
+            is_creator=False
         )
     try:
         session.add(new_user)
@@ -126,7 +130,8 @@ async def register_telegram_user(
     new_user = BaseUser(
         user_id=user_data.user_id,
         username=user_data.username,
-        is_admin=False
+        is_admin=False,
+        is_creator=False
     )
 
     session.add(new_user)
@@ -136,7 +141,7 @@ async def register_telegram_user(
     return {"message": "Telegram user registered successfully", **new_user.to_dict()}
 
 class LoginRequest(BaseModel):
-    username: str
+    email: str
     password: str
 
 @auth_router.post("/login")
@@ -145,7 +150,7 @@ async def login_user(
     session: AsyncSession = Depends(get_session)
 ):
     # Check if user exists in BaseUser table
-    query = select(BaseUser).where(BaseUser.username == login_data.username)
+    query = select(BaseUser).where(BaseUser.email == login_data.email)
     result = await session.execute(query)
     user = result.scalars().first()
 
@@ -197,4 +202,4 @@ async def login_telegram_user(
 @auth_router.get('/logout')
 async def logout_admin(response: Response):
     response.delete_cookie("auth_token")
-    return
+    return RedirectResponse('/login')

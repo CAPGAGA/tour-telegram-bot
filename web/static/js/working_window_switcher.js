@@ -1,5 +1,7 @@
 import { fetchTours } from "./fetch_tours.js";
 import { fetchCreatorTopStats } from "./admin/dashboard/getTopStats.js"
+import { fetchCreatorFinancesStats } from "./admin/finances/getFinanceStats.js"
+import { getPromosList } from "./admin/finances/getPromosList.js"
 
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".nav-button").forEach(button => {
@@ -17,6 +19,11 @@ document.addEventListener("DOMContentLoaded", function () {
             if (this.id == "dashboard") {
                 fetchCreatorTopStats();
             }
+            if (this.id == "finances") {
+                fetchCreatorFinancesStats();
+                getPromosList();
+            }
+
         });
     });
     if (document.getElementById("tours-window")) {

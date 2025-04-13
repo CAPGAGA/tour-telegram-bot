@@ -115,8 +115,10 @@ async def get_creators_stats(
         "total_balance": total_balance,
         "total_orders": total_orders,
         "unique_clients": unique_clients,
-        "active_tours": active_tours
+        "active_tours": active_tours,
+        "withdrawals": withdrawaled
     }
+
 
 @creator_rout_router.get("/get-sales-per-month")
 async def get_sales_per_month(
@@ -177,3 +179,4 @@ async def get_sales_per_month(
         'months': months,
         'sales': sales
     }
+

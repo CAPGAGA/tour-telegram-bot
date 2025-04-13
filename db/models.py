@@ -89,9 +89,6 @@ class BaseUser(BaseTable):
             'lang': self.lang
         }
 
-
-
-
 class Order(BaseTable):
 
     """
@@ -148,6 +145,35 @@ class Rout(BaseTable):
             'is_displayed': self.is_displayed,
             'image': self.image,
         }
+
+class PromoCode(BaseTable):
+
+    """
+        Table to store promo codes
+    """
+
+    __tablename__ = 'promo_code'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    code: Mapped[str] = mapped_column(String, nullable=False)
+    promo_type: Mapped[str] = mapped_column(String, nullable=False, default='flat')
+    discount: Mapped[int] = mapped_column(nullable=False)
+    creator_id: Mapped[int] = mapped_column(ForeignKey('creator.id'))
+    promo_start: Mapped[datetime] = mapped_column(DateTime(timezone=False), nullable=False)
+    promo_end: Mapped[datetime] = mapped_column(DateTime(timezone=False), nullable=False)
+    use_limit: Mapped[int] = mapped_column(Integer, nullable=False, default=-1)
+
+class PromoCodeRout(BaseTable):
+
+    """
+        Table to link promo codes and routs
+    """
+
+    __tablename__ = 'promo_code_rout'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    promo_code_id: Mapped[int] = mapped_column(ForeignKey('promo_code.id'))
+    rout_id: Mapped[int] = mapped_column(ForeignKey('rout.id'))
 
 
 class UserRout(BaseTable):
