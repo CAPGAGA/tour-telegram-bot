@@ -1,14 +1,16 @@
 import datetime
+from datetime import timedelta
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Response
+from fastapi_babel import _
 from pydantic import BaseModel
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.handlers import get_current_creator
 from db.database import get_session
 from db.models import Rout, PromoCode, PromoCodeRout
+
 
 promo_router = APIRouter(
     prefix="/promo",
@@ -27,6 +29,17 @@ class PromoCreate(BaseModel):
     use_limit: Optional[str] = None
     routs: list[str]
 
+class PromoEdit(BaseModel):
+
+    promo_id: str
+    code: str
+    promo_type: str
+    discount: str
+    creator_id: str
+    promo_start: Optional[str] = None
+    promo_end: Optional[str] = None
+    use_limit: Optional[str] = None
+    routs: list[str]
 
 
 @promo_router.post("/create")
@@ -69,9 +82,46 @@ async def create_promo(
 
     await session.commit()
 
-    return {"message": "Promo code created successfully"}
+    return {"message": _("Promo code created successfully")}
 
-@promo_router.get("/get")
+@promo_router.put("/create")
+async def edit_promo(
+    promo: PromoEdit,
+    session: AsyncSession = Depends(get_session)
+):
+    query = select(PromoCode).where(PromoCode.id == int(promo.promo_id))
+    result = await session.execute(query)
+    promo_code = result.scalars().first()
+
+    if not promo_code:
+        raise HTTPException(status_code=404, detail="Promo code not found")
+
+    promo_start = None
+    promo_end = None
+
+    if promo.promo_start and promo.promo_end:
+        promo_start = datetime.datetime.strptime(
+            promo.promo_start, "%Y-%m-%d"
+        )
+        promo_end = datetime.datetime.strptime(
+            promo.promo_end, "%Y-%m-%d"
+        )
+
+    promo_code.code = promo.code
+    promo_code.promo_type = promo.promo_type
+    promo_code.discount = int(promo.discount)
+    promo_code.creator_id = int(promo.creator_id)
+    promo_code.promo_start = promo_start
+    promo_code.promo_end = promo_end
+    promo_code.use_limit = int(promo.use_limit)
+
+    await session.commit()
+
+    return {"message": _("Promo code updated successfully")}
+
+
+
+@promo_router.get("/get-all")
 async def get_promo(
     creator_id: int,
     session: AsyncSession = Depends(get_session)
@@ -95,3 +145,83 @@ async def get_promo(
             promos.append(promo)
 
     return promos
+
+@promo_router.get("/get-promo")
+async def get_promo(
+    promo_id: int,
+    session: AsyncSession = Depends(get_session)
+):
+    query = select(PromoCode).where(PromoCode.id == promo_id)
+    result = await session.execute(query)
+    promo = result.scalars().first()
+    if promo:
+        routs_query = select(
+            PromoCodeRout.rout_id
+        ).where(
+            PromoCodeRout.promo_code_id == promo.id
+        )
+
+        routs_result = await session.execute(routs_query)
+        routs = routs_result.scalars().all()
+        promo.routs = routs
+        return promo
+
+@promo_router.post("/deactivate-promo")
+async def deactivate_promo(
+        promo_id: int,
+        session: AsyncSession = Depends(get_session)
+):
+    query = select(PromoCode).where(PromoCode.id == promo_id)
+    result = await session.execute(query)
+    promo = result.scalars().first()
+    if promo:
+        # we set timedelta to yesterday so this promo becomes unavailable
+        promo.promo_end = datetime.datetime.now() - timedelta(days=1)
+        await session.commit()
+        return {"message": _("Promo code deactivated successfully")}
+
+    raise HTTPException(status_code=404, detail=_("Promo code not found"))
+
+@promo_router.post("/activate-promo")
+async def activate_promo(
+        code: str,
+        session: AsyncSession = Depends(get_session)
+):
+    query = select(PromoCode).where(PromoCode.code == code)
+    result = await session.execute(query)
+    promo = result.scalars().first()
+
+    routs_query = select(PromoCodeRout.rout_id).where(PromoCodeRout.promo_code_id == promo.id)
+    routs_result = await session.execute(routs_query)
+    routs = routs_result.scalars().all()
+
+    if not promo:
+        raise HTTPException(status_code=404, detail=_("Promo code not found"))
+
+    today = datetime.datetime.today()
+
+    if not (promo.promo_start < today < promo.promo_end):
+        return HTTPException(status_code=400, detail=_("Promo code expired"))
+
+    if promo.use_limit != -1:
+        if promo.use_limit > 0:
+            promo.use_limit -= 1
+
+            await session.commit()
+            return {
+                "message": _("Promo code activated successfully"),
+                "discount": promo.discount,
+                "type": promo.promo_type,
+                "routs": routs,
+                "promo_id": promo.id
+            }
+        else:
+            return HTTPException(status_code=400, detail=_("Promo code limit reached"))
+
+    return {
+        "message": _("Promo code activated successfully"),
+        "discount": promo.discount,
+        "type": promo.promo_type,
+        "routs": routs,
+        "promo_id": promo.id
+    }

@@ -267,8 +267,6 @@ async def tour_admin(
         }, request=request, name='tour_admin.html'
     )
 
-
-
 # middleware
 app.add_middleware(
     BabelMiddleware,

@@ -1,5 +1,4 @@
 import os
-import aiohttp
 import logging
 
 
@@ -8,9 +7,6 @@ from telegram.ext import CallbackContext, CallbackQueryHandler
 
 from bot.payment.utils import fetch_tour_payment_details, complete_order
 from bot.decorators.auth import user_auth
-from bot.utils.messages import send_message
-
-
 
 # API Base URL
 API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000/apiV1")

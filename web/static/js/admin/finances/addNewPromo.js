@@ -3,6 +3,8 @@ import { showMessage } from "../../revolver.js";
 document.getElementById('createPromoBtn').addEventListener('click', (e) => {
     e.preventDefault();
 
+    const method = document.getElementById('createPromoBtn').getAttribute('data-action') === 'create' ? 'POST' : 'PUT'
+
     const creatorId = document.getElementById("username").getAttribute("data-creator-id");
     const promoCode = document.getElementById('promo-code').value
     const promoType = document.getElementById('promo-type').value
@@ -53,6 +55,7 @@ document.getElementById('createPromoBtn').addEventListener('click', (e) => {
     }
 
     const requestData = {
+        promo_id: method == 'PUT' ? document.getElementById('createPromoBtn').getAttribute('data-promo-id') : null,
         creator_id: creatorId,
         code: promoCode,
         promo_type: promoType,
@@ -63,8 +66,9 @@ document.getElementById('createPromoBtn').addEventListener('click', (e) => {
         routs: routIds
     }
 
+    console.log(method)
     fetch("/apiV1/promo/create", {
-        method: "POST",
+        method: method,
         headers: {
             "Content-Type": "application/json"
         },

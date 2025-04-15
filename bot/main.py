@@ -5,6 +5,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext, CallbackQueryHandler, \
     PreCheckoutQueryHandler
 
+from bot.modules.promo import promo_check, check_code
 from bot.modules.shop import show_tour_menu, handle_tour_pagination, handle_main_menu_return
 from bot.modules.tour import show_tour_point
 from bot.modules.tour_card import show_tour_details
@@ -58,6 +59,10 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_cancel_payment, pattern="cancel_payment_.*"))
     application.add_handler(PreCheckoutQueryHandler(pre_checkout_handler))
     application.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT, successful_payment_handler))
+    # --- Handlers for promo ---
+    application.add_handler(CallbackQueryHandler(promo_check, pattern="promo_code"))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_code))
+
 
     # --- Handlers for "My Tours" button in main menu ---
     application.add_handler(CallbackQueryHandler(users_tours, pattern="my_tours"))
