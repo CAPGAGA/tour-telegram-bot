@@ -23,7 +23,7 @@ auth_router = APIRouter(
 class UserRegisterRequest(BaseModel):
     username: Optional[str] = None
     password: str
-    is_creator: bool
+    is_creator: bool = False
     email: Optional[str] = None
 
 @auth_router.post("/register-user")
