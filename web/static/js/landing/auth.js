@@ -33,15 +33,20 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("register-user").addEventListener("submit", function (event) {
             event.preventDefault();
 
-            const username = document.getElementById("user-username").value.trim();
+            const email = document.getElementById("user-email").value.trim();
             const password = document.getElementById("user-password").value.trim();
 
-            if (!username || !password) {
+            if (!email || !password) {
                 showMessage("Please fill in all fields!", "error");
                 return;
             }
 
-            const requestData = { username, password };
+            const requestData = {
+                 username: null,
+                 password: password,
+                 is_creator: false,
+                 email: email
+            };
 
             fetch("/apiV1/auth/register-user", {
                 method: "POST",
@@ -51,7 +56,8 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json().then(data => ({ status: response.status, body: data })))
             .then(({ status, body }) => {
                 if (status !== 200) {
-                    throw new Error(body.detail || "Failed to register.");
+                    showMessage(body.detail, "error");
+                    return;
                 }
                 showMessage("User registered successfully!", "success");
                 setTimeout(() => window.location.href = "/login", 1500);
@@ -105,15 +111,15 @@ document.addEventListener("DOMContentLoaded", function () {
         loginForm.addEventListener("submit", function (event) {
             event.preventDefault();
 
-            const username = document.getElementById("username").value.trim();
+            const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value.trim();
 
-            if (!username || !password) {
+            if (!email || !password) {
                 showMessage("Please enter both username and password.", "error");
                 return;
             }
 
-            const requestData = { username, password };
+            const requestData = { email, password };
 
             fetch("/apiV1/auth/login", {
                 method: "POST",
@@ -148,4 +154,30 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    setupPasswordChecklist("user-password", "user-password-checklist");
+    setupPasswordChecklist("creator-password", "creator-password-checklist");
 });
+
+function setupPasswordChecklist(passwordInputId, checklistId) {
+    const passwordInput = document.getElementById(passwordInputId);
+    const checklist = document.getElementById(checklistId);
+
+    if (!passwordInput || !checklist) return;
+
+    const updateChecklist = () => {
+        const value = passwordInput.value;
+        checklist.querySelector('[data-check="length"]').classList.toggle('valid', value.length >= 8);
+        checklist.querySelector('[data-check="uppercase"]').classList.toggle('valid', /[A-Z]/.test(value));
+        checklist.querySelector('[data-check="digit"]').classList.toggle('valid', /\d/.test(value));
+        checklist.querySelector('[data-check="letter"]').classList.toggle('valid', /[a-zA-Z]/.test(value));
+
+        // Optional: Replace ❌ and ✅
+        checklist.querySelectorAll('li').forEach(li => {
+            li.textContent = li.classList.contains('valid')
+                ? "✅ " + li.textContent.replace("❌ ", "").replace("✅ ", "")
+                : "❌ " + li.textContent.replace("✅ ", "").replace("❌ ", "");
+        });
+    };
+
+    passwordInput.addEventListener('input', updateChecklist);
+}

@@ -16,6 +16,7 @@ html {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transition: opacity 0.5s ease-in-out;
     box-sizing: border-box;
+    overflow-x: auto;
 }
 
 .working-window.active {
@@ -23,6 +24,10 @@ html {
     opacity: 1;
 }
 
+.window-title{
+    padding: 0px 20px 0px 20px;
+    font-family: 'Poppins';
+}
 
 .add-button {
     margin: 20px;

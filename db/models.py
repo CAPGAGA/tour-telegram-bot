@@ -73,6 +73,7 @@ class BaseUser(BaseTable):
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     creator_id: Mapped[int] = mapped_column(ForeignKey('creator.id'), nullable=True)
     username: Mapped[str] = mapped_column(String, nullable=True)
+    email: Mapped[str] = mapped_column(String, nullable=True)
     # users that registered with telegram won't have password
     password: Mapped[str] = mapped_column(String, nullable=True)
     lang: Mapped[str] = mapped_column(String, nullable=True)
@@ -87,9 +88,6 @@ class BaseUser(BaseTable):
             'username': self.username,
             'lang': self.lang
         }
-
-
-
 
 class Order(BaseTable):
 
@@ -108,6 +106,20 @@ class Order(BaseTable):
     invoice_id: Mapped[str] = mapped_column(String, nullable=False)
     payment_link: Mapped[str] = mapped_column(String, nullable=True)
 
+
+class WithdrawRequest(BaseTable):
+
+    """
+        Table to store withdraw requests of creators
+    """
+
+    __tablename__ = 'withdraw_request'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    creator_id: Mapped[int] = mapped_column(ForeignKey("creator.id"))
+    amount: Mapped[float] = mapped_column(NUMERIC(10, 2), nullable=False)
+    status: Mapped[str] = mapped_column(String, nullable=False, default='pending')
+    method: Mapped[str] = mapped_column(String, nullable=False)
 
 class Rout(BaseTable):
 
@@ -133,6 +145,35 @@ class Rout(BaseTable):
             'is_displayed': self.is_displayed,
             'image': self.image,
         }
+
+class PromoCode(BaseTable):
+
+    """
+        Table to store promo codes
+    """
+
+    __tablename__ = 'promo_code'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    code: Mapped[str] = mapped_column(String, nullable=False)
+    promo_type: Mapped[str] = mapped_column(String, nullable=False, default='flat')
+    discount: Mapped[int] = mapped_column(nullable=False)
+    creator_id: Mapped[int] = mapped_column(ForeignKey('creator.id'))
+    promo_start: Mapped[datetime] = mapped_column(DateTime(timezone=False), nullable=False)
+    promo_end: Mapped[datetime] = mapped_column(DateTime(timezone=False), nullable=False)
+    use_limit: Mapped[int] = mapped_column(Integer, nullable=False, default=-1)
+
+class PromoCodeRout(BaseTable):
+
+    """
+        Table to link promo codes and routs
+    """
+
+    __tablename__ = 'promo_code_rout'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    promo_code_id: Mapped[int] = mapped_column(ForeignKey('promo_code.id'))
+    rout_id: Mapped[int] = mapped_column(ForeignKey('rout.id'))
 
 
 class UserRout(BaseTable):

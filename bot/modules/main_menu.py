@@ -7,6 +7,7 @@ async def get_main_menu(_):
     keyboard = [
         [InlineKeyboardButton("🛒 "+ _("Buy Tour"), callback_data="buy_tours")],
         [InlineKeyboardButton("📁 " + _("Browse My Tours"), callback_data="my_tours")],
+        [InlineKeyboardButton("🔖 " + _("Enter Promo Code"), callback_data="promo_code")],
         [InlineKeyboardButton("ℹ️ " + _("Help"), callback_data="help")],
         [InlineKeyboardButton("❓ " + _("About this bot"), callback_data="about")]
     ]

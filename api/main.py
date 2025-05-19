@@ -24,6 +24,7 @@ from api.routs.auth_v2 import auth_router
 from api.routs.geo import geocode_router
 from api.routs.media import point_media_router
 from api.routs.orders import order_router
+from api.routs.promo import promo_router
 from api.routs.routs import rout_router, get_rout as get_rout_without_points
 from api.routs.rout_points import rout_points_router, get_rout as get_rout_with_points
 from api.routs.search import search_router
@@ -91,6 +92,7 @@ app.include_router(order_router, prefix='/apiV1')
 app.include_router(search_router, prefix='/apiV1')
 app.include_router(user_router, prefix='/apiV1')
 app.include_router(geocode_router, prefix='/apiV1')
+app.include_router(promo_router, prefix='/apiV1')
 
 if not HEADLESS_MODE:
 
@@ -246,7 +248,6 @@ async def tour_admin(
 ):
     if not user:
         return RedirectResponse(url="/login")
-    print(user)
     user_id, is_creator = user
     if not is_creator:
         raise HTTPException(status_code=403, detail="Forbidden")
@@ -255,14 +256,16 @@ async def tour_admin(
     result = await session.execute(query)
     user = result.scalars().first()
 
+    if not user:
+        return RedirectResponse(url="/apiV1/auth/logout")
+
+
     return templates.TemplateResponse(
         context={
             'username': user.username,
             'creator_id': user.creator_id
         }, request=request, name='tour_admin.html'
     )
-
-
 
 # middleware
 app.add_middleware(

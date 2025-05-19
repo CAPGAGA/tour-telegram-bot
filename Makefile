@@ -21,3 +21,7 @@ compile:
 # Clean compiled .mo files (optional)
 clean:
 	find $(LOCALE_DIR) -name "*.mo" -delete
+
+# Export environment
+env:
+    export $(xargs < .env)

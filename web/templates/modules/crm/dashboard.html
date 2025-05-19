@@ -1,0 +1,32 @@
+<h1 class="window-title">Your Stats</h1>
+<div class="dashboard-metrics">
+    <div class="metric-card">
+        <span class="metric-label">Balance</span>
+        <div class="metric-value-wrapper">
+            <span id="metric-balance" class="metric-value">–</span>
+            <button id="withdraw-btn" class="withdraw-btn">Withdraw</button>
+        </div>
+    </div>
+    <div class="metric-card">
+        <span class="metric-label">Total Orders</span>
+        <span id="metric-orders" class="metric-value">–</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-label">Unique Clients</span>
+        <span id="metric-clients" class="metric-value">–</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-label">Active Tours</span>
+        <span id="metric-tours" class="metric-value">–</span>
+    </div>
+</div>
+<div class="time-scale-selector">
+    <label for="timescale-list">Choose Time Scale: </label>
+    <ul id="timescale-list">
+        <li class="timescale-option active" data-timescale="month">Last Month</li>
+        <li class="timescale-option" data-timescale="180days">Last 180 Days</li>
+        <li class="timescale-option" data-timescale="year">Last Year</li>
+    </ul>
+</div>
+<!-- Chart container -->
+<canvas id="salesPerMonthChart"></canvas>
