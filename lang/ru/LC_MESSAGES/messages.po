@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-29 21:09+0100\n"
+"POT-Creation-Date: 2025-05-20 17:51+0200\n"
 "PO-Revision-Date: 2025-03-22 17:09+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -19,6 +19,34 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
+#: api/routs/promo.py:85
+msgid "Promo code created successfully"
+msgstr "Промокод успешно создан"
+
+#: api/routs/promo.py:120
+msgid "Promo code updated successfully"
+msgstr "Промокод успешно обновлен"
+
+#: api/routs/promo.py:181
+msgid "Promo code deactivated successfully"
+msgstr "Промокод успешно деактивирован"
+
+#: api/routs/promo.py:183 api/routs/promo.py:199
+msgid "Promo code not found"
+msgstr "Промокод не найден"
+
+#: api/routs/promo.py:204
+msgid "Promo code expired"
+msgstr "Срок действия промокода истек"
+
+#: api/routs/promo.py:212 api/routs/promo.py:222 bot/modules/promo.py:123
+msgid "Promo code activated successfully"
+msgstr "Промокод успешно активирован"
+
+#: api/routs/promo.py:219
+msgid "Promo code limit reached"
+msgstr "Достигнут лимит использования промокода"
+
 #: bot/modules/main_menu.py:8
 msgid "Buy Tour"
 msgstr "Купить тур"
@@ -28,14 +56,19 @@ msgid "Browse My Tours"
 msgstr "Мои купленные туры"
 
 #: bot/modules/main_menu.py:10
+#, fuzzy
+msgid "Enter Promo Code"
+msgstr "У меня есть промокод"
+
+#: bot/modules/main_menu.py:11
 msgid "Help"
 msgstr "Помощь"
 
-#: bot/modules/main_menu.py:11
+#: bot/modules/main_menu.py:12
 msgid "About this bot"
 msgstr "О боте"
 
-#: bot/modules/main_menu.py:31 bot/modules/main_menu.py:41
+#: bot/modules/main_menu.py:32 bot/modules/main_menu.py:42
 msgid ""
 "Main menu\n"
 "\n"
@@ -45,6 +78,19 @@ msgstr ""
 "\n"
 "Выберите один из вариантов:"
 
+#: bot/modules/promo.py:49 bot/modules/promo.py:87 bot/modules/shop.py:58
+#: bot/modules/shop.py:78
+msgid "Back to Main Menu"
+msgstr "Назад в главное меню"
+
+#: bot/modules/promo.py:58
+msgid "Please enter your promo code:"
+msgstr "Пожалуйста, введите ваш промокод:"
+
+#: bot/modules/promo.py:124
+msgid "Below is a list of all included in promo tours:"
+msgstr "Ниже список всех туров, включенных в промоакцию:"
+
 #: bot/modules/shop.py:50
 msgid "Prev"
 msgstr "Назад"
@@ -52,10 +98,6 @@ msgstr "Назад"
 #: bot/modules/shop.py:52 web/templates/shop.html:49
 msgid "Next"
 msgstr "Вперёд"
-
-#: bot/modules/shop.py:58 bot/modules/shop.py:78
-msgid "Back to Main Menu"
-msgstr "Назад в главное меню"
 
 #: bot/modules/shop.py:85 bot/modules/shop.py:92
 msgid "Failed to load tours. Try again later."
@@ -85,61 +127,77 @@ msgstr "Карта следующей точки"
 msgid "I am here!"
 msgstr "Я здесь!"
 
-#: bot/modules/tour.py:195
+#: bot/modules/tour.py:197
 msgid "Next Point"
 msgstr "Следующая точка"
 
-#: bot/modules/tour.py:197
+#: bot/modules/tour.py:199
 msgid "Leave review!"
 msgstr "Оставить отзыв!"
 
-#: bot/modules/tour.py:198
+#: bot/modules/tour.py:200
 msgid "To main menu"
 msgstr "В главное меню"
 
-#: bot/modules/tour.py:202
+#: bot/modules/tour.py:204
 msgid "Tour navigation:"
 msgstr "Навигация по туру:"
 
-#: bot/modules/tour_card.py:61
+#: bot/modules/tour_card.py:64 bot/payment/payment_gateway.py:95
+#: bot/payment/payment_gateway.py:104 bot/payment/payment_gateway.py:113
 msgid "Back to shop"
 msgstr "Назад в магазин"
 
-#: bot/modules/tour_card.py:63
+#: bot/modules/tour_card.py:66
 msgid "Failed to load tour details. Try again later."
 msgstr "Не удалось загрузить детали тура. Попробуйте позже."
 
-#: bot/modules/tour_card.py:86
-msgid "Base Price"
-msgstr "Базовая цена"
+#: bot/modules/tour_card.py:99
+#, fuzzy
+msgid "Your Price"
+msgstr "Ваши туры"
 
-#: bot/modules/tour_card.py:87
+#: bot/modules/tour_card.py:100 bot/modules/tour_card.py:106
 msgid "Description"
 msgstr "Описание"
 
-#: bot/modules/tour_card.py:88
+#: bot/modules/tour_card.py:101 bot/modules/tour_card.py:107
 msgid "Points"
 msgstr "Точки маршрута"
 
-#: bot/modules/tour_card.py:88
+#: bot/modules/tour_card.py:101 bot/modules/tour_card.py:107
 msgid "Distance"
 msgstr "Расстояние"
 
-#: bot/modules/tour_card.py:92 web/templates/tour_page.html:51
+#: bot/modules/tour_card.py:105
+#, fuzzy
+msgid "Price"
+msgstr "Назад"
+
+#: bot/modules/tour_card.py:116
+msgid "Add to My Account"
+msgstr "Добавить в мой аккаунт"
+
+#: bot/modules/tour_card.py:117
+#, fuzzy
+msgid "Gift to Friend"
+msgstr "Купить для друга"
+
+#: bot/modules/tour_card.py:118 bot/modules/tour_card.py:127
+msgid "Back to Tour List"
+msgstr "Назад к списку туров"
+
+#: bot/modules/tour_card.py:123 web/templates/tour_page.html:51
 msgid "Buy for Me"
 msgstr "Купить для себя"
 
-#: bot/modules/tour_card.py:93
+#: bot/modules/tour_card.py:125
 msgid "Buy for Friend"
 msgstr "Купить для друга"
 
-#: bot/modules/tour_card.py:94
+#: bot/modules/tour_card.py:126
 msgid "I have promo code"
 msgstr "У меня есть промокод"
-
-#: bot/modules/tour_card.py:95
-msgid "Back to Tour List"
-msgstr "Назад к списку туров"
 
 #: bot/modules/users_tours.py:38
 msgid "Buy your first tour"
@@ -153,72 +211,95 @@ msgstr "У вас ещё нет купленных маршрутов."
 msgid "Your Purchased Routes:"
 msgstr "Ваши купленные маршруты:"
 
-#: bot/payment/payment_gateway.py:16
+#: bot/payment/payment_gateway.py:28
 msgid "Pay with card"
 msgstr "Оплата кратой"
 
-#: bot/payment/payment_gateway.py:20
+#: bot/payment/payment_gateway.py:32
 msgid "Pay with russian card"
 msgstr "Оплата российской картой"
 
-#: bot/payment/payment_gateway.py:23
+#: bot/payment/payment_gateway.py:35
 #, fuzzy
 msgid " Back to Tour Page"
 msgstr "Назад к списку туров"
 
-#: bot/payment/payment_gateway.py:44
+#: bot/payment/payment_gateway.py:61
 msgid "Choose how you want to pay:"
 msgstr "Выберете способ оплаты:"
 
-#: bot/payment/payment_ru.py:44
+#: bot/payment/payment_gateway.py:93
+msgid "Tour successfully added to your account!"
+msgstr "Тур успешно добавлен в ваш аккаунт!"
+
+#: bot/payment/payment_gateway.py:96
+#: web/templates/modules/landing/navbar.html:20
+msgid "My Tours"
+msgstr "Мои туры"
+
+#: bot/payment/payment_gateway.py:101
+#, fuzzy
+msgid "Failed to add tour to your account. Please try again later."
+msgstr "Не удалось загрузить детали тура. Попробуйте позже."
+
+#: bot/payment/payment_gateway.py:103 bot/payment/payment_gateway.py:112
+#, fuzzy
+msgid "Try Again"
+msgstr "Навигация по туру:"
+
+#: bot/payment/payment_gateway.py:110
+msgid "An error occurred. Please try again later."
+msgstr "Произошла ошибка. Пожалуйста, попробуйте позже."
+
+#: bot/payment/payment_ru.py:43
 msgid "Pay"
 msgstr "Оплатить"
 
-#: bot/payment/payment_ru.py:45
+#: bot/payment/payment_ru.py:44
 msgid " Cancel Payment"
 msgstr "Отмена оплаты"
 
-#: bot/payment/payment_ru.py:88
+#: bot/payment/payment_ru.py:116
 #, fuzzy
 msgid "Back to tour page"
 msgstr "Назад к списку туров"
 
-#: bot/payment/payment_ru.py:90
+#: bot/payment/payment_ru.py:118
 #, fuzzy
 msgid "Failed to generate payment details. Try again later."
 msgstr "Не удалось загрузить детали тура. Попробуйте позже."
 
-#: bot/payment/payment_ru.py:120
+#: bot/payment/payment_ru.py:152
 #, fuzzy
 msgid "Shop more"
 msgstr "Магазин"
 
-#: bot/payment/payment_ru.py:121
+#: bot/payment/payment_ru.py:153
 #, fuzzy
 msgid "To your tours"
 msgstr "Ваши туры"
 
-#: bot/payment/payment_ru.py:124
+#: bot/payment/payment_ru.py:156
 msgid "Payment successful! Your order has been confirmed."
 msgstr "Платеж прошёл успешно! Ваш заказ подтверждён."
 
-#: bot/payment/payment_ru.py:131
+#: bot/payment/payment_ru.py:163
 msgid "Payment successful, but order confirmation failed."
 msgstr "Платеж прошёл успешно, но подтверждение заказа не удалось."
 
-#: bot/payment/payment_ru.py:132
+#: bot/payment/payment_ru.py:164
 msgid "Contact Support: @your_support"
 msgstr "Свяжитесь с нашей поддержкой: @your_support"
 
-#: bot/payment/payment_ru.py:133
+#: bot/payment/payment_ru.py:165
 msgid "Your payment token"
 msgstr "Ваш платежный индификатор"
 
-#: bot/payment/payment_ru.py:155
+#: bot/payment/payment_ru.py:187
 msgid "Return to tour page"
 msgstr "Вернутся на страницу тура"
 
-#: bot/payment/payment_ru.py:157
+#: bot/payment/payment_ru.py:189
 msgid "Payment has been canceled."
 msgstr "Платеж отменен"
 
@@ -428,7 +509,8 @@ msgid "Discover Unique Audio Tours Around the World"
 msgstr "Откройте для себя уникальные аудиотуры по всему миру"
 
 #: web/templates/landing.html:9 web/templates/landing.html:12
-#: web/templates/landing.html:18
+#: web/templates/landing.html:18 web/templates/login.html:8
+#: web/templates/register.html:8
 msgid ""
 "Browse and explore immersive self-guided tours powered by audio, images, "
 "and maps. Discover new destinations and travel at your own pace."
@@ -437,24 +519,21 @@ msgstr ""
 "изображениями и картами. Открывайте новые места и путешествуйте в своем "
 "ритме."
 
-#: web/templates/login.html:6 web/templates/login.html:19
-#: web/templates/login.html:35 web/templates/modules/landing/navbar.html:25
+#: web/templates/login.html:6 web/templates/login.html:30
+#: web/templates/login.html:46 web/templates/modules/landing/navbar.html:25
 msgid "Login"
 msgstr "Вход"
 
-#: web/templates/login.html:23 web/templates/register.html:32
-msgid "Username"
-msgstr "Имя пользователя"
+#: web/templates/login.html:34 web/templates/register.html:42
+#: web/templates/register.html:69
+msgid "Email"
+msgstr "Электронная почта"
 
-#: web/templates/login.html:25
-msgid "Enter your username"
-msgstr "Введите имя пользователя"
-
-#: web/templates/login.html:32
+#: web/templates/login.html:43
 msgid "Enter your password"
 msgstr "Введите пароль"
 
-#: web/templates/login.html:39
+#: web/templates/login.html:50
 msgid "Don't have an account? Register"
 msgstr "Нет аккаунта? Зарегистрируйтесь"
 
@@ -479,40 +558,56 @@ msgstr "Начните исследовать, купив свой первый 
 msgid "Browse Tours"
 msgstr "Смотреть туры"
 
-#: web/templates/register.html:6 web/templates/register.html:19
-#: web/templates/register.html:45 web/templates/register.html:71
+#: web/templates/register.html:6 web/templates/register.html:29
+#: web/templates/register.html:60 web/templates/register.html:93
 msgid "Register"
 msgstr "Регистрация"
 
-#: web/templates/register.html:23
+#: web/templates/register.html:33
 msgid "Register as User"
 msgstr "Регистрация как пользователь"
 
-#: web/templates/register.html:24
+#: web/templates/register.html:34
 msgid "Register as Creator"
 msgstr "Регистрация как создатель"
 
-#: web/templates/register.html:29
+#: web/templates/register.html:39
 msgid "Register as a User"
 msgstr "Зарегистрироваться как пользователь"
 
-#: web/templates/register.html:34
-msgid "Enter username"
-msgstr "Введите имя пользователя"
-
-#: web/templates/register.html:39
+#: web/templates/register.html:49 web/templates/register.html:81
 msgid "Password"
 msgstr "Пароль"
 
-#: web/templates/register.html:41 web/templates/register.html:68
+#: web/templates/register.html:51 web/templates/register.html:83
 msgid "Enter password"
 msgstr "Введите пароль"
 
-#: web/templates/register.html:51
+#: web/templates/register.html:54 web/templates/register.html:86
+msgid "At least 8 characters"
+msgstr "Минимум 8 символов"
+
+#: web/templates/register.html:55 web/templates/register.html:87
+msgid "One uppercase letter"
+msgstr "Одна заглавная буква"
+
+#: web/templates/register.html:56 web/templates/register.html:88
+msgid "One number"
+msgstr "Одна цифра"
+
+#: web/templates/register.html:57 web/templates/register.html:89
+msgid "One letter"
+msgstr "Одна буква"
+
+#: web/templates/register.html:66
 msgid "Register as a Creator"
 msgstr "Зарегистрироваться как создатель"
 
-#: web/templates/register.html:76
+#: web/templates/register.html:75
+msgid "Username"
+msgstr "Имя пользователя"
+
+#: web/templates/register.html:97
 msgid "Already have an account? Login"
 msgstr "Уже есть аккаунт? Войти"
 
@@ -590,10 +685,6 @@ msgstr "Магазин"
 msgid "Install App"
 msgstr "Установить приложение"
 
-#: web/templates/modules/landing/navbar.html:20
-msgid "My Tours"
-msgstr "Мои туры"
-
 #: web/templates/modules/landing/navbar.html:22
 msgid "Creator's cabinet"
 msgstr "Кабинет создателя"
@@ -602,3 +693,11 @@ msgstr "Кабинет создателя"
 msgid "Language"
 msgstr "Язык"
 
+#~ msgid "Base Price"
+#~ msgstr "Базовая цена"
+
+#~ msgid "Enter your username"
+#~ msgstr "Введите имя пользователя"
+
+#~ msgid "Enter username"
+#~ msgstr "Введите имя пользователя"

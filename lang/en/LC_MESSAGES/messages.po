@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-29 21:09+0100\n"
+"POT-Creation-Date: 2025-05-20 17:51+0200\n"
 "PO-Revision-Date: 2025-03-22 17:09+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,6 +18,34 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
+#: api/routs/promo.py:85
+msgid "Promo code created successfully"
+msgstr ""
+
+#: api/routs/promo.py:120
+msgid "Promo code updated successfully"
+msgstr ""
+
+#: api/routs/promo.py:181
+msgid "Promo code deactivated successfully"
+msgstr ""
+
+#: api/routs/promo.py:183 api/routs/promo.py:199
+msgid "Promo code not found"
+msgstr ""
+
+#: api/routs/promo.py:204
+msgid "Promo code expired"
+msgstr ""
+
+#: api/routs/promo.py:212 api/routs/promo.py:222 bot/modules/promo.py:123
+msgid "Promo code activated successfully"
+msgstr ""
+
+#: api/routs/promo.py:219
+msgid "Promo code limit reached"
+msgstr ""
+
 #: bot/modules/main_menu.py:8
 msgid "Buy Tour"
 msgstr ""
@@ -27,18 +55,35 @@ msgid "Browse My Tours"
 msgstr ""
 
 #: bot/modules/main_menu.py:10
-msgid "Help"
+msgid "Enter Promo Code"
 msgstr ""
 
 #: bot/modules/main_menu.py:11
+msgid "Help"
+msgstr ""
+
+#: bot/modules/main_menu.py:12
 msgid "About this bot"
 msgstr ""
 
-#: bot/modules/main_menu.py:31 bot/modules/main_menu.py:41
+#: bot/modules/main_menu.py:32 bot/modules/main_menu.py:42
 msgid ""
 "Main menu\n"
 "\n"
 "Choose one of the options:"
+msgstr ""
+
+#: bot/modules/promo.py:49 bot/modules/promo.py:87 bot/modules/shop.py:58
+#: bot/modules/shop.py:78
+msgid "Back to Main Menu"
+msgstr ""
+
+#: bot/modules/promo.py:58
+msgid "Please enter your promo code:"
+msgstr ""
+
+#: bot/modules/promo.py:124
+msgid "Below is a list of all included in promo tours:"
 msgstr ""
 
 #: bot/modules/shop.py:50
@@ -47,10 +92,6 @@ msgstr ""
 
 #: bot/modules/shop.py:52 web/templates/shop.html:49
 msgid "Next"
-msgstr ""
-
-#: bot/modules/shop.py:58 bot/modules/shop.py:78
-msgid "Back to Main Menu"
 msgstr ""
 
 #: bot/modules/shop.py:85 bot/modules/shop.py:92
@@ -81,60 +122,73 @@ msgstr ""
 msgid "I am here!"
 msgstr ""
 
-#: bot/modules/tour.py:195
+#: bot/modules/tour.py:197
 msgid "Next Point"
 msgstr ""
 
-#: bot/modules/tour.py:197
+#: bot/modules/tour.py:199
 msgid "Leave review!"
 msgstr ""
 
-#: bot/modules/tour.py:198
+#: bot/modules/tour.py:200
 msgid "To main menu"
 msgstr ""
 
-#: bot/modules/tour.py:202
+#: bot/modules/tour.py:204
 msgid "Tour navigation:"
 msgstr ""
 
-#: bot/modules/tour_card.py:61
+#: bot/modules/tour_card.py:64 bot/payment/payment_gateway.py:95
+#: bot/payment/payment_gateway.py:104 bot/payment/payment_gateway.py:113
 msgid "Back to shop"
 msgstr ""
 
-#: bot/modules/tour_card.py:63
+#: bot/modules/tour_card.py:66
 msgid "Failed to load tour details. Try again later."
 msgstr ""
 
-#: bot/modules/tour_card.py:86
-msgid "Base Price"
+#: bot/modules/tour_card.py:99
+msgid "Your Price"
 msgstr ""
 
-#: bot/modules/tour_card.py:87
+#: bot/modules/tour_card.py:100 bot/modules/tour_card.py:106
 msgid "Description"
 msgstr ""
 
-#: bot/modules/tour_card.py:88
+#: bot/modules/tour_card.py:101 bot/modules/tour_card.py:107
 msgid "Points"
 msgstr ""
 
-#: bot/modules/tour_card.py:88
+#: bot/modules/tour_card.py:101 bot/modules/tour_card.py:107
 msgid "Distance"
 msgstr ""
 
-#: bot/modules/tour_card.py:92 web/templates/tour_page.html:51
+#: bot/modules/tour_card.py:105
+msgid "Price"
+msgstr ""
+
+#: bot/modules/tour_card.py:116
+msgid "Add to My Account"
+msgstr ""
+
+#: bot/modules/tour_card.py:117
+msgid "Gift to Friend"
+msgstr ""
+
+#: bot/modules/tour_card.py:118 bot/modules/tour_card.py:127
+msgid "Back to Tour List"
+msgstr ""
+
+#: bot/modules/tour_card.py:123 web/templates/tour_page.html:51
 msgid "Buy for Me"
 msgstr ""
 
-#: bot/modules/tour_card.py:93
+#: bot/modules/tour_card.py:125
 msgid "Buy for Friend"
 msgstr ""
 
-#: bot/modules/tour_card.py:94
+#: bot/modules/tour_card.py:126
 msgid "I have promo code"
-msgstr ""
-
-#: bot/modules/tour_card.py:95
-msgid "Back to Tour List"
 msgstr ""
 
 #: bot/modules/users_tours.py:38
@@ -149,67 +203,88 @@ msgstr ""
 msgid "Your Purchased Routes:"
 msgstr ""
 
-#: bot/payment/payment_gateway.py:16
+#: bot/payment/payment_gateway.py:28
 msgid "Pay with card"
 msgstr ""
 
-#: bot/payment/payment_gateway.py:20
+#: bot/payment/payment_gateway.py:32
 msgid "Pay with russian card"
 msgstr ""
 
-#: bot/payment/payment_gateway.py:23
+#: bot/payment/payment_gateway.py:35
 msgid " Back to Tour Page"
 msgstr ""
 
-#: bot/payment/payment_gateway.py:44
+#: bot/payment/payment_gateway.py:61
 msgid "Choose how you want to pay:"
 msgstr ""
 
-#: bot/payment/payment_ru.py:44
+#: bot/payment/payment_gateway.py:93
+msgid "Tour successfully added to your account!"
+msgstr ""
+
+#: bot/payment/payment_gateway.py:96
+#: web/templates/modules/landing/navbar.html:20
+msgid "My Tours"
+msgstr ""
+
+#: bot/payment/payment_gateway.py:101
+msgid "Failed to add tour to your account. Please try again later."
+msgstr ""
+
+#: bot/payment/payment_gateway.py:103 bot/payment/payment_gateway.py:112
+msgid "Try Again"
+msgstr ""
+
+#: bot/payment/payment_gateway.py:110
+msgid "An error occurred. Please try again later."
+msgstr ""
+
+#: bot/payment/payment_ru.py:43
 msgid "Pay"
 msgstr ""
 
-#: bot/payment/payment_ru.py:45
+#: bot/payment/payment_ru.py:44
 msgid " Cancel Payment"
 msgstr ""
 
-#: bot/payment/payment_ru.py:88
+#: bot/payment/payment_ru.py:116
 msgid "Back to tour page"
 msgstr ""
 
-#: bot/payment/payment_ru.py:90
+#: bot/payment/payment_ru.py:118
 msgid "Failed to generate payment details. Try again later."
 msgstr ""
 
-#: bot/payment/payment_ru.py:120
+#: bot/payment/payment_ru.py:152
 msgid "Shop more"
 msgstr ""
 
-#: bot/payment/payment_ru.py:121
+#: bot/payment/payment_ru.py:153
 msgid "To your tours"
 msgstr ""
 
-#: bot/payment/payment_ru.py:124
+#: bot/payment/payment_ru.py:156
 msgid "Payment successful! Your order has been confirmed."
 msgstr ""
 
-#: bot/payment/payment_ru.py:131
+#: bot/payment/payment_ru.py:163
 msgid "Payment successful, but order confirmation failed."
 msgstr ""
 
-#: bot/payment/payment_ru.py:132
+#: bot/payment/payment_ru.py:164
 msgid "Contact Support: @your_support"
 msgstr ""
 
-#: bot/payment/payment_ru.py:133
+#: bot/payment/payment_ru.py:165
 msgid "Your payment token"
 msgstr ""
 
-#: bot/payment/payment_ru.py:155
+#: bot/payment/payment_ru.py:187
 msgid "Return to tour page"
 msgstr ""
 
-#: bot/payment/payment_ru.py:157
+#: bot/payment/payment_ru.py:189
 msgid "Payment has been canceled."
 msgstr ""
 
@@ -396,30 +471,28 @@ msgid "Discover Unique Audio Tours Around the World"
 msgstr ""
 
 #: web/templates/landing.html:9 web/templates/landing.html:12
-#: web/templates/landing.html:18
+#: web/templates/landing.html:18 web/templates/login.html:8
+#: web/templates/register.html:8
 msgid ""
 "Browse and explore immersive self-guided tours powered by audio, images, "
 "and maps. Discover new destinations and travel at your own pace."
 msgstr ""
 
-#: web/templates/login.html:6 web/templates/login.html:19
-#: web/templates/login.html:35 web/templates/modules/landing/navbar.html:25
+#: web/templates/login.html:6 web/templates/login.html:30
+#: web/templates/login.html:46 web/templates/modules/landing/navbar.html:25
 msgid "Login"
 msgstr ""
 
-#: web/templates/login.html:23 web/templates/register.html:32
-msgid "Username"
+#: web/templates/login.html:34 web/templates/register.html:42
+#: web/templates/register.html:69
+msgid "Email"
 msgstr ""
 
-#: web/templates/login.html:25
-msgid "Enter your username"
-msgstr ""
-
-#: web/templates/login.html:32
+#: web/templates/login.html:43
 msgid "Enter your password"
 msgstr ""
 
-#: web/templates/login.html:39
+#: web/templates/login.html:50
 msgid "Don't have an account? Register"
 msgstr ""
 
@@ -444,40 +517,56 @@ msgstr ""
 msgid "Browse Tours"
 msgstr ""
 
-#: web/templates/register.html:6 web/templates/register.html:19
-#: web/templates/register.html:45 web/templates/register.html:71
+#: web/templates/register.html:6 web/templates/register.html:29
+#: web/templates/register.html:60 web/templates/register.html:93
 msgid "Register"
 msgstr ""
 
-#: web/templates/register.html:23
+#: web/templates/register.html:33
 msgid "Register as User"
 msgstr ""
 
-#: web/templates/register.html:24
+#: web/templates/register.html:34
 msgid "Register as Creator"
 msgstr ""
 
-#: web/templates/register.html:29
+#: web/templates/register.html:39
 msgid "Register as a User"
 msgstr ""
 
-#: web/templates/register.html:34
-msgid "Enter username"
-msgstr ""
-
-#: web/templates/register.html:39
+#: web/templates/register.html:49 web/templates/register.html:81
 msgid "Password"
 msgstr ""
 
-#: web/templates/register.html:41 web/templates/register.html:68
+#: web/templates/register.html:51 web/templates/register.html:83
 msgid "Enter password"
 msgstr ""
 
-#: web/templates/register.html:51
+#: web/templates/register.html:54 web/templates/register.html:86
+msgid "At least 8 characters"
+msgstr ""
+
+#: web/templates/register.html:55 web/templates/register.html:87
+msgid "One uppercase letter"
+msgstr ""
+
+#: web/templates/register.html:56 web/templates/register.html:88
+msgid "One number"
+msgstr ""
+
+#: web/templates/register.html:57 web/templates/register.html:89
+msgid "One letter"
+msgstr ""
+
+#: web/templates/register.html:66
 msgid "Register as a Creator"
 msgstr ""
 
-#: web/templates/register.html:76
+#: web/templates/register.html:75
+msgid "Username"
+msgstr ""
+
+#: web/templates/register.html:97
 msgid "Already have an account? Login"
 msgstr ""
 
@@ -553,10 +642,6 @@ msgstr ""
 msgid "Install App"
 msgstr ""
 
-#: web/templates/modules/landing/navbar.html:20
-msgid "My Tours"
-msgstr ""
-
 #: web/templates/modules/landing/navbar.html:22
 msgid "Creator's cabinet"
 msgstr ""
@@ -564,4 +649,13 @@ msgstr ""
 #: web/templates/modules/landing/navbar.html:28
 msgid "Language"
 msgstr ""
+
+#~ msgid "Base Price"
+#~ msgstr ""
+
+#~ msgid "Enter your username"
+#~ msgstr ""
+
+#~ msgid "Enter username"
+#~ msgstr ""
 
