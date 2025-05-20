@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, HTTPException, Depends, Response
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -16,10 +18,19 @@ order_router = APIRouter(
     tags=["order"],
 )
 
+class FreeOrderCreate(BaseModel):
+
+    user_id: int
+    rout_id: int
+
+
 class OrderCreate(BaseModel):
 
     user_id: int
     rout_id: int
+    discount_type: Optional[str] = None
+    discount_value: Optional[str] = None
+
 
 class OrderResponsePayPal(BaseModel):
 
@@ -41,6 +52,8 @@ async def create_order_paypal(
     invoice_data = await InvoiceConstructor.return_invoice_paypal_link(
         order.rout_id,
         order.user_id,
+        order.discount_type,
+        order.discount_value,
         session
     )
     # create order in db
@@ -116,14 +129,16 @@ async def complete_order_paypal_cancel(
 
     return RedirectResponse(url='/')
 
-@order_router.post('/create/telegram', response_model=OrderResponseTelegram)
-async def create_order_telegram(
+@order_router.post('/create/youkassa', response_model=OrderResponseTelegram)
+async def create_order_youkassa(
         order: OrderCreate,
         session: AsyncSession = Depends(get_session)
 ):
     invoice_data = await InvoiceConstructor.return_invoice_telegram_json(
         order.user_id,
         order.rout_id,
+        order.discount_type,
+        order.discount_value,
         session
     )
 
@@ -145,8 +160,8 @@ async def create_order_telegram(
         "invoice_payload": invoice_data['invoice_payload']
     }
 
-@order_router.post('/complete/telegram/success/{token}')
-async def complete_order_telegram_success(
+@order_router.post('/complete/youkassa/success/{token}')
+async def complete_order_youkassa_success(
         token: str,
         session: AsyncSession = Depends(get_session)
 ):
@@ -173,4 +188,40 @@ async def complete_order_telegram_success(
 
     return Response(status_code=200, content='ok')
 
+@order_router.post('/complete/free')
+async def create_free_order(
+        order: FreeOrderCreate,
+        session: AsyncSession = Depends(get_session)
+):
 
+    result = await session.execute(
+        select(Rout).where(Rout.id == order.rout_id)
+    )
+    rout = result.scalars().first()
+
+    if not rout:
+        raise HTTPException(status_code=404, detail="Rout does not exists")
+
+    result = await session.execute(
+        select(BaseUser).where(BaseUser.id == order.user_id)
+        )
+    user = result.scalars().first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User does not exists")
+
+    new_order = Order(
+        user_id=order.user_id,
+        rout_id=order.rout_id,
+        amount=0,
+        payment_method='Free',
+        invoice_id=f'Free_{order.user_id}_{order.rout_id}',
+        payment_link=None
+    )
+
+    session.add(new_order)
+    await session.commit()
+
+    return {
+        "order_id": new_order.id,
+    }

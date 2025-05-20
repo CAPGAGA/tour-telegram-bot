@@ -234,7 +234,8 @@ async def display_rout(
     if not db_rout:
         raise HTTPException(status_code=404, detail="Rout not found")
 
-    if not rout.is_displayed:
+
+    if not db_rout.is_displayed:
         # check if rout can be displayed
         point_query = (
             select(RoutPoint.id, RoutPoint.point_text, PointsAudio.audio_name)

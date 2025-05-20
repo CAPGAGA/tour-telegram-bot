@@ -2,6 +2,7 @@ import os
 import logging
 
 from datetime import datetime
+from typing import Optional
 
 import aiohttp
 from fastapi import HTTPException
@@ -49,6 +50,8 @@ class InvoiceConstructor:
                     return amount_usd * float(rates.usd_eur)
                 elif target_currency == "RUB":
                     return amount_usd * float(rates.usd_rub)
+                return None
+        return None
 
     @staticmethod
     async def _fetch_tour_details(tour_id: int, session: AsyncSession):
@@ -76,7 +79,9 @@ class InvoiceConstructor:
     async def return_invoice_paypal_link(
             tour_id: int,
             user_id: int,
-            session: AsyncSession
+            discount_type: str,
+            discount_value: str,
+            session: AsyncSession,
     ) -> dict:
         """
         Construct an invoice for PayPal payments
@@ -88,10 +93,29 @@ class InvoiceConstructor:
         if not tour_data or not user_data:
             raise HTTPException(status_code=500, detail="Invoice generation failed")
 
+        base_price = tour_data.base_price
+        final_price = base_price
+        price_description = f'Access to tour: "{tour_data.rout_name}"'
+
+        # Apply discount if provided
+        if discount_type != 'None' or discount_value is not None:
+            try:
+                discount_value_float = float(discount_value)
+                if discount_type == "flat":
+                    final_price = max(0, base_price - discount_value_float)
+                    price_description = f'Access to tour: "{tour_data.rout_name}" (${base_price:.2f} - ${discount_value_float:.2f} discount)'
+                elif discount_type == "percent":
+                    discount_amount = (base_price * discount_value_float) / 100
+                    final_price = max(0, base_price - discount_amount)
+                    price_description = f'Access to tour: "{tour_data.rout_name}" (${base_price:.2f} - {discount_value_float}% off)'
+            except ValueError:
+                logger.error(f"Invalid discount value: {discount_value}")
+                # Continue with base price if discount calculation fails
+                final_price = base_price
+
         invoice_id = f"ORD-{tour_id}-{user_id}-{int(datetime.utcnow().timestamp())}"
 
         async with aiohttp.ClientSession() as client_session:
-
             # Get PayPal Access Token
             auth = aiohttp.BasicAuth(PAYPAL_CLIENT_ID, PAYPAL_SECRET)
             async with client_session.post(
@@ -117,9 +141,9 @@ class InvoiceConstructor:
                         "reference_id": invoice_id,
                         "amount": {
                             "currency_code": "USD",
-                            "value": str(tour_data.base_price)
+                            "value": str(final_price)
                         },
-                        "description": f'Access to tour: "{tour_data.rout_name}"'
+                        "description": price_description
                     }
                 ],
                 "payment_source": {
@@ -161,20 +185,22 @@ class InvoiceConstructor:
                 return {
                     "invoice_id": invoice_id,
                     "approval_link": approval_link,
-                    "amount": tour_data.base_price,
+                    "amount": final_price,
                     "payment_method": "paypal"
                 }
-
 
     @staticmethod
     async def return_invoice_telegram_json(
             user_id: int,
             tour_id: int,
+            discount_type: Optional[str],
+            discount_value: Optional[str],
             session: AsyncSession
     ) -> dict:
         """
         Construct an invoice for Telegram payments
         """
+
         # Get data from db
         tour_data = await InvoiceConstructor._fetch_tour_details(tour_id, session)
         user_data = await InvoiceConstructor._fetch_user_details(user_id, session)
@@ -182,7 +208,26 @@ class InvoiceConstructor:
         if not tour_data or not user_data:
             raise HTTPException(status_code=500, detail="Invoice generation failed")
 
-        invoice_id = f"TG-ORD-{tour_id}-{user_id}-{int(datetime.utcnow().timestamp())}"
+        invoice_id = f"YK-ORD-{tour_id}-{user_id}-{int(datetime.utcnow().timestamp())}"
+
+        base_price = await InvoiceConstructor._convert_currency(tour_data.base_price, TELEGRAM_CURRENCY)
+        final_price = base_price
+        price_label = tour_data.rout_name
+
+        if discount_type != 'None' or discount_value is not None:
+            try:
+                discount_value_float = float(discount_value)
+                if discount_type == "flat":
+                    final_price = max(0, base_price - discount_value_float)
+                    price_label = f"{tour_data.rout_name} (${base_price:.2f} - ${discount_value_float:.2f} discount)"
+                elif discount_type == "percent":
+                    discount_amount = (base_price * discount_value_float) / 100
+                    final_price = max(0, base_price - discount_amount)
+                    price_label = f"{tour_data.rout_name} (${base_price:.2f} - {discount_value_float}% off)"
+            except ValueError:
+                logger.error(f"Invalid discount value: {discount_value}")
+                # Continue with base price if discount calculation fails
+                final_price = base_price
 
         invoice_payload = {
             "title": f"{tour_data.rout_name} Tour",
@@ -191,8 +236,8 @@ class InvoiceConstructor:
             "provider_token": TELEGRAM_PAYMENT_PROVIDER,
             "currency": TELEGRAM_CURRENCY,
             "prices": {
-                'label': tour_data.rout_name,
-                'price': await InvoiceConstructor._convert_currency(tour_data.base_price, TELEGRAM_CURRENCY),
+                'label': price_label,
+                'price': str(final_price),
             },
             "start_parameter": f"buy_tour_{tour_id}",
             "need_email": True,
@@ -210,7 +255,7 @@ class InvoiceConstructor:
             "invoice_id": invoice_id,
             "invoice_payload": invoice_payload,
             "order_sign": order_sign,
-            "amount": tour_data.base_price,
-            "payment_method": "telegram"
+            "amount": final_price,
+            "payment_method": "yookassa"
         }
 

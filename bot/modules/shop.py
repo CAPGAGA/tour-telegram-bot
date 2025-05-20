@@ -39,7 +39,7 @@ def get_tour_page_keyboard(tours, page, _=None):
         keyboard.append(
             [
                 InlineKeyboardButton(
-                    f"{adapted_title} - ${tour['base_price']}", callback_data=f"view_tour_{tour['id']}"
+                    f"{adapted_title} - ${tour['base_price']}", callback_data=f"view_tour_None_None_{tour['id']}"
                 )
             ]
         )

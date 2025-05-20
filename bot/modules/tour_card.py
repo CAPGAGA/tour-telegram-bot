@@ -48,6 +48,9 @@ async def show_tour_details(
     await query.answer()
 
     tour_id = query.data.split("_")[-1]
+    promo_discount = query.data.split("_")[-2]
+    promo_type = query.data.split("_")[-3]
+
     tour = await fetch_tour_details(tour_id)
     user_tours = await fetch_users_tours(user.get("id"))
     is_owned = False
@@ -77,23 +80,52 @@ async def show_tour_details(
     distance = escape_markdown(distance_raw, version=2)
     points = escape_markdown(points_raw, version=2)
 
+    # After the base price section and before creating tour_text
+
+    # Calculate price with promo if applicable
+    final_price = base_price_raw
+    if promo_type != 'None' and promo_discount != 'None':
+        if promo_type == "flat":
+            final_price = max(0, float(base_price_raw) - float(promo_discount))
+        elif promo_type == "percent":
+            discount_amount = (float(base_price_raw) * float(promo_discount)) / 100
+            final_price = max(0, float(base_price_raw) - discount_amount)
+        
+        final_price = str(round(final_price, 2))
+        final_price = escape_markdown(final_price, version=2)
+
+        # Update tour text to include both prices
+        tour_text = (f"🗺 **{rout_name}**"
+                     f"\n💰 **" + _("Your Price") + f":** {final_price}$"
+                     f"\n\n📖 **" + _("Description") + f":** {description} "
+                     f"\n\n📢 **" + _("Points") + f":** {points} ┃ 📏 **" + _("Distance" ) + f":** {distance} km  ")
+    else:
+        # Original tour text without promo
+        tour_text = (f"🗺 **{rout_name}**"
+                     f"\n\n💵 **" + _("Price") + f":** {base_price}$"
+                     f"\n\n📖 **" + _("Description") + f":** {description} "
+                     f"\n\n📢 **" + _("Points") + f":** {points} ┃ 📏 **" + _("Distance" ) + f":** {distance} km  ")
+
     # Tour description (trim if too long)
     if len(description) > 600:
         description = description[:600] + "..."
 
-    # Create tour card message
-    tour_text = (f"🗺 **{rout_name}**"
-                 f"\n\n💵 **" + _("Base Price") + f":** {base_price}$"
-                 f"\n\n📖 **" + _("Description") + f":** {description} "
-                 f"\n\n📢 **" + _("Points") + f":** {points} ┃ 📏 **" + _("Distance" ) + f":** {distance} km  ")
-
-    # Create purchase buttons
-    keyboard = [
-        [InlineKeyboardButton("🛍 " + _("Buy for Me"), callback_data=f"buy_me_{tour_id}")],
-        [InlineKeyboardButton("🎁 " + _("Buy for Friend"), callback_data=f"buy_friend_{tour_id}")],
-        [InlineKeyboardButton("💵 " + _("I have promo code"), callback_data=f"buy_promo_{tour_id}")],
-        [InlineKeyboardButton("🔙 " + _("Back to Tour List"), callback_data="buy_tours")]
-    ]
+    if float(final_price) == 0:
+        # Create add to my account keyboard
+        keyboard = [
+            [InlineKeyboardButton("➕ " + _("Add to My Account"), callback_data=f"add_tour_{tour_id}")],
+            [InlineKeyboardButton("🎁 " + _("Gift to Friend"), callback_data=f"buy_friend_{tour_id}")],
+            [InlineKeyboardButton("🔙 " + _("Back to Tour List"), callback_data="buy_tours")]
+        ]
+    else:
+        # Create buy keyboard
+        keyboard = [
+            [InlineKeyboardButton("🛍 " + _("Buy for Me"),
+                                  callback_data=f"buy_me_{promo_type}_{promo_discount}_{tour_id}")],
+            [InlineKeyboardButton("🎁 " + _("Buy for Friend"), callback_data=f"buy_friend_{tour_id}")],
+            [InlineKeyboardButton("💵 " + _("I have promo code"), callback_data=f"buy_promo_{tour_id}")],
+            [InlineKeyboardButton("🔙 " + _("Back to Tour List"), callback_data="buy_tours")]
+        ]
 
     if is_owned:
         keyboard.pop(0)
