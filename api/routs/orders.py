@@ -28,8 +28,8 @@ class OrderCreate(BaseModel):
 
     user_id: int
     rout_id: int
-    discount_type: Optional[str] = None
-    discount_value: Optional[str] = None
+    discount_type: Optional[str] = "None"
+    discount_value: Optional[str] = "None"
 
 
 class OrderResponsePayPal(BaseModel):

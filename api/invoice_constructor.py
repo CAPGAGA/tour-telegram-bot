@@ -98,7 +98,7 @@ class InvoiceConstructor:
         price_description = f'Access to tour: "{tour_data.rout_name}"'
 
         # Apply discount if provided
-        if discount_type != 'None' or discount_value is not None:
+        if discount_type != 'None':
             try:
                 discount_value_float = float(discount_value)
                 if discount_type == "flat":
@@ -214,7 +214,7 @@ class InvoiceConstructor:
         final_price = base_price
         price_label = tour_data.rout_name
 
-        if discount_type != 'None' or discount_value is not None:
+        if discount_type != 'None':
             try:
                 discount_value_float = float(discount_value)
                 if discount_type == "flat":
