@@ -24,7 +24,10 @@ async def construct_invoice(
     invoice_data = await fetch_tour_payment_details(
         user_id=data['user_id'],
         tour_id=data['tour_id'],
-        method='telegram'
+        method=data['method'],
+        subject=data['subject'],
+        discount=data['discount'],
+        promo_type=data['promo_type']
     )
     if not invoice_data:
         return None
@@ -91,15 +94,26 @@ async def redner_youkassa_payment_menu(
     query = update.callback_query
     await query.answer()
 
+    # extract needed for invoice data
     tour_id = query.data.split("_")[-1]
+    method = query.data.split("_")[-2]
+    subject = query.data.split("_")[-3]
+    discount = query.data.split("_")[-4]
+    promo_type = query.data.split("_")[-5]
+
     data = {
         "user_id": user['id'],
-        "tour_id": tour_id
+        "tour_id": tour_id,
+        "method": method,
+        "subject": subject,
+        "discount": discount,
+        "promo_type": promo_type
     }
+
     invoice = await construct_invoice(update.effective_chat.id, data, _)
-    logger.info(invoice)
+
     if not invoice:
-        keyboard = [[InlineKeyboardButton('🛒' + _('Back to tour page'), callback_data=f"view_tour_{tour_id}")]]
+        keyboard = [[InlineKeyboardButton('🛒' + _('Back to tour page'), callback_data=f"view_tour_{promo_type}_{discount}_{tour_id}")]]
         await query.message.edit_text(
             "❌ " + _("Failed to generate payment details. Try again later."),
             reply_markup=InlineKeyboardMarkup(keyboard)
@@ -170,7 +184,7 @@ async def handle_cancel_payment(
         logger.error(f"Failed to delete invoice message: {e}")
 
     # Send cancellation confirmation
-    keyboard = [[InlineKeyboardButton("🔙 " + _("Return to tour page"), callback_data=f"view_tour_{tour_id}")]]
+    keyboard = [[InlineKeyboardButton("🔙 " + _("Return to tour page"), callback_data=f"view_tour_None_None_{tour_id}")]]
     await query.message.reply_text(
         "❌ " + _("Payment has been canceled."),
         reply_markup=InlineKeyboardMarkup(keyboard)

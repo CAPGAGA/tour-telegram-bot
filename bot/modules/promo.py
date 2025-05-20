@@ -3,6 +3,7 @@ import os
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, CallbackQueryHandler
+from telegram.constants import ParseMode
 
 from bot.decorators.auth import user_auth
 from bot.utils.messages import send_message
@@ -109,7 +110,7 @@ async def check_code(
             rout_list.append(
                 [
                     InlineKeyboardButton(
-                        f"{rout.get('rout_name')} - {calculated_price}$ ([s]({rout.get('base_price')}$)[/s]",
+                        f"{rout.get('rout_name')} - {calculated_price}$",
                         callback_data=f"view_tour_{promo.get('type')}_{promo.get('discount')}_{rout.get('id')}"
                     )
                 ]
@@ -121,7 +122,8 @@ async def check_code(
                 message_id=original_message_id,
                 text="✅ " + _("Promo code activated successfully") + "\n\n"
                      + _("Below is a list of all included in promo tours:"),
-                reply_markup=InlineKeyboardMarkup(rout_list)
+                reply_markup=InlineKeyboardMarkup(rout_list),
+                parse_mode=ParseMode.MARKDOWN_V2
             )
         return
 

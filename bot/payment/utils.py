@@ -7,7 +7,10 @@ API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000/apiV1")
 async def fetch_tour_payment_details(
         user_id: int,
         tour_id: int,
-        method: str
+        method: str,
+        subject: str,
+        discount: str,
+        promo_type: str
 ):
     """
         Fetch necessary data to insert into payment button
@@ -18,7 +21,9 @@ async def fetch_tour_payment_details(
         try:
             data = {
                 "user_id": user_id,
-                "rout_id": tour_id
+                "rout_id": tour_id,
+                "discount_value": discount,
+                "discount_type": promo_type
             }
             async with session.post(f"{API_BASE_URL}/order/create/{method}", json=data) as response:
                 if response.status != 200:
@@ -28,11 +33,12 @@ async def fetch_tour_payment_details(
             return None
 
 async def complete_order(
-    token: str
+        method: str,
+        token: str
 ) -> bool:
     async with aiohttp.ClientSession() as session:
         try:
-            async with session.post(f"{API_BASE_URL}/order/complete/telegram/success/{token}") as response:
+            async with session.post(f"{API_BASE_URL}/order/complete/{method}/success/{token}") as response:
                 if response.status != 200:
                     return False
                 return True
