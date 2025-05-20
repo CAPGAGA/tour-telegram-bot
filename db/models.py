@@ -159,8 +159,8 @@ class PromoCode(BaseTable):
     promo_type: Mapped[str] = mapped_column(String, nullable=False, default='flat')
     discount: Mapped[int] = mapped_column(nullable=False)
     creator_id: Mapped[int] = mapped_column(ForeignKey('creator.id'))
-    promo_start: Mapped[datetime] = mapped_column(DateTime(timezone=False), nullable=False)
-    promo_end: Mapped[datetime] = mapped_column(DateTime(timezone=False), nullable=False)
+    promo_start: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=False), nullable=False)
+    promo_end: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=False), nullable=False)
     use_limit: Mapped[int] = mapped_column(Integer, nullable=False, default=-1)
 
 class PromoCodeRout(BaseTable):
