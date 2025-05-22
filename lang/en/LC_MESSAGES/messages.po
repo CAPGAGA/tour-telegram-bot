@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-20 17:51+0200\n"
+"POT-Creation-Date: 2025-05-22 20:09+0200\n"
 "PO-Revision-Date: 2025-03-22 17:09+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -138,8 +138,8 @@ msgstr ""
 msgid "Tour navigation:"
 msgstr ""
 
-#: bot/modules/tour_card.py:64 bot/payment/payment_gateway.py:95
-#: bot/payment/payment_gateway.py:104 bot/payment/payment_gateway.py:113
+#: bot/modules/tour_card.py:64 bot/payment/payment_gateway.py:96
+#: bot/payment/payment_gateway.py:105 bot/payment/payment_gateway.py:114
 msgid "Back to shop"
 msgstr ""
 
@@ -219,24 +219,24 @@ msgstr ""
 msgid "Choose how you want to pay:"
 msgstr ""
 
-#: bot/payment/payment_gateway.py:93
+#: bot/payment/payment_gateway.py:94
 msgid "Tour successfully added to your account!"
 msgstr ""
 
-#: bot/payment/payment_gateway.py:96
+#: bot/payment/payment_gateway.py:97
 #: web/templates/modules/landing/navbar.html:20
 msgid "My Tours"
 msgstr ""
 
-#: bot/payment/payment_gateway.py:101
+#: bot/payment/payment_gateway.py:102
 msgid "Failed to add tour to your account. Please try again later."
 msgstr ""
 
-#: bot/payment/payment_gateway.py:103 bot/payment/payment_gateway.py:112
+#: bot/payment/payment_gateway.py:104 bot/payment/payment_gateway.py:113
 msgid "Try Again"
 msgstr ""
 
-#: bot/payment/payment_gateway.py:110
+#: bot/payment/payment_gateway.py:111
 msgid "An error occurred. Please try again later."
 msgstr ""
 
