@@ -81,10 +81,11 @@ async def free_add_rout(
     try:
         # Call API to add tour to user's account
         async with aiohttp.ClientSession() as session:
-            url = f"{API_BASE_URL}/complete/free"
+            url = f"{API_BASE_URL}/order/complete/free"
+
             payload = {
-                "user_id": user.get("id"),
-                "tour_id": int(tour_id)
+                "user_id": int(user.get("id")),
+                "rout_id": int(tour_id)
             }
 
             async with session.post(url, json=payload) as response:

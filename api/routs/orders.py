@@ -222,6 +222,16 @@ async def create_free_order(
     session.add(new_order)
     await session.commit()
 
+    result = await session.execute(
+        select(UserRout).where(UserRout.user_id == user.id, UserRout.rout_id == order.rout_id)
+    )
+    user_rout = result.scalars().first()
+
+    if not user_rout:
+        new_user_rout = UserRout(user_id=user.id, rout_id=order.rout_id)
+        session.add(new_user_rout)
+        await session.commit()
+
     return {
         "order_id": new_order.id,
     }
