@@ -114,7 +114,6 @@ async def show_tour_details(
         # Create add to my account keyboard
         keyboard = [
             [InlineKeyboardButton("➕ " + _("Add to My Account"), callback_data=f"add_tour_{tour_id}")],
-            [InlineKeyboardButton("🎁 " + _("Gift to Friend"), callback_data=f"buy_friend_{tour_id}")],
             [InlineKeyboardButton("🔙 " + _("Back to Tour List"), callback_data="buy_tours")]
         ]
     else:
@@ -122,8 +121,7 @@ async def show_tour_details(
         keyboard = [
             [InlineKeyboardButton("🛍 " + _("Buy for Me"),
                                   callback_data=f"buy_me_{promo_type}_{promo_discount}_{tour_id}")],
-            [InlineKeyboardButton("🎁 " + _("Buy for Friend"), callback_data=f"buy_friend_{tour_id}")],
-            [InlineKeyboardButton("💵 " + _("I have promo code"), callback_data=f"buy_promo_{tour_id}")],
+            [InlineKeyboardButton("🎁 " + _("Buy as gift"), callback_data=f"buy_friend_{promo_type}_{promo_discount}_{tour_id}")],
             [InlineKeyboardButton("🔙 " + _("Back to Tour List"), callback_data="buy_tours")]
         ]
 

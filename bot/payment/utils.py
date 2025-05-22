@@ -44,3 +44,15 @@ async def complete_order(
                 return True
         except aiohttp.ClientError:
             return False
+
+async def get_gift_code(
+        invoice_id: str
+):
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.post(f"{API_BASE_URL}/promo/create-gift", json={"invoice_id": invoice_id}) as response:
+                if response.status != 200:
+                    return None
+                return await response.json()
+        except aiohttp.ClientError:
+            return None
