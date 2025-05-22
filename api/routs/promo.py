@@ -1,4 +1,6 @@
 import datetime
+import random
+import string
 from datetime import timedelta
 from typing import Optional
 
@@ -9,8 +11,7 @@ from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.database import get_session
-from db.models import Rout, PromoCode, PromoCodeRout
-
+from db.models import Rout, PromoCode, PromoCodeRout, Order
 
 promo_router = APIRouter(
     prefix="/promo",
@@ -41,6 +42,9 @@ class PromoEdit(BaseModel):
     use_limit: Optional[str] = None
     routs: list[str]
 
+class GiftCodeCreate(BaseModel):
+
+    invoice_id: str
 
 @promo_router.post("/create")
 async def create_promo(
@@ -83,6 +87,46 @@ async def create_promo(
     await session.commit()
 
     return {"message": _("Promo code created successfully")}
+
+
+@promo_router.post("/create-gift")
+async def create_gift_code(
+        body: GiftCodeCreate,
+        session: AsyncSession = Depends(get_session)
+):
+    #Check if order have been paid
+    query = select(
+        Order
+    ).where(
+        Order.invoice_id == body.invoice_id,
+    )
+    result = await session.execute(query)
+    order = result.scalars().first()
+
+
+
+    if not order:
+        raise HTTPException(status_code=404, detail=_("Order not found"))
+    print(order.status)
+    if order.status != 'paid':
+        raise HTTPException(status_code=400, detail=_("Order not paid"))
+
+    chars = string.ascii_uppercase + string.digits
+    code = ''.join(random.choice(chars) for _ in range(15))
+    new_promo = PromoCode(
+        code=code,
+        promo_type='percent',
+        discount=100,
+        creator_id=1,
+        promo_start=datetime.datetime.now(),
+        promo_end=datetime.datetime.now() + timedelta(days=365),
+        use_limit=1
+    )
+
+    session.add(new_promo)
+    await session.commit()
+
+    return {"message": _("Promo code created successfully"), "code": code}
 
 @promo_router.put("/create")
 async def edit_promo(

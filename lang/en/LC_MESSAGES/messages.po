@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-22 20:09+0200\n"
+"POT-Creation-Date: 2025-05-22 21:32+0200\n"
 "PO-Revision-Date: 2025-03-22 17:09+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,31 +18,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: api/routs/promo.py:85
+#: api/routs/promo.py:89 api/routs/promo.py:129
 msgid "Promo code created successfully"
 msgstr ""
 
-#: api/routs/promo.py:120
+#: api/routs/promo.py:109
+msgid "Order not found"
+msgstr ""
+
+#: api/routs/promo.py:112
+msgid "Order not paid"
+msgstr ""
+
+#: api/routs/promo.py:164
 msgid "Promo code updated successfully"
 msgstr ""
 
-#: api/routs/promo.py:181
+#: api/routs/promo.py:225
 msgid "Promo code deactivated successfully"
 msgstr ""
 
-#: api/routs/promo.py:183 api/routs/promo.py:199
+#: api/routs/promo.py:227 api/routs/promo.py:243
 msgid "Promo code not found"
 msgstr ""
 
-#: api/routs/promo.py:204
+#: api/routs/promo.py:248
 msgid "Promo code expired"
 msgstr ""
 
-#: api/routs/promo.py:212 api/routs/promo.py:222 bot/modules/promo.py:123
+#: api/routs/promo.py:256 api/routs/promo.py:266 bot/modules/promo.py:123
 msgid "Promo code activated successfully"
 msgstr ""
 
-#: api/routs/promo.py:219
+#: api/routs/promo.py:263
 msgid "Promo code limit reached"
 msgstr ""
 
@@ -171,24 +179,16 @@ msgstr ""
 msgid "Add to My Account"
 msgstr ""
 
-#: bot/modules/tour_card.py:117
-msgid "Gift to Friend"
-msgstr ""
-
-#: bot/modules/tour_card.py:118 bot/modules/tour_card.py:127
+#: bot/modules/tour_card.py:117 bot/modules/tour_card.py:125
 msgid "Back to Tour List"
 msgstr ""
 
-#: bot/modules/tour_card.py:123 web/templates/tour_page.html:51
+#: bot/modules/tour_card.py:122 web/templates/tour_page.html:51
 msgid "Buy for Me"
 msgstr ""
 
-#: bot/modules/tour_card.py:125
-msgid "Buy for Friend"
-msgstr ""
-
-#: bot/modules/tour_card.py:126
-msgid "I have promo code"
+#: bot/modules/tour_card.py:124
+msgid "Buy as gift"
 msgstr ""
 
 #: bot/modules/users_tours.py:38
@@ -240,51 +240,61 @@ msgstr ""
 msgid "An error occurred. Please try again later."
 msgstr ""
 
-#: bot/payment/payment_ru.py:43
+#: bot/payment/payment_ru.py:45
 msgid "Pay"
 msgstr ""
 
-#: bot/payment/payment_ru.py:44
+#: bot/payment/payment_ru.py:46
 msgid " Cancel Payment"
 msgstr ""
 
-#: bot/payment/payment_ru.py:116
+#: bot/payment/payment_ru.py:119
 msgid "Back to tour page"
 msgstr ""
 
-#: bot/payment/payment_ru.py:118
+#: bot/payment/payment_ru.py:121
 msgid "Failed to generate payment details. Try again later."
 msgstr ""
 
-#: bot/payment/payment_ru.py:152
+#: bot/payment/payment_ru.py:162
 msgid "Shop more"
 msgstr ""
 
-#: bot/payment/payment_ru.py:153
+#: bot/payment/payment_ru.py:163
 msgid "To your tours"
 msgstr ""
 
-#: bot/payment/payment_ru.py:156
-msgid "Payment successful! Your order has been confirmed."
-msgstr ""
-
-#: bot/payment/payment_ru.py:163
+#: bot/payment/payment_ru.py:173 bot/payment/payment_ru.py:195
 msgid "Payment successful, but order confirmation failed."
 msgstr ""
 
-#: bot/payment/payment_ru.py:164
+#: bot/payment/payment_ru.py:174 bot/payment/payment_ru.py:196
 msgid "Contact Support: @your_support"
 msgstr ""
 
-#: bot/payment/payment_ru.py:165
+#: bot/payment/payment_ru.py:175 bot/payment/payment_ru.py:197
 msgid "Your payment token"
 msgstr ""
 
-#: bot/payment/payment_ru.py:187
+#: bot/payment/payment_ru.py:178 bot/payment/payment_ru.py:188
+msgid "Payment successful! Your order has been confirmed."
+msgstr ""
+
+#: bot/payment/payment_ru.py:179
+msgid "Here is your gift code: "
+msgstr ""
+
+#: bot/payment/payment_ru.py:180
+msgid ""
+"Your friend may activate it by submitting this code in \"Enter Promo "
+"Code\" button in main menu"
+msgstr ""
+
+#: bot/payment/payment_ru.py:219
 msgid "Return to tour page"
 msgstr ""
 
-#: bot/payment/payment_ru.py:189
+#: bot/payment/payment_ru.py:221
 msgid "Payment has been canceled."
 msgstr ""
 
@@ -657,5 +667,20 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Enter username"
+#~ msgstr ""
+
+#~ msgid "Gift to Friend"
+#~ msgstr ""
+
+#~ msgid "Buy for Friend"
+#~ msgstr ""
+
+#~ msgid "I have promo code"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Your fined may activate it buy "
+#~ "submitting this code in \"Enter Promo"
+#~ " Code\" button in main menu"
 #~ msgstr ""
 

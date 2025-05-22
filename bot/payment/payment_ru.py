@@ -5,7 +5,7 @@ import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice
 from telegram.ext import CallbackContext, CallbackQueryHandler
 
-from bot.payment.utils import fetch_tour_payment_details, complete_order
+from bot.payment.utils import fetch_tour_payment_details, complete_order, get_gift_code
 from bot.decorators.auth import user_auth
 
 # API Base URL
@@ -32,10 +32,12 @@ async def construct_invoice(
     if not invoice_data:
         return None
 
+    price = int(float(invoice_data['invoice_payload']["prices"]['price']) * 100)
+
     prices = [
         LabeledPrice(
             label=invoice_data['invoice_payload']["prices"]['label'],
-            amount=int(float(invoice_data['invoice_payload']["prices"]['price']) * 100)
+            amount=price
         )
     ]
 
@@ -51,7 +53,7 @@ async def construct_invoice(
                     "description": invoice_data['invoice_payload']['description'],
                     "quantity": "1.00",
                     "amount": {
-                        "value": invoice_data['invoice_payload']['prices']['price'],
+                        "value": str(price / 100),
                         "currency": invoice_data['invoice_payload']['currency']
                     },
                     "vat_code": 1,
@@ -78,6 +80,7 @@ async def construct_invoice(
         'protect_content': invoice_data['invoice_payload']['protect_content'],
         'reply_markup': InlineKeyboardMarkup(keyboard)
     }
+    print(invoice)
     return invoice
 
 @user_auth
@@ -122,6 +125,7 @@ async def redner_youkassa_payment_menu(
     await context.bot.send_invoice(
         **invoice
     )
+    context.user_data['buying_for'] = subject
     return
 
 
@@ -139,13 +143,19 @@ async def successful_payment_handler(
     """
     Handles successful payment and sends to my-tours
     """
-
     _ = context._
 
     payment = update.message.successful_payment
     payment_token = payment.invoice_payload
+    subject = context.user_data['buying_for']
+    del(context.user_data['buying_for'])
 
-    completed = await complete_order(payment_token)
+
+
+    completed = await complete_order(
+        method='youkassa',
+        token=payment_token
+    )
 
     if completed:
         keyboard = [
@@ -153,6 +163,28 @@ async def successful_payment_handler(
             [InlineKeyboardButton('🔙 ' + _('To your tours'), callback_data='my_tours')]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
+        if subject == 'friend':
+            gift_code = await get_gift_code(payment_token)
+            if not gift_code:
+                keyboard = [
+                    [InlineKeyboardButton('🔙 Return to Main Menu', callback_data='main_menu')]
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                contact_info = (f"⚠️ " + _("Payment successful, but order confirmation failed.") + "\n\n" +
+                                f"📞 " + _("Contact Support: @your_support") + "\n\n" +
+                                _("Your payment token") + f": {payment_token}")
+                await update.message.reply_text(contact_info, reply_markup=reply_markup)
+
+            await update.message.reply_text("✅ " + _("Payment successful! Your order has been confirmed.") +
+                                            "\n" + _("Here is your gift code: ") + "<b>" + gift_code['code'] + "</b>" + "\n\n" +
+                                            _('Your friend may activate it by submitting this code in "Enter Promo Code" button in main menu'),
+                                            reply_markup=reply_markup,
+                                            parse_mode='html'
+                                            )
+            return
+
+
+
         await update.message.reply_text("✅ " + _("Payment successful! Your order has been confirmed."),
                                         reply_markup=reply_markup)
     else:

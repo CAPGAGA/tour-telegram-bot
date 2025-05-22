@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-22 20:09+0200\n"
+"POT-Creation-Date: 2025-05-22 21:32+0200\n"
 "PO-Revision-Date: 2025-03-22 17:09+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -19,31 +19,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: api/routs/promo.py:85
+#: api/routs/promo.py:89 api/routs/promo.py:129
 msgid "Promo code created successfully"
 msgstr "Промокод успешно создан"
 
-#: api/routs/promo.py:120
+#: api/routs/promo.py:109
+msgid "Order not found"
+msgstr "Заказ не найден"
+
+#: api/routs/promo.py:112
+msgid "Order not paid"
+msgstr "Заказ не оплачен"
+
+#: api/routs/promo.py:164
 msgid "Promo code updated successfully"
 msgstr "Промокод успешно обновлен"
 
-#: api/routs/promo.py:181
+#: api/routs/promo.py:225
 msgid "Promo code deactivated successfully"
 msgstr "Промокод успешно деактивирован"
 
-#: api/routs/promo.py:183 api/routs/promo.py:199
+#: api/routs/promo.py:227 api/routs/promo.py:243
 msgid "Promo code not found"
 msgstr "Промокод не найден"
 
-#: api/routs/promo.py:204
+#: api/routs/promo.py:248
 msgid "Promo code expired"
 msgstr "Срок действия промокода истек"
 
-#: api/routs/promo.py:212 api/routs/promo.py:222 bot/modules/promo.py:123
+#: api/routs/promo.py:256 api/routs/promo.py:266 bot/modules/promo.py:123
 msgid "Promo code activated successfully"
 msgstr "Промокод успешно активирован"
 
-#: api/routs/promo.py:219
+#: api/routs/promo.py:263
 msgid "Promo code limit reached"
 msgstr "Достигнут лимит использования промокода"
 
@@ -56,9 +64,8 @@ msgid "Browse My Tours"
 msgstr "Мои купленные туры"
 
 #: bot/modules/main_menu.py:10
-#, fuzzy
 msgid "Enter Promo Code"
-msgstr "У меня есть промокод"
+msgstr "Ввести промокод"
 
 #: bot/modules/main_menu.py:11
 msgid "Help"
@@ -153,9 +160,8 @@ msgid "Failed to load tour details. Try again later."
 msgstr "Не удалось загрузить детали тура. Попробуйте позже."
 
 #: bot/modules/tour_card.py:99
-#, fuzzy
 msgid "Your Price"
-msgstr "Ваши туры"
+msgstr "Ваша цена"
 
 #: bot/modules/tour_card.py:100 bot/modules/tour_card.py:106
 msgid "Description"
@@ -170,34 +176,24 @@ msgid "Distance"
 msgstr "Расстояние"
 
 #: bot/modules/tour_card.py:105
-#, fuzzy
 msgid "Price"
-msgstr "Назад"
+msgstr "Цена"
 
 #: bot/modules/tour_card.py:116
 msgid "Add to My Account"
 msgstr "Добавить в мой аккаунт"
 
-#: bot/modules/tour_card.py:117
-#, fuzzy
-msgid "Gift to Friend"
-msgstr "Купить для друга"
-
-#: bot/modules/tour_card.py:118 bot/modules/tour_card.py:127
+#: bot/modules/tour_card.py:117 bot/modules/tour_card.py:125
 msgid "Back to Tour List"
 msgstr "Назад к списку туров"
 
-#: bot/modules/tour_card.py:123 web/templates/tour_page.html:51
+#: bot/modules/tour_card.py:122 web/templates/tour_page.html:51
 msgid "Buy for Me"
 msgstr "Купить для себя"
 
-#: bot/modules/tour_card.py:125
-msgid "Buy for Friend"
-msgstr "Купить для друга"
-
-#: bot/modules/tour_card.py:126
-msgid "I have promo code"
-msgstr "У меня есть промокод"
+#: bot/modules/tour_card.py:124
+msgid "Buy as gift"
+msgstr "Купить в подарок"
 
 #: bot/modules/users_tours.py:38
 msgid "Buy your first tour"
@@ -220,9 +216,8 @@ msgid "Pay with russian card"
 msgstr "Оплата российской картой"
 
 #: bot/payment/payment_gateway.py:35
-#, fuzzy
 msgid " Back to Tour Page"
-msgstr "Назад к списку туров"
+msgstr "Вернуться на страницу тура"
 
 #: bot/payment/payment_gateway.py:61
 msgid "Choose how you want to pay:"
@@ -238,68 +233,70 @@ msgid "My Tours"
 msgstr "Мои туры"
 
 #: bot/payment/payment_gateway.py:102
-#, fuzzy
 msgid "Failed to add tour to your account. Please try again later."
-msgstr "Не удалось загрузить детали тура. Попробуйте позже."
+msgstr "Не удалось добавить тур в ваш аккаунт. Пожалуйста, попробуйте позже."
 
 #: bot/payment/payment_gateway.py:104 bot/payment/payment_gateway.py:113
-#, fuzzy
 msgid "Try Again"
-msgstr "Навигация по туру:"
+msgstr "Попробовать снова"
 
 #: bot/payment/payment_gateway.py:111
 msgid "An error occurred. Please try again later."
 msgstr "Произошла ошибка. Пожалуйста, попробуйте позже."
 
-#: bot/payment/payment_ru.py:43
+#: bot/payment/payment_ru.py:45
 msgid "Pay"
 msgstr "Оплатить"
 
-#: bot/payment/payment_ru.py:44
+#: bot/payment/payment_ru.py:46
 msgid " Cancel Payment"
 msgstr "Отмена оплаты"
 
-#: bot/payment/payment_ru.py:116
-#, fuzzy
+#: bot/payment/payment_ru.py:119
 msgid "Back to tour page"
-msgstr "Назад к списку туров"
+msgstr "Вернуться на страницу тура"
 
-#: bot/payment/payment_ru.py:118
-#, fuzzy
+#: bot/payment/payment_ru.py:121
 msgid "Failed to generate payment details. Try again later."
-msgstr "Не удалось загрузить детали тура. Попробуйте позже."
+msgstr "Не удалось сгенерировать детали платежа. Попробуйте позже."
 
-#: bot/payment/payment_ru.py:152
-#, fuzzy
+#: bot/payment/payment_ru.py:162
 msgid "Shop more"
-msgstr "Магазин"
-
-#: bot/payment/payment_ru.py:153
-#, fuzzy
-msgid "To your tours"
-msgstr "Ваши туры"
-
-#: bot/payment/payment_ru.py:156
-msgid "Payment successful! Your order has been confirmed."
-msgstr "Платеж прошёл успешно! Ваш заказ подтверждён."
+msgstr "Продолжить покупки"
 
 #: bot/payment/payment_ru.py:163
+msgid "To your tours"
+msgstr "К вашим турам"
+
+#: bot/payment/payment_ru.py:173 bot/payment/payment_ru.py:195
 msgid "Payment successful, but order confirmation failed."
 msgstr "Платеж прошёл успешно, но подтверждение заказа не удалось."
 
-#: bot/payment/payment_ru.py:164
+#: bot/payment/payment_ru.py:174 bot/payment/payment_ru.py:196
 msgid "Contact Support: @your_support"
 msgstr "Свяжитесь с нашей поддержкой: @your_support"
 
-#: bot/payment/payment_ru.py:165
+#: bot/payment/payment_ru.py:175 bot/payment/payment_ru.py:197
 msgid "Your payment token"
 msgstr "Ваш платежный индификатор"
 
-#: bot/payment/payment_ru.py:187
+#: bot/payment/payment_ru.py:178 bot/payment/payment_ru.py:188
+msgid "Payment successful! Your order has been confirmed."
+msgstr "Платеж прошёл успешно! Ваш заказ подтверждён."
+
+#: bot/payment/payment_ru.py:179
+msgid "Here is your gift code: "
+msgstr "Вот ваш подарочный код: "
+
+#: bot/payment/payment_ru.py:180
+msgid "Your friend may activate it by submitting this code in \"Enter Promo Code\" button in main menu"
+msgstr "Ваш друг может активировать его, введя этот код через кнопку \"У меня есть промокод\" в главном меню"
+
+#: bot/payment/payment_ru.py:219
 msgid "Return to tour page"
 msgstr "Вернутся на страницу тура"
 
-#: bot/payment/payment_ru.py:189
+#: bot/payment/payment_ru.py:221
 msgid "Payment has been canceled."
 msgstr "Платеж отменен"
 
@@ -692,13 +689,4 @@ msgstr "Кабинет создателя"
 #: web/templates/modules/landing/navbar.html:28
 msgid "Language"
 msgstr "Язык"
-
-#~ msgid "Base Price"
-#~ msgstr "Базовая цена"
-
-#~ msgid "Enter your username"
-#~ msgstr "Введите имя пользователя"
-
-#~ msgid "Enter username"
-#~ msgstr "Введите имя пользователя"
 
