@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.database import get_session
 from db.models import PointMedia, PointsAudio
-from api.handlers import generate_hashed_filename, get_creator_id
-from api.access_checkers import check_creator_rout_point_access
+from api.utils.handlers import generate_hashed_filename, get_creator_id
+from api.utils.access_checkers import check_creator_rout_point_access
 
 from settings import BASE_DIR
 

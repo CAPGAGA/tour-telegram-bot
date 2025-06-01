@@ -86,3 +86,7 @@
 .logout-button:hover {
     background-color: #c0392b;
 }
+
+.logo svg {
+  color: light-dark(#333b3c, #efefec);
+}

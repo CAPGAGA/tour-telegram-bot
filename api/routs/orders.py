@@ -4,14 +4,13 @@ from fastapi import APIRouter, HTTPException, Depends, Response
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm.sync import update
 from starlette.responses import RedirectResponse
 
 from db.database import get_session
 from db.models import Rout, BaseUser, UserRout, Order
 
-from api.handlers import decode_payment_token
-from api.invoice_constructor import InvoiceConstructor
+from api.utils.handlers import decode_payment_token
+from api.utils.invoice_constructor import InvoiceConstructor
 
 order_router = APIRouter(
     prefix="/order",

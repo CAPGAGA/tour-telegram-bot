@@ -1,6 +1,5 @@
 from collections import defaultdict
-from typing import Optional, Any
-from typing_extensions import Self
+from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
@@ -10,8 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.models import RoutPoint, PointMedia, PointsAudio
 from db.database import get_session
 
-from api.handlers import get_creator_id
-from api.access_checkers import check_creator_rout_point_access
+from api.utils.handlers import get_creator_id
+from api.utils.access_checkers import check_creator_rout_point_access
 
 
 rout_points_router = APIRouter(

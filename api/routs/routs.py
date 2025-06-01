@@ -9,8 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.database import get_session
 from db.models import Rout, RoutPoint, PointsAudio
 
-from api.handlers import get_creator_id, haversine, generate_hashed_filename
-from api.access_checkers import check_creator_rout_access
+from api.utils.handlers import get_creator_id, haversine, generate_hashed_filename
+from api.utils.access_checkers import check_creator_rout_access
 
 rout_router = APIRouter(
     prefix="/rout",

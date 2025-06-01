@@ -5,15 +5,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
 import bcrypt
-import jwt
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from starlette.responses import RedirectResponse
 
 from db.database import get_session
 from db.models import BaseUser, Creator
 
-from api.handlers import hash_password, create_token
+from api.utils.handlers import hash_password, create_token
 
 auth_router = APIRouter(
     prefix="/auth",
