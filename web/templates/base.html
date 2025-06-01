@@ -1,5 +1,6 @@
+<!-- templates/base.html -->
 <!DOCTYPE html>
-<html lang="{{ lang }}">
+<html lang="{{ lang|default('en') }}">
 <head>
     <meta charset="UTF-8">
     <!--SEO-->
@@ -25,7 +26,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='logo/favicon/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='logo/favicon/favicon-16x16.png') }}">
     <link rel="manifest" href="{{ url_for('static', path='logo/favicon/site.webmanifest') }}">
-    <title>PockeTour</title>
+    <title>{% block title %}PockeTour{% endblock %}</title>
     <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/bulma.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/revolver-msg.css') }}" rel="stylesheet">
@@ -33,28 +34,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    {% block extra_head %}{% endblock %}
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YH9DBEETFV"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-YH9DBEETFV');
     </script>
 </head>
 <body>
-
-{% include "modules/landing/navbar.html" %}
-
-{% include "modules/landing/hero_section.html" %}
-
-{% include "modules/landing/features.html" %}
-
-{% include "modules/landing/mini_shop.html" %}
-
-{% include "modules/landing/footer.html" %}
-
+    {% block content %}{% endblock %}
+</body>
 <script>
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/static/js/pwa/sw.js")
@@ -62,10 +54,10 @@ if ("serviceWorker" in navigator) {
         .catch(err => console.error("Service Worker Registration Failed", err));
 }
 </script>
-</body>
-<script type="module" src="{{ url_for('static', path='js/landing/render_shop.js') }}"></script>
-<script type="module" src="{{ url_for('static', path='js/landing/utils.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/pwa/sw.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/pwa/installPWA.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/landing/utils.js') }}"></script>
 <script type="module" src="{{ url_for('static', path='js/landing/changeLanguage.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/revolver.js') }}"></script>
+{% block scripts %}{% endblock %}
 </html>

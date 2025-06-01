@@ -116,7 +116,7 @@ if not HEADLESS_MODE:
             } if user else {
                 "lang": lang,
             },
-            name='landing.html'
+            name='pages/landing.html'
         )
 
     @app.get("/for-creators", response_class=HTMLResponse)
@@ -237,6 +237,31 @@ if not HEADLESS_MODE:
             name='test-pages/test-landing.html'
         )
 
+    @app.get(
+        "payment/success", response_class=HTMLResponse
+    )
+    async def payment_success(
+            request: Request,
+    ):
+        return templates.TemplateResponse(
+            request=request,
+            context={},
+            name='payments/success.html'
+        )
+
+
+    @app.get(
+        "payment/error", response_class=HTMLResponse
+    )
+    async def payment_error(
+            request: Request,
+    ):
+        return templates.TemplateResponse(
+            request=request,
+            context={},
+            name='payments/error.html'
+        )
+
 
 @app.get('/login', response_class=HTMLResponse)
 async def login_page(
@@ -245,7 +270,7 @@ async def login_page(
 ):
     if not auth_token:
         return templates.TemplateResponse(
-            request=request, name='login.html'
+            request=request, name='pages/login.html'
         )
     return RedirectResponse(url="/tour-admin")
 
@@ -256,7 +281,7 @@ async def register_page(
 ):
     if not auth_token:
         return templates.TemplateResponse(
-            request=request, name='register.html'
+            request=request, name='pages/register.html'
         )
     return RedirectResponse(url="/tour-admin")
 
