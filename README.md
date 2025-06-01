@@ -51,7 +51,7 @@ pybabel extract -F babel.cfg -o messages.pot .
 
 Then initialize your translation file with:
 ```shell
-pybabel init -i messages.pot -d lang -l <lang>
+pybabel update -i messages.pot -d lang
 ```
 
 Translate in lang/<lang>/LC_MESSAGES/messages.po and compile with

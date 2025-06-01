@@ -10,6 +10,8 @@
     box-shadow: 0px 0px 20px 999px rgba(0, 0, 0, 0.05);
     justify-content: center;
     font-family: 'Poppins';
+    max-height: 100vh;
+    overflow-x: scroll;
 }
 
 .modal-content {

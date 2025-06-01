@@ -218,6 +218,26 @@ if not HEADLESS_MODE:
             name='my_tours_page.html'
         )
 
+    @app.get(
+        "/test-page", response_class=HTMLResponse
+    )
+    async def test_page(
+            request: Request,
+            user: Optional[tuple] = Depends(get_current_creator),
+            session: AsyncSession = Depends(get_session)
+    ):
+        if not user:
+            return RedirectResponse(url="/login?next=/test-page")
+        return templates.TemplateResponse(
+            request=request,
+            context={
+                "user_id": user[0],
+                "is_creator": user[1]
+            },
+            name='test-pages/test-landing.html'
+        )
+
+
 @app.get('/login', response_class=HTMLResponse)
 async def login_page(
         request: Request,

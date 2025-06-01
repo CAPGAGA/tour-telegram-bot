@@ -289,8 +289,12 @@ msgid "Here is your gift code: "
 msgstr "Вот ваш подарочный код: "
 
 #: bot/payment/payment_ru.py:180
-msgid "Your friend may activate it by submitting this code in \"Enter Promo Code\" button in main menu"
-msgstr "Ваш друг может активировать его, введя этот код через кнопку \"У меня есть промокод\" в главном меню"
+msgid ""
+"Your friend may activate it by submitting this code in \"Enter Promo "
+"Code\" button in main menu"
+msgstr ""
+"Ваш друг может активировать его, введя этот код через кнопку \"У меня "
+"есть промокод\" в главном меню"
 
 #: bot/payment/payment_ru.py:219
 msgid "Return to tour page"

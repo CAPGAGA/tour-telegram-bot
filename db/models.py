@@ -121,6 +121,19 @@ class WithdrawRequest(BaseTable):
     status: Mapped[str] = mapped_column(String, nullable=False, default='pending')
     method: Mapped[str] = mapped_column(String, nullable=False)
 
+class RoutLocation(BaseTable):
+
+    """
+        Table to store rout locations
+    """
+
+    __tablename__ = 'rout_location'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    rout_id: Mapped[int] = mapped_column(ForeignKey("rout.id"))
+    country: Mapped[str] = mapped_column(String, nullable=False)
+    city: Mapped[str] = mapped_column(String, nullable=False)
+
 class Rout(BaseTable):
 
     """
