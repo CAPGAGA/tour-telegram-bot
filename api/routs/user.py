@@ -1,11 +1,8 @@
-from typing import Optional
-
 from sqlalchemy import update
 
-from fastapi import APIRouter, Depends, Request
-from pydantic import BaseModel
+from fastapi import APIRouter, Request
 
-from api.handlers import get_current_user
+from api.utils.handlers import get_current_user
 
 from db.models import BaseUser
 from db.database import get_session

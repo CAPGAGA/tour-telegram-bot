@@ -2,7 +2,7 @@ import logging
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Optional, Annotated
+from typing import Optional
 
 from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse
@@ -18,7 +18,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 
 from api.cron.update_currency_rates import fetch_and_store_currency_rates, ensure_currency_rates
-from api.handlers import get_auth_token, get_current_creator, get_current_user, get_locale, get_lang_from_session
+from api.utils.handlers import get_auth_token, get_current_creator, get_locale, get_lang_from_session
 from api.routs.creator import creator_rout_router
 from api.routs.auth_v2 import auth_router
 from api.routs.geo import geocode_router

@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.handlers import get_current_creator
+from api.utils.handlers import get_current_creator
 from db.database import get_session
 from db.models import CreatorRout, Rout, Order, WithdrawRequest
 from db.schemas import RoutSchema

@@ -8,11 +8,10 @@ import aiohttp
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from telegram import LabeledPrice
 
 from db.database import get_session
 from db.models import Rout, BaseUser, CurrencyRates
-from api.handlers import create_payment_token
+from api.utils.handlers import create_payment_token
 from settings import PAYPAL_API_URL, PAYPAL_SECRET, PAYPAL_CLIENT_ID, TELEGRAM_PAYMENT_PROVIDER, TELEGRAM_CURRENCY
 
 logger = logging.getLogger(__name__)
