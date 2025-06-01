@@ -168,3 +168,4 @@ cython_debug/
 
 example.com+5-key.pem
 example.com+5.pem
+/web/templates/test-pages/

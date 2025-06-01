@@ -172,7 +172,7 @@ async def get_sales_per_month(
         result = await session.execute(orders_query)
         sales_data = result.fetchall()
 
-    months = [sale[0].strftime('%b %Y') for sale in sales_data]
+    months = [sale[0] for sale in sales_data]
     sales = [float(sale[1]) for sale in sales_data]
 
     return {

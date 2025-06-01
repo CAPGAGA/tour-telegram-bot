@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Audio Tours - Responsive</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <style>
+    body {
+      background-color: #12161c;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: row;
+    }
+
+    .sidebar {
+      width: 260px;
+      background-color: #1a1f27;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #00d1b2;
+      margin-bottom: 2rem;
+    }
+
+    .nav-links a {
+      color: #ccc;
+      margin-bottom: 1.25rem;
+      display: block;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #00d1b2;
+    }
+
+    .cta-section {
+      margin-top: 2rem;
+    }
+
+    .or-separator {
+      text-align: center;
+      color: #888;
+      font-size: 0.8rem;
+      margin: 0.75rem 0;
+    }
+
+    .content {
+      flex: 1;
+      padding: 3rem 2rem;
+    }
+
+    .tours {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3rem;
+      justify-content: center;
+    }
+
+    .tour-card {
+      width: 360px;
+      background: rgba(30, 38, 47, 0.6);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tour-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .tour-info {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      flex: 1;
+    }
+
+    .tour-title {
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: #f0f0f0;
+      margin-bottom: 1.2rem;
+    }
+
+    .tour-description {
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    .tour-location {
+      font-size: 0.95rem;
+      color: #aaa;
+      margin-bottom: 1.5rem;
+    }
+
+    .tour-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .pill {
+      background-color: transparent;
+      border: 1px solid #777;
+      color: #aaa;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 400;
+    }
+
+    .button {
+      border-radius: 8px;
+    }
+
+    /* Responsive Styles */
+    @media screen and (max-width: 1024px) {
+      .layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        position: relative;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .cta-section {
+        margin-top: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .or-separator {
+        margin: 0.3rem 0;
+      }
+
+      .content {
+        padding: 2rem 1rem;
+      }
+
+      .tours {
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .tour-card {
+        width: 100%;
+        max-width: 95vw;
+      }
+      /* Transition and glow effects for cards */
+        .tour-card {
+          transition: all 0.35s ease;
+          transform: translateY(0);
+        }
+
+        .tour-card:hover {
+          transform: scale(1.03) translateY(-4px);
+          box-shadow: 0 0 20px rgba(0, 209, 178, 0.25);
+          border: 1px solid rgba(0, 209, 178, 0.1);
+        }
+
+        /* Animate cards on load */
+        @keyframes fadeInUp {
+          0% {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .tour-card {
+          animation: fadeInUp 0.6s ease forwards;
+          opacity: 0;
+        }
+
+        /* Delay animations per card */
+        .tour-card:nth-child(1) { animation-delay: 0.1s; }
+        .tour-card:nth-child(2) { animation-delay: 0.2s; }
+        .tour-card:nth-child(3) { animation-delay: 0.3s; }
+
+        /* Sidebar link hover */
+        .nav-links a {
+          transition: color 0.3s ease, transform 0.2s ease;
+        }
+        .nav-links a:hover {
+          color: #00d1b2;
+          transform: translateX(4px);
+        }
+        .cta-section .button {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cta-section .button:hover {
+          transform: scale(1.04);
+          box-shadow: 0 0 12px rgba(0, 209, 178, 0.4);
+        }
+
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div>
+      <div class="logo">🎧 TourWave</div>
+      <nav class="nav-links">
+        <a href="#tours">Featured Tours</a>
+        <a href="#creators">For Creators</a>
+        <a href="#shop">Shop</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+    <div class="cta-section">
+      <a class="button is-primary is-fullwidth" href="/shop">Explore Tours</a>
+      <div class="or-separator">or</div>
+      <a class="button is-link is-fullwidth" href="/creators">Become a Creator</a>
+    </div>
+  </aside>
+
+  <!-- Content -->
+  <section class="content">
+    <div class="tours">
+
+      <!-- Card 1 -->
+      <div class="tour-card">
+        <img class="tour-image" src="https://picsum.photos/id/1015/360/200" alt="Paris Tour">
+        <div class="tour-info">
+          <div class="tour-title">Paris Hidden Corners</div>
+          <div class="tour-description">Wander through Montmartre’s alleys with immersive storytelling and local vibes.</div>
+          <div class="tour-location">🇫🇷 France – Paris</div>
+          <div class="tour-meta">
+            <span class="pill">2.5 km</span>
+            <span class="pill">8 points</span>
+            <span class="pill">Free</span>
+          </div>
+          <a class="button is-primary is-fullwidth">🎧 Listen Now</a>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="tour-card">
+        <img class="tour-image" src="https://picsum.photos/id/1027/360/200" alt="NYC Tour">
+        <div class="tour-info">
+          <div class="tour-title">Voices of NYC</div>
+          <div class="tour-description">Explore Broadway and its secrets with ambient voices and theatrical history.</div>
+          <div class="tour-location">🇺🇸 USA – New York</div>
+          <div class="tour-meta">
+            <span class="pill">1.8 km</span>
+            <span class="pill">6 points</span>
+            <span class="pill">$4.99</span>
+          </div>
+          <a class="button is-primary is-fullwidth">🎧 Listen Now</a>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="tour-card">
+        <img class="tour-image" src="https://picsum.photos/id/1036/360/200" alt="Tokyo Tour">
+        <div class="tour-info">
+          <div class="tour-title">Tokyo Beat</div>
+          <div class="tour-description">From Shibuya’s crosswalk to quiet shrines, hear the pulse of Tokyo unfold.</div>
+          <div class="tour-location">🇯🇵 Japan – Tokyo</div>
+          <div class="tour-meta">
+            <span class="pill">3.1 km</span>
+            <span class="pill">10 points</span>
+            <span class="pill">$6.99</span>
+          </div>
+          <a class="button is-primary is-fullwidth">🎧 Listen Now</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>
