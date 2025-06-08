@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}PockeTour – {{ _("Discover Unique Audio Tours") }}{% endblock %}
+
+{% block content %}
+    {% include "modules/landing/navbar.html" %}
+    {% include "modules/landing/hero_section.html" %}
+    {% include "modules/landing/features.html" %}
+    {% include "modules/landing/mini_shop.html" %}
+    {% include "modules/landing/footer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', path='js/landing/render_shop.js') }}"></script>
+{% endblock %}

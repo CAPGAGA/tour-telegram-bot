@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-22 21:32+0200\n"
+"POT-Creation-Date: 2025-06-08 18:06+0200\n"
 "PO-Revision-Date: 2025-03-22 17:09+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -98,7 +98,8 @@ msgstr ""
 msgid "Prev"
 msgstr ""
 
-#: bot/modules/shop.py:52 web/templates/shop.html:49
+#: bot/modules/shop.py:52 web/templates/old/shop.html:49
+#: web/templates/pages/shop.html:33
 msgid "Next"
 msgstr ""
 
@@ -114,35 +115,43 @@ msgstr ""
 msgid "Available Tours:"
 msgstr ""
 
-#: bot/modules/tour.py:109 bot/modules/users_tours.py:39
+#: bot/modules/tour.py:117
+msgid "Review with comment"
+msgstr ""
+
+#: bot/modules/tour.py:118 bot/modules/users_tours.py:39
 msgid "Back to Menu"
 msgstr ""
 
-#: bot/modules/tour.py:111
+#: bot/modules/tour.py:121
 msgid "Rate this tour"
 msgstr ""
 
-#: bot/modules/tour.py:129
+#: bot/modules/tour.py:149
 msgid "Map of next point"
 msgstr ""
 
-#: bot/modules/tour.py:145
+#: bot/modules/tour.py:168
 msgid "I am here!"
 msgstr ""
 
-#: bot/modules/tour.py:197
+#: bot/modules/tour.py:200
+msgid "Stop"
+msgstr ""
+
+#: bot/modules/tour.py:227
 msgid "Next Point"
 msgstr ""
 
-#: bot/modules/tour.py:199
+#: bot/modules/tour.py:229
 msgid "Leave review!"
 msgstr ""
 
-#: bot/modules/tour.py:200
+#: bot/modules/tour.py:230
 msgid "To main menu"
 msgstr ""
 
-#: bot/modules/tour.py:204
+#: bot/modules/tour.py:236
 msgid "Tour navigation:"
 msgstr ""
 
@@ -183,7 +192,8 @@ msgstr ""
 msgid "Back to Tour List"
 msgstr ""
 
-#: bot/modules/tour_card.py:122 web/templates/tour_page.html:51
+#: bot/modules/tour_card.py:122 web/templates/old/tour_page.html:51
+#: web/templates/pages/tour.html:33
 msgid "Buy for Me"
 msgstr ""
 
@@ -207,7 +217,7 @@ msgstr ""
 msgid "Pay with card"
 msgstr ""
 
-#: bot/payment/payment_gateway.py:32
+#: bot/payment/payment_gateway.py:32 web/templates/pages/checkout.html:41
 msgid "Pay with russian card"
 msgstr ""
 
@@ -298,310 +308,25 @@ msgstr ""
 msgid "Payment has been canceled."
 msgstr ""
 
-#: web/templates/checkout.html:10
-msgid "Checkout for"
-msgstr ""
-
-#: web/templates/checkout.html:32
-msgid "Checkout"
-msgstr ""
-
-#: web/templates/checkout.html:34
-msgid "Tour Details"
-msgstr ""
-
-#: web/templates/checkout.html:41
-msgid "Choose Payment Method"
-msgstr ""
-
-#: web/templates/checkout.html:42
-msgid "Card with PayPal"
-msgstr ""
-
-#: web/templates/for_creators_page.html:8
-msgid ""
-"Join our platform and start earning by creating interactive audio and "
-"visual tours."
-msgstr ""
-
-#: web/templates/for_creators_page.html:10
-#: web/templates/for_creators_page.html:16
-#: web/templates/for_creators_page.html:39
-#: web/templates/for_creators_page.html:61
-msgid "Become a Creator with PockeTour"
-msgstr ""
-
-#: web/templates/for_creators_page.html:11
-#: web/templates/for_creators_page.html:17
-msgid "Create interactive travel experiences and earn forever."
-msgstr ""
-
-#: web/templates/for_creators_page.html:27
-msgid "Become a Creator"
-msgstr ""
-
-#: web/templates/for_creators_page.html:40
-msgid ""
-"Create interactive audio and visual travel tours and earn income from "
-"global travelers."
-msgstr ""
-
-#: web/templates/for_creators_page.html:64
-msgid ""
-"Join our platform and start earning by creating interactive audio and "
-"visual tours for travelers worldwide. Here's why you should become a "
-"PockeTour creator:"
-msgstr ""
-
-#: web/templates/for_creators_page.html:71
-msgid "Create Once, Earn Forever"
-msgstr ""
-
-#: web/templates/for_creators_page.html:72
-msgid ""
-"Upload your tour once and earn from it continuously as travelers explore "
-"your content."
-msgstr ""
-
-#: web/templates/for_creators_page.html:78
-msgid "Global Reach"
-msgstr ""
-
-#: web/templates/for_creators_page.html:79
-msgid "Your tours are instantly available to travelers around the world."
-msgstr ""
-
-#: web/templates/for_creators_page.html:85
-msgid "Built-in Promotion"
-msgstr ""
-
-#: web/templates/for_creators_page.html:86
-msgid ""
-"We handle marketing and drive traffic to your tour using powerful SEO "
-"tools and our growing platform audience."
-msgstr ""
-
-#: web/templates/for_creators_page.html:92
-msgid "Multilingual Support"
-msgstr ""
-
-#: web/templates/for_creators_page.html:93
-msgid ""
-"Create in your language, and we will translate it to reach a global "
-"audience. (coming soon)"
-msgstr ""
-
-#: web/templates/for_creators_page.html:98
-msgid "How It Works"
-msgstr ""
-
-#: web/templates/for_creators_page.html:102
-msgid "Step 1: Create Your Tour"
-msgstr ""
-
-#: web/templates/for_creators_page.html:103
-msgid ""
-"Start by adding general information: a compelling title, a detailed "
-"description, and a price that fits your experience."
-msgstr ""
-
-#: web/templates/for_creators_page.html:104
-msgid ""
-"Then, use our intuitive editor to place points on the map, attach photos "
-"and audio to bring your story to life."
-msgstr ""
-
-#: web/templates/for_creators_page.html:120
-msgid "Step 2: Add details"
-msgstr ""
-
-#: web/templates/for_creators_page.html:121
-msgid ""
-"Set up each point on the map with images and/or audio, then publish it to"
-" the world."
-msgstr ""
-
-#: web/templates/for_creators_page.html:122
-msgid ""
-"We promote your tour on our platform using advanced SEO and community "
-"channels."
-msgstr ""
-
-#: web/templates/for_creators_page.html:128
-msgid "Step 3: Manage and earn with Every Tour"
-msgstr ""
-
-#: web/templates/for_creators_page.html:129
-msgid "Toggle visibility, edit tours, add new languages and more"
-msgstr ""
-
-#: web/templates/for_creators_page.html:138
-msgid "Roadmap"
-msgstr ""
-
-#: web/templates/for_creators_page.html:140
-msgid "Q1:"
-msgstr ""
-
-#: web/templates/for_creators_page.html:140
-msgid "Launch Creator Tools ✅"
-msgstr ""
-
-#: web/templates/for_creators_page.html:141
-msgid "Q2:"
-msgstr ""
-
-#: web/templates/for_creators_page.html:141
-msgid "Mobile Support + PWA"
-msgstr ""
-
-#: web/templates/for_creators_page.html:142
-msgid "Q3:"
-msgstr ""
-
-#: web/templates/for_creators_page.html:142
-msgid "Analytics Dashboard"
-msgstr ""
-
-#: web/templates/for_creators_page.html:143
-msgid "Q4:"
-msgstr ""
-
-#: web/templates/for_creators_page.html:143
-msgid "Affiliate Program"
-msgstr ""
-
-#: web/templates/for_creators_page.html:147
-msgid "Start Creating"
-msgstr ""
-
-#: web/templates/landing.html:7 web/templates/landing.html:11
-#: web/templates/landing.html:17
-msgid "Discover Unique Audio Tours Around the World"
-msgstr ""
-
-#: web/templates/landing.html:9 web/templates/landing.html:12
-#: web/templates/landing.html:18 web/templates/login.html:8
-#: web/templates/register.html:8
+#: web/templates/base.html:12 web/templates/base.html:13
+#: web/templates/base.html:14 web/templates/old/landing.html:9
+#: web/templates/old/landing.html:12 web/templates/old/landing.html:18
+#: web/templates/old/login.html:8 web/templates/old/register.html:8
 msgid ""
 "Browse and explore immersive self-guided tours powered by audio, images, "
 "and maps. Discover new destinations and travel at your own pace."
 msgstr ""
 
-#: web/templates/login.html:6 web/templates/login.html:30
-#: web/templates/login.html:46 web/templates/modules/landing/navbar.html:25
-msgid "Login"
+#: web/templates/base.html:18 web/templates/base.html:22
+#: web/templates/base.html:28 web/templates/old/landing.html:7
+#: web/templates/old/landing.html:11 web/templates/old/landing.html:17
+msgid "Discover Unique Audio Tours Around the World"
 msgstr ""
 
-#: web/templates/login.html:34 web/templates/register.html:42
-#: web/templates/register.html:69
-msgid "Email"
-msgstr ""
-
-#: web/templates/login.html:43
-msgid "Enter your password"
-msgstr ""
-
-#: web/templates/login.html:50
-msgid "Don't have an account? Register"
-msgstr ""
-
-#: web/templates/my_tours_page.html:12
-msgid "Your Tours"
-msgstr ""
-
-#: web/templates/my_tours_page.html:34
-msgid "My Purchased Tours"
-msgstr ""
-
-#: web/templates/my_tours_page.html:58
-msgid "Nothing here yet"
-msgstr ""
-
-#: web/templates/my_tours_page.html:59
-msgid "Start exploring by purchasing your first tour"
-msgstr ""
-
-#: web/templates/modules/landing/hero_section.html:6
-#: web/templates/my_tours_page.html:60
-msgid "Browse Tours"
-msgstr ""
-
-#: web/templates/register.html:6 web/templates/register.html:29
-#: web/templates/register.html:60 web/templates/register.html:93
-msgid "Register"
-msgstr ""
-
-#: web/templates/register.html:33
-msgid "Register as User"
-msgstr ""
-
-#: web/templates/register.html:34
-msgid "Register as Creator"
-msgstr ""
-
-#: web/templates/register.html:39
-msgid "Register as a User"
-msgstr ""
-
-#: web/templates/register.html:49 web/templates/register.html:81
-msgid "Password"
-msgstr ""
-
-#: web/templates/register.html:51 web/templates/register.html:83
-msgid "Enter password"
-msgstr ""
-
-#: web/templates/register.html:54 web/templates/register.html:86
-msgid "At least 8 characters"
-msgstr ""
-
-#: web/templates/register.html:55 web/templates/register.html:87
-msgid "One uppercase letter"
-msgstr ""
-
-#: web/templates/register.html:56 web/templates/register.html:88
-msgid "One number"
-msgstr ""
-
-#: web/templates/register.html:57 web/templates/register.html:89
-msgid "One letter"
-msgstr ""
-
-#: web/templates/register.html:66
-msgid "Register as a Creator"
-msgstr ""
-
-#: web/templates/register.html:75
-msgid "Username"
-msgstr ""
-
-#: web/templates/register.html:97
-msgid "Already have an account? Login"
-msgstr ""
-
-#: web/templates/shop.html:6
-msgid "Tours Shop"
-msgstr ""
-
-#: web/templates/shop.html:30
-msgid "Tour Store"
-msgstr ""
-
-#: web/templates/shop.html:35 web/templates/shop.html:40
-msgid "Search"
-msgstr ""
-
-#: web/templates/shop.html:37
-msgid "Search for a tour..."
-msgstr ""
-
-#: web/templates/shop.html:48
-msgid "Previous"
-msgstr ""
-
-#: web/templates/tour_page.html:58
-msgid "Tour Points"
+#: web/templates/base.html:20
+msgid ""
+"audio tours, walking tours, self-guided travel, city tours, virtual "
+"travel, cultural tourism, travel app, PockeTour"
 msgstr ""
 
 #: web/templates/modules/landing/features.html:5
@@ -636,6 +361,12 @@ msgstr ""
 msgid "Discover, Book, and Experience Amazing Travel Destinations"
 msgstr ""
 
+#: web/templates/modules/landing/hero_section.html:6
+#: web/templates/old/my_tours_page.html:60
+#: web/templates/pages/payments/cancel.html:41
+msgid "Browse Tours"
+msgstr ""
+
 #: web/templates/modules/landing/mini_shop.html:3
 msgid "Featured Tours"
 msgstr ""
@@ -656,8 +387,480 @@ msgstr ""
 msgid "Creator's cabinet"
 msgstr ""
 
+#: web/templates/modules/landing/navbar.html:25 web/templates/old/login.html:6
+#: web/templates/old/login.html:30 web/templates/old/login.html:46
+#: web/templates/pages/login.html:3 web/templates/pages/login.html:14
+#: web/templates/pages/login.html:30
+msgid "Login"
+msgstr ""
+
 #: web/templates/modules/landing/navbar.html:28
 msgid "Language"
+msgstr ""
+
+#: web/templates/old/checkout.html:10 web/templates/pages/checkout.html:3
+msgid "Checkout for"
+msgstr ""
+
+#: web/templates/old/checkout.html:32 web/templates/pages/checkout.html:18
+msgid "Checkout"
+msgstr ""
+
+#: web/templates/old/checkout.html:34 web/templates/pages/checkout.html:24
+msgid "Tour Details"
+msgstr ""
+
+#: web/templates/old/checkout.html:41 web/templates/pages/checkout.html:34
+msgid "Choose Payment Method"
+msgstr ""
+
+#: web/templates/old/checkout.html:42 web/templates/pages/checkout.html:37
+msgid "Card with PayPal"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:8
+#: web/templates/pages/for-creators.html:5
+msgid ""
+"Join our platform and start earning by creating interactive audio and "
+"visual tours."
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:10
+#: web/templates/old/for_creators_page.html:16
+#: web/templates/old/for_creators_page.html:39
+#: web/templates/old/for_creators_page.html:61
+#: web/templates/pages/for-creators.html:15
+#: web/templates/pages/for-creators.html:29
+msgid "Become a Creator with PockeTour"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:11
+#: web/templates/old/for_creators_page.html:17
+#: web/templates/pages/for-creators.html:6
+#: web/templates/pages/for-creators.html:7
+msgid "Create interactive travel experiences and earn forever."
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:27
+msgid "Become a Creator"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:40
+#: web/templates/pages/for-creators.html:16
+msgid ""
+"Create interactive audio and visual travel tours and earn income from "
+"global travelers."
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:64
+#: web/templates/pages/for-creators.html:32
+msgid ""
+"Join our platform and start earning by creating interactive audio and "
+"visual tours for travelers worldwide. Here's why you should become a "
+"PockeTour creator:"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:71
+#: web/templates/pages/for-creators.html:39
+msgid "Create Once, Earn Forever"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:72
+#: web/templates/pages/for-creators.html:40
+msgid ""
+"Upload your tour once and earn from it continuously as travelers explore "
+"your content."
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:78
+#: web/templates/pages/for-creators.html:46
+msgid "Global Reach"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:79
+#: web/templates/pages/for-creators.html:47
+msgid "Your tours are instantly available to travelers around the world."
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:85
+#: web/templates/pages/for-creators.html:53
+msgid "Built-in Promotion"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:86
+#: web/templates/pages/for-creators.html:54
+msgid ""
+"We handle marketing and drive traffic to your tour using powerful SEO "
+"tools and our growing platform audience."
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:92
+#: web/templates/pages/for-creators.html:60
+msgid "Multilingual Support"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:93
+#: web/templates/pages/for-creators.html:61
+msgid ""
+"Create in your language, and we will translate it to reach a global "
+"audience. (coming soon)"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:98
+#: web/templates/pages/for-creators.html:66
+msgid "How It Works"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:102
+#: web/templates/pages/for-creators.html:70
+msgid "Step 1: Create Your Tour"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:103
+#: web/templates/pages/for-creators.html:71
+msgid ""
+"Start by adding general information: a compelling title, a detailed "
+"description, and a price that fits your experience."
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:104
+#: web/templates/pages/for-creators.html:72
+msgid ""
+"Then, use our intuitive editor to place points on the map, attach photos "
+"and audio to bring your story to life."
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:120
+#: web/templates/pages/for-creators.html:88
+msgid "Step 2: Add details"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:121
+#: web/templates/pages/for-creators.html:89
+msgid ""
+"Set up each point on the map with images and/or audio, then publish it to"
+" the world."
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:122
+#: web/templates/pages/for-creators.html:90
+msgid ""
+"We promote your tour on our platform using advanced SEO and community "
+"channels."
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:128
+#: web/templates/pages/for-creators.html:96
+msgid "Step 3: Manage and earn with Every Tour"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:129
+#: web/templates/pages/for-creators.html:97
+msgid "Toggle visibility, edit tours, add new languages and more"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:138
+#: web/templates/pages/for-creators.html:106
+msgid "Roadmap"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:140
+#: web/templates/pages/for-creators.html:108
+msgid "Q1:"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:140
+#: web/templates/pages/for-creators.html:108
+msgid "Launch Creator Tools ✅"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:141
+#: web/templates/pages/for-creators.html:109
+msgid "Q2:"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:141
+#: web/templates/pages/for-creators.html:109
+msgid "Mobile Support + PWA"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:142
+#: web/templates/pages/for-creators.html:110
+msgid "Q3:"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:142
+#: web/templates/pages/for-creators.html:110
+msgid "Analytics Dashboard"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:143
+#: web/templates/pages/for-creators.html:111
+msgid "Q4:"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:143
+#: web/templates/pages/for-creators.html:111
+msgid "Affiliate Program"
+msgstr ""
+
+#: web/templates/old/for_creators_page.html:147
+#: web/templates/pages/for-creators.html:115
+msgid "Start Creating"
+msgstr ""
+
+#: web/templates/old/login.html:34 web/templates/old/register.html:42
+#: web/templates/old/register.html:69 web/templates/pages/login.html:18
+#: web/templates/pages/register.html:26 web/templates/pages/register.html:53
+msgid "Email"
+msgstr ""
+
+#: web/templates/old/login.html:43 web/templates/pages/login.html:27
+msgid "Enter your password"
+msgstr ""
+
+#: web/templates/old/login.html:50 web/templates/pages/login.html:34
+msgid "Don't have an account? Register"
+msgstr ""
+
+#: web/templates/old/my_tours_page.html:12
+msgid "Your Tours"
+msgstr ""
+
+#: web/templates/old/my_tours_page.html:34
+msgid "My Purchased Tours"
+msgstr ""
+
+#: web/templates/old/my_tours_page.html:58
+msgid "Nothing here yet"
+msgstr ""
+
+#: web/templates/old/my_tours_page.html:59
+msgid "Start exploring by purchasing your first tour"
+msgstr ""
+
+#: web/templates/old/register.html:6 web/templates/old/register.html:29
+#: web/templates/old/register.html:60 web/templates/old/register.html:93
+#: web/templates/pages/register.html:3 web/templates/pages/register.html:13
+#: web/templates/pages/register.html:44 web/templates/pages/register.html:77
+msgid "Register"
+msgstr ""
+
+#: web/templates/old/register.html:33 web/templates/pages/register.html:17
+msgid "Register as User"
+msgstr ""
+
+#: web/templates/old/register.html:34 web/templates/pages/register.html:18
+msgid "Register as Creator"
+msgstr ""
+
+#: web/templates/old/register.html:39 web/templates/pages/register.html:23
+msgid "Register as a User"
+msgstr ""
+
+#: web/templates/old/register.html:49 web/templates/old/register.html:81
+#: web/templates/pages/register.html:33 web/templates/pages/register.html:65
+msgid "Password"
+msgstr ""
+
+#: web/templates/old/register.html:51 web/templates/old/register.html:83
+#: web/templates/pages/register.html:35 web/templates/pages/register.html:67
+msgid "Enter password"
+msgstr ""
+
+#: web/templates/old/register.html:54 web/templates/old/register.html:86
+#: web/templates/pages/register.html:38 web/templates/pages/register.html:70
+msgid "At least 8 characters"
+msgstr ""
+
+#: web/templates/old/register.html:55 web/templates/old/register.html:87
+#: web/templates/pages/register.html:39 web/templates/pages/register.html:71
+msgid "One uppercase letter"
+msgstr ""
+
+#: web/templates/old/register.html:56 web/templates/old/register.html:88
+#: web/templates/pages/register.html:40 web/templates/pages/register.html:72
+msgid "One number"
+msgstr ""
+
+#: web/templates/old/register.html:57 web/templates/old/register.html:89
+#: web/templates/pages/register.html:41 web/templates/pages/register.html:73
+msgid "One letter"
+msgstr ""
+
+#: web/templates/old/register.html:66 web/templates/pages/register.html:50
+msgid "Register as a Creator"
+msgstr ""
+
+#: web/templates/old/register.html:75 web/templates/pages/register.html:59
+msgid "Username"
+msgstr ""
+
+#: web/templates/old/register.html:97 web/templates/pages/register.html:81
+msgid "Already have an account? Login"
+msgstr ""
+
+#: web/templates/old/shop.html:6 web/templates/pages/shop.html:3
+msgid "Tours Shop"
+msgstr ""
+
+#: web/templates/old/shop.html:30 web/templates/pages/shop.html:14
+msgid "Tour Store"
+msgstr ""
+
+#: web/templates/old/shop.html:35 web/templates/old/shop.html:40
+#: web/templates/pages/shop.html:19 web/templates/pages/shop.html:24
+msgid "Search"
+msgstr ""
+
+#: web/templates/old/shop.html:37 web/templates/pages/shop.html:21
+msgid "Search for a tour..."
+msgstr ""
+
+#: web/templates/old/shop.html:48 web/templates/pages/shop.html:32
+msgid "Previous"
+msgstr ""
+
+#: web/templates/old/tour_page.html:58 web/templates/pages/tour.html:40
+msgid "Tour Points"
+msgstr ""
+
+#: web/templates/pages/checkout.html:6 web/templates/pages/checkout.html:7
+#: web/templates/pages/checkout.html:8
+msgid "Complete your purchase of"
+msgstr ""
+
+#: web/templates/pages/checkout.html:51
+msgid "Order Summary"
+msgstr ""
+
+#: web/templates/pages/checkout.html:54
+msgid "Tour Price"
+msgstr ""
+
+#: web/templates/pages/checkout.html:59
+msgid "Discount"
+msgstr ""
+
+#: web/templates/pages/checkout.html:65
+msgid "Total"
+msgstr ""
+
+#: web/templates/pages/checkout.html:73
+msgid "Back to Tour Page"
+msgstr ""
+
+#: web/templates/pages/landing.html:3
+msgid "Discover Unique Audio Tours"
+msgstr ""
+
+#: web/templates/pages/shop.html:5 web/templates/pages/shop.html:6
+#: web/templates/pages/shop.html:7
+msgid ""
+"Discover and purchase unique audio tours from local experts worldwide. "
+"Browse our collection of self-guided tours for your next adventure."
+msgstr ""
+
+#: web/templates/pages/payments/cancel.html:4
+#: web/templates/pages/payments/cancel.html:24
+msgid "Payment Cancelled"
+msgstr ""
+
+#: web/templates/pages/payments/cancel.html:7
+msgid ""
+"Your payment has been cancelled. No charges have been made to your "
+"account."
+msgstr ""
+
+#: web/templates/pages/payments/cancel.html:25
+msgid "Your payment has been cancelled"
+msgstr ""
+
+#: web/templates/pages/payments/cancel.html:28
+msgid ""
+"The payment process was stopped. No charges have been made to your "
+"account."
+msgstr ""
+
+#: web/templates/pages/payments/cancel.html:29
+msgid "You can try the payment again or browse other tours in our shop."
+msgstr ""
+
+#: web/templates/pages/payments/error.html:4
+#: web/templates/pages/payments/error.html:25
+msgid "Payment Failed"
+msgstr ""
+
+#: web/templates/pages/payments/error.html:7
+msgid "Your payment could not be processed. Please try again or contact support."
+msgstr ""
+
+#: web/templates/pages/payments/error.html:26
+msgid "We could not process your payment"
+msgstr ""
+
+#: web/templates/pages/payments/error.html:29
+msgid "The transaction was not completed. This could be due to:"
+msgstr ""
+
+#: web/templates/pages/payments/error.html:31
+msgid "Insufficient funds"
+msgstr ""
+
+#: web/templates/pages/payments/error.html:32
+msgid "Card declined"
+msgstr ""
+
+#: web/templates/pages/payments/error.html:33
+msgid "Connection issues"
+msgstr ""
+
+#: web/templates/pages/payments/error.html:34
+msgid "Technical problems"
+msgstr ""
+
+#: web/templates/pages/payments/error.html:36
+msgid "No money has been charged from your account."
+msgstr ""
+
+#: web/templates/pages/payments/error.html:40
+msgid "If you continue to experience issues, please contact our support:"
+msgstr ""
+
+#: web/templates/pages/payments/error.html:63
+msgid "Return to Shop"
+msgstr ""
+
+#: web/templates/pages/payments/success.html:3
+msgid "Payment Successful"
+msgstr ""
+
+#: web/templates/pages/payments/success.html:6
+msgid "Your payment has been successfully processed. Thank you for your purchase!"
+msgstr ""
+
+#: web/templates/pages/payments/success.html:23
+msgid "Payment Successful!"
+msgstr ""
+
+#: web/templates/pages/payments/success.html:24
+msgid "Thank you for your purchase"
+msgstr ""
+
+#: web/templates/pages/payments/success.html:27
+msgid "Your tour has been added to your account."
+msgstr ""
+
+#: web/templates/pages/payments/success.html:28
+msgid "You can start your journey right away!"
+msgstr ""
+
+#: web/templates/pages/payments/success.html:39
+msgid "Go to My Tours"
+msgstr ""
+
+#: web/templates/pages/payments/success.html:49
+msgid "Browse More Tours"
 msgstr ""
 
 #~ msgid "Base Price"

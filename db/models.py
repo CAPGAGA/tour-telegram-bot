@@ -170,7 +170,7 @@ class PromoCode(BaseTable):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     code: Mapped[str] = mapped_column(String, nullable=False)
     promo_type: Mapped[str] = mapped_column(String, nullable=False, default='flat')
-    discount: Mapped[int] = mapped_column(nullable=False)
+    discount: Mapped[str] = mapped_column(nullable=False)
     creator_id: Mapped[int] = mapped_column(ForeignKey('creator.id'))
     promo_start: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=False), nullable=False)
     promo_end: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=False), nullable=False)

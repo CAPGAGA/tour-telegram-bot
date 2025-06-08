@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}PockeTour – {{ _("Register") }}{% endblock %}
+{% block extra_head %}
+<link href="{{ url_for('static', path='css/auth/common.css') }}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+    {% include "modules/landing/navbar.html" %}
+    <section class="hero is-fullheight">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <div class="column is-6 is-offset-3">
+                    <h3 class="title is-4">{{ _("Register" ) }}</h3>
+
+                    <!-- Toggle Registration Type -->
+                    <div class="buttons has-addons is-centered">
+                        <button id="user-btn" class="button is-info is-light">{{ _("Register as User") }}</button>
+                        <button id="creator-btn" class="button is-info">{{ _("Register as Creator" ) }}</button>
+                    </div>
+
+                    <!-- User Registration Form -->
+                    <div id="user-form" class="box">
+                        <h4 class="title is-5">{{ _( "Register as a User" ) }}</h4>
+                        <form id="register-user">
+                            <div class="field">
+                                <label class="label">{{ _( "Email" ) }}</label>
+                                <div class="control">
+                                    <input class="input" type="email" id="user-email" placeholder="user@user.user" required>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">{{ _( "Password" ) }}</label>
+                                <div class="control">
+                                    <input class="input" type="password" id="user-password" placeholder="{{ _('Enter password') }}" required>
+                                </div>
+                                <ul class="password-checklist" id="user-password-checklist">
+                                    <li data-check="length">❌ {{ _( "At least 8 characters" ) }}</li>
+                                    <li data-check="uppercase">❌ {{ _( "One uppercase letter" ) }}</li>
+                                    <li data-check="digit">❌ {{ _( "One number" ) }}</li>
+                                    <li data-check="letter">❌ {{ _( "One letter" ) }}</li>
+                                </ul>
+                            </div>
+                            <button type="submit" class="button is-info is-fullwidth">{{ _("Register") }}</button>
+                        </form>
+                    </div>
+
+                    <!-- Creator Registration Form -->
+                    <div id="creator-form" class="box" style="display: none;">
+                        <h4 class="title is-5">{{ _("Register as a Creator") }}</h4>
+                        <form id="register-creator">
+                            <div class="field">
+                                <label class="label">{{ _( "Email" ) }}</label>
+                                <div class="control">
+                                    <input class="input" type="text" id="creator-email" placeholder="example@example.com" required>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">{{ _( "Username" ) }}</label>
+                                <div class="control">
+                                    <input class="input" type="text" id="creator-username" placeholder="ExampleTours DOO." required>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">{{ _( "Password" ) }}</label>
+                                <div class="control">
+                                    <input class="input" type="password" id="creator-password" placeholder="{{ _('Enter password') }}" required>
+                                </div>
+                                <ul class="password-checklist" id="creator-password-checklist">
+                                    <li data-check="length">❌ {{ _( "At least 8 characters" ) }}</li>
+                                    <li data-check="uppercase">❌ {{ _( "One uppercase letter" ) }}</li>
+                                    <li data-check="digit">❌ {{ _( "One number" ) }}</li>
+                                    <li data-check="letter">❌ {{ _( "One letter" ) }}</li>
+                                </ul>
+                            </div>
+
+                            <button type="submit" class="button is-info is-fullwidth">{{ _("Register" ) }}</button>
+                        </form>
+                    </div>
+                    <p class="has-text-grey">
+                        <a href="/login">{{ _("Already have an account? Login") }}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% include "modules/landing/footer.html" %}
+{% endblock %}
+{% block scripts %}
+<script type="module" src="{{ url_for('static', path='js/landing/auth.js') }}"></script>
+{% endblock %}

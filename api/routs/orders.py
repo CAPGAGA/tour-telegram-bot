@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Depends, Response
@@ -11,6 +12,12 @@ from db.models import Rout, BaseUser, UserRout, Order
 
 from api.utils.handlers import decode_payment_token
 from api.utils.invoice_constructor import InvoiceConstructor
+
+logger = logging.getLogger(__name__)
+
+payment_error = "/payment/error"
+payment_success = "/payment/success"
+payment_cancel = "/payment/cancel"
 
 order_router = APIRouter(
     prefix="/order",
@@ -80,7 +87,8 @@ async def complete_order_paypal_success(
     user_id, tour_id, invoice_id = decode_payment_token(token)
 
     if not user_id or not tour_id or not invoice_id:
-        raise HTTPException(status_code=500, detail="Failed to decode payment token")
+        logger.error("Failed to decode payment token")
+        return RedirectResponse(url=payment_error)
 
     result = await session.execute(
         select(Order).where(Order.invoice_id == invoice_id)
@@ -88,7 +96,8 @@ async def complete_order_paypal_success(
     order = result.scalars().first()
 
     if not order:
-        raise HTTPException(status_code=404, detail="Order does not exists")
+        logger.error("Order does not exists")
+        return RedirectResponse(url=payment_error)
 
     order.status = 'paid'
     await session.commit()
@@ -103,7 +112,7 @@ async def complete_order_paypal_success(
         session.add(new_user_rout)
         await session.commit()
 
-    return RedirectResponse(url='/')
+    return RedirectResponse(url=payment_success)
 
 @order_router.get('/complete/paypal/cancel/{token}')
 async def complete_order_paypal_cancel(
@@ -126,7 +135,7 @@ async def complete_order_paypal_cancel(
     order.status = 'canceled'
     await session.commit()
 
-    return RedirectResponse(url='/')
+    return RedirectResponse(url=payment_cancel)
 
 @order_router.post('/create/youkassa', response_model=OrderResponseTelegram)
 async def create_order_youkassa(

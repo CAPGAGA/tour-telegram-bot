@@ -18,7 +18,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 
 from api.cron.update_currency_rates import fetch_and_store_currency_rates, ensure_currency_rates
-from api.utils.handlers import get_auth_token, get_current_creator, get_locale, get_lang_from_session
+from api.middleware.user import UserMiddleware
+from api.utils.handlers import get_auth_token, get_lang_from_session
 from api.routs.creator import creator_rout_router
 from api.routs.auth_v2 import auth_router
 from api.routs.geo import geocode_router
@@ -69,10 +70,13 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(UserMiddleware)
+
 # mount static files
 app.mount("/static", StaticFiles(directory="web/static"), name="static")
 app.mount('/media', StaticFiles(directory='web/media'), name='media')
 templates = Jinja2Templates(directory="web/templates")
+
 
 # Babel config
 babel_configs = BabelConfigs(
@@ -95,65 +99,49 @@ app.include_router(geocode_router, prefix='/apiV1')
 app.include_router(promo_router, prefix='/apiV1')
 
 if not HEADLESS_MODE:
-
     # util urls
     app.mount('/sitemap.xml', sitemap)
 
-    # functions to output pages
     @app.get('/', response_class=HTMLResponse)
     async def landing(
             request: Request,
-            user: Optional[tuple] = Depends(get_current_creator),
-            lang: str = Depends(get_locale),
     ):
         return templates.TemplateResponse(
             request=request,
-            context={
-                "user_id": user[0],
-                "is_creator": user[1],
-                "lang": lang,
-
-            } if user else {
-                "lang": lang,
-            },
-            name='landing.html'
+            name='pages/landing.html',
+            context={**request.state.user}
         )
 
     @app.get("/for-creators", response_class=HTMLResponse)
     async def for_creators(
             request: Request,
-            user: Optional[tuple] = Depends(get_current_creator),
-            lang: str = Depends(get_locale),
     ):
         return templates.TemplateResponse(
             request=request,
-            context={
-                "user_id": user[0],
-                "is_creator": user[1],
-                "lang": lang,
-            } if user else {
-                "lang": lang
-            },
-            name='for_creators_page.html'
+            name='pages/for-creators.html',
+            context={**request.state.user}
         )
 
-    @app.get('/shop')
+    @app.get('/shop', name='shop')
+    async def redirect_to_correct_shop():
+        return RedirectResponse(url='/shop/1')
+
+    @app.get('/shop/{page}', response_class=HTMLResponse)
     async def shop(
             request: Request,
-            user: Optional[tuple] = Depends(get_current_creator)
+            page: int,
     ):
         return templates.TemplateResponse(
             request=request,
-            context={"user_id": user[0], "is_creator": user[1]} if user else {},
-            name='shop.html'
+            name='pages/shop.html',
+            context={**request.state.user, "page": page}
         )
 
     @app.get('/tour/{rout_id}')
     async def tour_page(
-            request: Request,
-            rout_id: int,
-            user: Optional[tuple] = Depends(get_current_creator),
-            session: AsyncSession = Depends(get_session)
+        request: Request,
+        rout_id: int,
+        session: AsyncSession = Depends(get_session)
     ):
         query = select(Rout).where(Rout.id == rout_id)
         result = await session.execute(query)
@@ -162,129 +150,166 @@ if not HEADLESS_MODE:
             raise HTTPException(status_code=404, detail="Rout not found")
 
         rout_points = await get_rout_with_points(rout_id, session)
-
+        
         return templates.TemplateResponse(
             request=request,
+            name='pages/tour.html',
             context={
+                **request.state.user,
                 'rout': rout.to_dict(),
                 'rout_points': rout_points
-            },
-            name='tour_page.html'
+            }
         )
 
     @app.get('/tour/{rout_id}/buy')
     async def tour_purchase_page(
-            request: Request,
-            rout_id: int,
-            user: Optional[tuple] = Depends(get_current_creator),
-            session: AsyncSession = Depends(get_session)
+        request: Request,
+        rout_id: int,
+        session: AsyncSession = Depends(get_session)
     ):
-        if not user:
-            return RedirectResponse(url="/login?next=/tour/{rout_id}/buy")
+        if not request.state.user:
+            return RedirectResponse(url=f"/login?next=/tour/{rout_id}/buy")
 
-        rout = await get_rout_without_points(
-            rout_id=rout_id,
-            session=session
-        )
-
+        rout = await get_rout_without_points(rout_id=rout_id, session=session)
         return templates.TemplateResponse(
             request=request,
+            name='pages/checkout.html',
             context={
-                "user_id": user[0],
+                **request.state.user,
                 "tour": rout
-            },
-            name='checkout.html'
+            }
         )
 
     @app.get('/my-tours', response_class=HTMLResponse)
     async def my_tours_page(
-            request: Request,
-            user: Optional[tuple] = Depends(get_current_creator),
-            session: AsyncSession = Depends(get_session)
+        request: Request,
+        session: AsyncSession = Depends(get_session)
     ):
-        if not user:
+        if not request.state.user:
             return RedirectResponse(url='login?next=/my-tours')
+        
         try:
-            user_owned_routs = await get_user_routs(user_id=user[0], session=session)
+            user_owned_routs = await get_user_routs(
+                user_id=request.state.user['user']['id'],
+                session=session
+            )
         except:
             user_owned_routs = []
 
         return templates.TemplateResponse(
             request=request,
+            name='pages/my_tours.html',
             context={
-                "user_id": user[0],
+                **request.state.user,
                 "routs": user_owned_routs
-            },
-            name='my_tours_page.html'
+            }
         )
 
-    @app.get(
-        "/test-page", response_class=HTMLResponse
-    )
+    @app.get("/test-page", response_class=HTMLResponse)
     async def test_page(
             request: Request,
-            user: Optional[tuple] = Depends(get_current_creator),
-            session: AsyncSession = Depends(get_session)
     ):
-        if not user:
+        if not request.state.user:
             return RedirectResponse(url="/login?next=/test-page")
         return templates.TemplateResponse(
             request=request,
+            name='test-pages/test-landing.html',
             context={
-                "user_id": user[0],
-                "is_creator": user[1]
-            },
-            name='test-pages/test-landing.html'
+                **request.state.user,
+            }
         )
 
+    @app.get("/payment/success", response_class=HTMLResponse)
+    async def payment_success(
+            request: Request
+    ):
+        return templates.TemplateResponse(
+            request=request,
+            name='pages/payments/success.html',
+            context={
+                **request.state.user,
+            }
+        )
+
+    @app.get("/payment/error", response_class=HTMLResponse)
+    async def payment_error(
+            request: Request
+    ):
+        return templates.TemplateResponse(
+            request=request,
+            name='pages/payments/error.html',
+            context={
+                **request.state.user,
+            }
+        )
+
+    @app.get("/payment/cancel", response_class=HTMLResponse)
+    async def payment_cancel(
+            request: Request
+    ):
+        return templates.TemplateResponse(
+            request=request,
+            name='pages/payments/cancel.html',
+            context={
+                **request.state.user,
+            }
+        )
 
 @app.get('/login', response_class=HTMLResponse)
 async def login_page(
-        request: Request,
-        auth_token: str = Depends(get_auth_token)
+    request: Request,
 ):
-    if not auth_token:
+    if not request.state.user:
         return templates.TemplateResponse(
-            request=request, name='login.html'
+            request=request,
+            name='pages/login.html',
+            context={
+                **request.state.user,
+            }
         )
     return RedirectResponse(url="/tour-admin")
 
 @app.get('/register', response_class=HTMLResponse)
 async def register_page(
-        request: Request,
-        auth_token: str = Depends(get_auth_token)
+    request: Request,
+    auth_token: str = Depends(get_auth_token)
 ):
     if not auth_token:
         return templates.TemplateResponse(
-            request=request, name='register.html'
+            request=request,
+            name='pages/register.html',
+            context={
+                **request.state.user,
+            }
         )
     return RedirectResponse(url="/tour-admin")
 
 @app.get('/tour-admin', response_class=HTMLResponse)
 async def tour_admin(
-        request: Request,
-        user: str = Depends(get_current_creator),
-        session: AsyncSession = Depends(get_session)
+    request: Request,
+
+    session: AsyncSession = Depends(get_session)
 ):
-    if not user:
+    if not request.state.user:
         return RedirectResponse(url="/login")
-    user_id, is_creator = user
-    if not is_creator:
+    if not request.state.user['user'].get('is_creator'):
         raise HTTPException(status_code=403, detail="Forbidden")
 
-    query = select(BaseUser).where(BaseUser.id == user_id)
+    query = select(BaseUser).where(BaseUser.id == request.state.user['user']['id'])
     result = await session.execute(query)
-    user = result.scalars().first()
+    db_user = result.scalars().first()
 
-    if not user:
+    if not db_user:
         return RedirectResponse(url="/apiV1/auth/logout")
 
-
     return templates.TemplateResponse(
+        request=request,
+        name='tour_admin.html',
         context={
-            'username': user.username,
-            'creator_id': user.creator_id
-        }, request=request, name='tour_admin.html'
+            **request.state.user,
+            'username': db_user.username,
+            'creator_id': db_user.creator_id
+        }
     )
 
 # middleware

@@ -27,6 +27,9 @@ MEDIA_GROUP_4_WITH_EMOJI = 25
 MEDIA_GROUP_5_WIDTH = 68
 MEDIA_GROUP_5_WIDTH_EMOJI = 17
 
+# Add at the top of the file with other constants
+TOUR_MESSAGES = {}  # Dict to store message IDs for each chat
+
 async def fetch_first_tour_point(rout_id):
     """
         Fetch first tour point from API
@@ -70,8 +73,13 @@ async def show_tour_point(
      Shows each tour point in recursion
     """
     _ = context._
+
     query = update.callback_query
     await query.answer()
+
+    # first delete previous messages
+    await cleanup_tour_messages(update.effective_chat.id, context)
+
     # start, mid, finish
     state = query.data.split('_')[0]
     # rout_id or point_id
@@ -101,16 +109,27 @@ async def show_tour_point(
 
     # render last message
     keyboard = [
-        [InlineKeyboardButton(text="⭐", callback_data="review_{data}_1")],
-        [InlineKeyboardButton(text="⭐⭐", callback_data="review_{data}_2")],
-        [InlineKeyboardButton(text="⭐⭐⭐", callback_data="review_{data}_3")],
-        [InlineKeyboardButton(text="⭐⭐⭐⭐", callback_data="review_{data}_4")],
-        [InlineKeyboardButton(text="⭐⭐⭐⭐⭐", callback_data="review_{data}_5")],
+        [InlineKeyboardButton(text="⭐", callback_data=f"review_{data}_1")],
+        [InlineKeyboardButton(text="⭐⭐", callback_data=f"review_{data}_2")],
+        [InlineKeyboardButton(text="⭐⭐⭐", callback_data=f"review_{data}_3")],
+        [InlineKeyboardButton(text="⭐⭐⭐⭐", callback_data=f"review_{data}_4")],
+        [InlineKeyboardButton(text="⭐⭐⭐⭐⭐", callback_data=f"review_{data}_5")],
+        [InlineKeyboardButton(text="🔙 "+ _("Review with comment"), callback_data=f"review_{data}_comment")],
         [InlineKeyboardButton(text="🔙 "+ _("Back to Menu"), callback_data="main_menu")]
     ]
+
     await update.callback_query.message.edit_text(_("Rate this tour"), reply_markup=InlineKeyboardMarkup(keyboard))
     return
 
+async def cleanup_tour_messages(chat_id: int, context: CallbackContext):
+    """Delete previous tour point messages"""
+    if chat_id in TOUR_MESSAGES:
+        for message_id in TOUR_MESSAGES[chat_id]:
+            try:
+                await context.bot.delete_message(chat_id, message_id)
+            except Exception:
+                pass  # Ignore errors if message was already deleted
+        TOUR_MESSAGES[chat_id] = []
 
 async def show_tour_point_map(
         update: Update,
@@ -118,25 +137,29 @@ async def show_tour_point_map(
         point: dict,
         _
 ):
-    """
-        Renders point message
-    """
-
+    """Renders point message by updating existing message and cleaning up old ones"""
     chat_id = update.effective_chat.id
+
+    # Initialize message list for this chat if needed
+    if chat_id not in TOUR_MESSAGES:
+        TOUR_MESSAGES[chat_id] = []
+
     upper_border = '➖' * MAP_MESSAGE_WITH_EMOJI
-    # send point description
     description = (f"{upper_border}"
                    f"\n           <a href="">&#8204;</a>🧭 <b>"+ _("Map of next point") + "</b>")
-    await context.bot.send_message(
+    
+    # Send description and store message ID
+    message = await context.bot.send_message(
         chat_id=chat_id,
         text=description,
         parse_mode=ParseMode.HTML
     )
-    # send point map
+    TOUR_MESSAGES[chat_id].append(message.message_id)
+
+    # Send location if available
     latitude = point.get("latitude")
     longitude = point.get("longitude")
 
-    # send map with point
     if latitude and longitude:
         reply_markup = InlineKeyboardMarkup(
             [
@@ -145,17 +168,16 @@ async def show_tour_point_map(
                         _("I am here!"),
                         callback_data=f"info_mytour_{point['id']}"
                     )
-                 ]
+                ]
             ]
         )
-        await context.bot.send_location(
-            chat_id,
+        location_message = await context.bot.send_location(
+            chat_id=chat_id,
             latitude=latitude,
             longitude=longitude,
             reply_markup=reply_markup
         )
-    return
-
+        TOUR_MESSAGES[chat_id].append(location_message.message_id)
 
 async def show_tour_point_materials(
         update: Update,
@@ -163,25 +185,31 @@ async def show_tour_point_materials(
         point: dict,
         _
 ):
+    """Shows point materials and cleans up previous messages"""
     chat_id = update.effective_chat.id
+    
+    # Initialize message list for this chat if needed
+    if chat_id not in TOUR_MESSAGES:
+        TOUR_MESSAGES[chat_id] = []
 
-    # check and send audios if needed
+    # Handle audios
     audios = point.get("audio", [])
     if isinstance(audios, list) and audios:
         for audio in audios:
             audio_path = os.path.join(BASE_DIR, 'web/media/audio', audio)
-            audio_name = f"Audio for point {point.get('point_name')}"
+            audio_name = _("Stop") + ' ' + point.get('point_name')
             if os.path.isfile(audio_path):
                 with open(audio_path, 'rb') as audio_file:
-                    await context.bot.send_audio(
+                    message = await context.bot.send_audio(
                         chat_id,
                         audio=audio_file,
                         filename=audio_name,
                         performer='PocketTourBot',
                         protect_content=True
                     )
+                    TOUR_MESSAGES[chat_id].append(message.message_id)
 
-    # check and send images if needed
+    # Handle images
     images = point.get("image", [])
     if isinstance(images, list) and images:
         media_group = [
@@ -189,9 +217,11 @@ async def show_tour_point_materials(
                 media=open(os.path.join(BASE_DIR, 'web/media/images', img), 'rb')
             ) for img in images
         ]
-        await context.bot.send_media_group(chat_id, media_group, protect_content=True)
+        messages = await context.bot.send_media_group(chat_id, media_group, protect_content=True)
+        for message in messages:
+            TOUR_MESSAGES[chat_id].append(message.message_id)
 
-    # setup controller
+    # Setup navigation controls
     keyboard = []
     if point.get("next_point"):
         keyboard.append([InlineKeyboardButton("➡️ " + _("Next Point"), callback_data=f"mid_mytour_{point['next_point']}")])
@@ -199,6 +229,11 @@ async def show_tour_point_materials(
         keyboard.append([InlineKeyboardButton("⭐ " + _("Leave review!"), callback_data=f"review_mytour_{point['rout_id']}")])
         keyboard.append([InlineKeyboardButton("✅ " + _("To main menu"), callback_data="main_menu")])
 
-    # send controller
+    # Send navigation controls
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await context.bot.send_message(chat_id, text="🔄 " + _("Tour navigation:"), reply_markup=reply_markup)
+    message = await context.bot.send_message(
+        chat_id,
+        text="🔄 " + _("Tour navigation:"),
+        reply_markup=reply_markup
+    )
+    TOUR_MESSAGES[chat_id].append(message.message_id)

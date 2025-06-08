@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <!--SEO-->
+    <link rel="canonical" href="https://pocketour.online/">
+    <meta name="author" content="PockeTour: {{ _('Discover Unique Audio Tours Around the World' ) }}">
+    <meta name="robots" content="index, follow">
+    <meta name="description" content="{{ _('Browse and explore immersive self-guided tours powered by audio, images, and maps. Discover new destinations and travel at your own pace.') }}">
+    <meta name="keywords" content="audio tours, walking tours, self-guided travel, city tours, virtual travel, cultural tourism, travel app, PockeTour">
+    <meta property="og:title" content="PockeTour: {{ _('Discover Unique Audio Tours Around the World' ) }}">
+    <meta property="og:description" content="{{ _('Browse and explore immersive self-guided tours powered by audio, images, and maps. Discover new destinations and travel at your own pace.') }}">
+    <meta property="og:image" content="{{ url_for('static', path='images/preview.jpg') }}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PockeTour: {{ _('Discover Unique Audio Tours Around the World' ) }}">
+    <meta name="twitter:description" content="{{ _('Browse and explore immersive self-guided tours powered by audio, images, and maps. Discover new destinations and travel at your own pace.') }}">
+    <meta name="twitter:image" content="{{ url_for('static', path='images/preview.jpg') }}">
+    <!--End of SEO-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', path='logo/favicon/apple-touch-icon.png') }}">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='logo/favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='logo/favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', path='logo/favicon/site.webmanifest') }}">
+    <title>PockeTour</title>
+    <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/bulma.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/revolver-msg.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YH9DBEETFV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YH9DBEETFV');
+    </script>
+</head>
+<body>
+
+{% include "modules/landing/navbar.html" %}
+
+{% include "modules/landing/hero_section.html" %}
+
+{% include "modules/landing/features.html" %}
+
+{% include "modules/landing/mini_shop.html" %}
+
+{% include "modules/landing/footer.html" %}
+
+<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/static/js/pwa/sw.js")
+        .then(() => console.log("Service Worker Registered"))
+        .catch(err => console.error("Service Worker Registration Failed", err));
+}
+</script>
+</body>
+<script type="module" src="{{ url_for('static', path='js/landing/render_shop.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/landing/utils.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/pwa/sw.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/pwa/installPWA.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/landing/changeLanguage.js') }}"></script>
+</html>

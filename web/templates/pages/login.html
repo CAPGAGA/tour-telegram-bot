@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}PockeTour – {{ _("Login") }}{% endblock %}
+{% block extra_head %}
+<link href="{{ url_for('static', path='css/auth/common.css') }}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+    {% include "modules/landing/navbar.html" %}
+    <body>
+    <section class="hero is-fullheight">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <div class="column is-4 is-offset-4">
+                    <h3 class="title is-4">{{ _("Login" ) }}</h3>
+                    <div class="box">
+                        <form id="login-form">
+                            <div class="field">
+                                <label class="label">{{ _("Email" ) }}</label>
+                                <div class="control">
+                                    <input class="input" type="email" id="email" placeholder="user@user.user" required>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Password</label>
+                                <div class="control">
+                                    <input class="input" type="password" id="password" placeholder="{{ _('Enter your password') }}" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="button is-info is-fullwidth">{{ _("Login" ) }}</button>
+                        </form>
+                    </div>
+                    <p class="has-text-grey">
+                        <a href="/register">{{ _("Don't have an account? Register") }}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% include "modules/landing/footer.html" %}
+{% endblock %}
+{% block scripts %}
+<script type="module" src="{{ url_for('static', path='js/landing/auth.js') }}"></script>
+{% endblock %}
