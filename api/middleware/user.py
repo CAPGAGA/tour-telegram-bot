@@ -46,8 +46,10 @@ class UserMiddleware(BaseHTTPMiddleware):
                     }
                 }
             except jwt.PyJWTError:
+                request.state.user = {}
                 pass
-
+        else:
+            request.state.user = {}
         request.state.lang = request.session.get('lang', 'en')
         response = await call_next(request)
         return response
