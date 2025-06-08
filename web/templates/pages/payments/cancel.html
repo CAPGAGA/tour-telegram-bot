@@ -1,0 +1,49 @@
+
+{% extends "base.html" %}
+
+{% block title %}PockeTour - {{ _('Payment Cancelled') }}{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="{{ _('Your payment has been cancelled. No charges have been made to your account.') }}">
+{% endblock %}
+
+{% block content %}
+{% include "modules/landing/navbar.html" %}
+
+<section class="section">
+    <div class="container">
+        <div class="box has-text-centered">
+            <!-- Cancelled Icon -->
+            <span class="icon is-large has-text-warning">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+            </span>
+
+            <h1 class="title mt-4">{{ _('Payment Cancelled') }}</h1>
+            <p class="subtitle">{{ _('Your payment has been cancelled') }}</p>
+
+            <div class="content">
+                <p>{{ _('The payment process was stopped. No charges have been made to your account.') }}</p>
+                <p>{{ _('You can try the payment again or browse other tours in our shop.') }}</p>
+            </div>
+
+            <div class="buttons is-centered mt-5">
+                <a href="{{ url_for('shop') }}" class="button is-link">
+                    <span class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"/>
+                            <circle cx="20" cy="21" r="1"/>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                        </svg>
+                    </span>
+                    <span>{{ _('Browse Tours') }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include "modules/landing/footer.html" %}
+{% endblock %}

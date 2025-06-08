@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}PockeTour - {{ _('Checkout for') }} {{ tour.tour_name }}{% endblock %}
+
+{% block description %}
+<meta name="description" content="{{ _('Complete your purchase of') }} {{ tour.rout_name }} - {{ tour.description }}">
+<meta property="og:description" content="{{ _('Complete your purchase of') }} {{ tour.rout_name }} - {{ tour.description }}">
+<meta name="twitter:description" content="{{ _('Complete your purchase of') }} {{ tour.rout_name }} - {{ tour.description }}">
+{% endblock %}
+
+
+{% block content %}
+
+{% include "modules/landing/navbar.html" %}
+
+<section class="section">
+    <div class="container">
+        <h1 class="title">{{ _('Checkout') }}</h1>
+
+        <!-- Tour Summary -->
+        <div class="columns">
+            <div class="column is-two-thirds">
+                <div class="box">
+                    <h2 class="subtitle">{{ _('Tour Details') }}</h2>
+                    <div class="tour-summary">
+                        <h3 class="is-size-4">{{ tour.rout_name }}</h3>
+                        <p class="price is-size-5">${{ tour.base_price }}</p>
+                        <p class="description">{{ tour.description }}</p>
+                    </div>
+                </div>
+
+                <!-- Payment Method Selection -->
+                <div class="box">
+                    <h2 class="subtitle">{{ _('Choose Payment Method') }}</h2>
+                    <div class="payment-methods">
+                        <button class="button is-fullwidth is-primary mb-3" id="pay-with-paypal" data-tour-id="{{ tour.id }}" data-user-id="{{ user_id }}">
+                            {{ _('Card with PayPal') }}
+                        </button>
+                        {% if is_ru_available %}
+                        <button class="button is-fullwidth" id="youkassa-button">
+                            {{ _('Pay with russian card') }}
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="column">
+                <div class="box">
+                    <h2 class="subtitle">{{ _('Order Summary') }}</h2>
+                    <div class="order-summary">
+                        <div class="level">
+                            <div class="level-left">{{ _('Tour Price') }}</div>
+                            <div class="level-right">${{ tour.base_price }}</div>
+                        </div>
+                        {% if discount %}
+                        <div class="level">
+                            <div class="level-left">{{ _('Discount') }}</div>
+                            <div class="level-right">-${{ discount_amount }}</div>
+                        </div>
+                        {% endif %}
+                        <hr>
+                        <div class="level is-size-5 has-text-weight-bold">
+                            <div class="level-left">{{ _('Total') }}</div>
+                            <div class="level-right">${{ final_price }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Back to Tour Button -->
+                <a href="{{ url_for('tour_page', rout_id=tour.id) }}" class="button is-fullwidth">
+                    {{ _('Back to Tour Page') }}
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include "modules/landing/footer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', path='js/checkout/getInvoice.js') }}"></script>
+{% endblock %}

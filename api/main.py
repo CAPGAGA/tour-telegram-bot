@@ -137,7 +137,7 @@ if not HEADLESS_MODE:
             name='pages/for-creators.html'
         )
 
-    @app.get('/shop')
+    @app.get('/shop', name='shop')
     async def redirect_to_correct_shop():
         return RedirectResponse(url='/shop/1')
 
@@ -198,7 +198,7 @@ if not HEADLESS_MODE:
                 "user_id": user[0],
                 "tour": rout
             },
-            name='checkout.html'
+            name='pages/checkout.html'
         )
 
     @app.get('/my-tours', response_class=HTMLResponse)
@@ -243,7 +243,7 @@ if not HEADLESS_MODE:
         )
 
     @app.get(
-        "payment/success", response_class=HTMLResponse
+        "/payment/success", response_class=HTMLResponse
     )
     async def payment_success(
             request: Request,
@@ -251,12 +251,12 @@ if not HEADLESS_MODE:
         return templates.TemplateResponse(
             request=request,
             context={},
-            name='payments/success.html'
+            name='pages/payments/success.html'
         )
 
 
     @app.get(
-        "payment/error", response_class=HTMLResponse
+        "/payment/error", response_class=HTMLResponse
     )
     async def payment_error(
             request: Request,
@@ -264,7 +264,19 @@ if not HEADLESS_MODE:
         return templates.TemplateResponse(
             request=request,
             context={},
-            name='payments/error.html'
+            name='pages/payments/error.html'
+        )
+
+    @app.get(
+        "/payment/cancel", response_class=HTMLResponse
+    )
+    async def payment_cancel(
+            request: Request,
+    ):
+        return templates.TemplateResponse(
+            request=request,
+            context={},
+            name='pages/payments/cancel.html'
         )
 
 
