@@ -16,9 +16,9 @@
                 <a class="navbar-item" href="/for-creators">{{ _("For Creators") }}</a>
                 <a class="navbar-item" href="/shop">{{ _("Shop") }}</a>
                 <button id="install-pwa" class="navbar-item is-hidden">{{ _("Install App") }}</button>
-                {% if user_id %}
+                {% if user %}
                 <a class="navbar-item" href="/my-tours">{{ _("My Tours") }}</a>
-                    {% if is_creator %}
+                    {% if user.is_creator %}
                         <a class="navbar-item" href="/tour-admin">{{ _("Creator's cabinet") }}</a>
                     {% endif %}
                 {% else %}
