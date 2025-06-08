@@ -134,7 +134,7 @@ if not HEADLESS_MODE:
             } if user else {
                 "lang": lang
             },
-            name='for_creators_page.html'
+            name='pages/for-creators.html'
         )
 
     @app.get('/shop')

@@ -1,10 +1,131 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}PockeTour - For Creators{% endblock %}
+{% block description %}
+<meta name="description" content="{{ _('Join our platform and start earning by creating interactive audio and visual tours.') }}">
+<meta property="og:description" content="{{ _('Create interactive travel experiences and earn forever.') }}">
+<meta name="twitter:description" content="{{ _('Create interactive travel experiences and earn forever.') }}">
+{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "{{ _('Become a Creator with PockeTour') }}",
+    "description": "{{ _('Create interactive audio and visual travel tours and earn income from global travelers.') }}",
+    "url": "{{ request.url }}",
+    "inLanguage": "{{ lang }}"
+  }
+</script>
+{% endblock %}
+
+{% block content %}
+
+{% include "modules/landing/navbar.html" %}
+
+<section class="section">
+    <div class="container content">
+        <h1 class="title is-2 has-text-centered">{{ _("Become a Creator with PockeTour") }}</h1>
+
+        <p class="has-text-centered">
+            {{ _("Join our platform and start earning by creating interactive audio and visual tours for travelers worldwide. Here's why you should become a PockeTour creator:") }}
+        </p>
+
+        <div class="columns is-multiline is-variable is-6 mt-4">
+            <div class="column is-one-quarter has-text-centered">
+                <span class="icon is-large"><i class="fas fa-infinity fa-2x"></i></span>
+                <p>
+                    <strong>{{ _("Create Once, Earn Forever") }}</strong><br>
+                    {{ _("Upload your tour once and earn from it continuously as travelers explore your content.") }}
+                </p>
+            </div>
+            <div class="column is-one-quarter has-text-centered">
+                <span class="icon is-large"><i class="fas fa-globe fa-2x"></i></span>
+                <p>
+                    <strong>{{ _("Global Reach") }}</strong><br>
+                    {{ _("Your tours are instantly available to travelers around the world.") }}
+                </p>
+            </div>
+            <div class="column is-one-quarter has-text-centered">
+                <span class="icon is-large"><i class="fas fa-bullhorn fa-2x"></i></span>
+                <p>
+                    <strong>{{ _("Built-in Promotion") }}</strong><br>
+                    {{ _("We handle marketing and drive traffic to your tour using powerful SEO tools and our growing platform audience.") }}
+                </p>
+            </div>
+            <div class="column is-one-quarter has-text-centered">
+                <span class="icon is-large"><i class="fas fa-language fa-2x"></i></span>
+                <p>
+                    <strong>{{ _("Multilingual Support") }}</strong><br>
+                    {{ _("Create in your language, and we will translate it to reach a global audience. (coming soon)") }}
+                </p>
+            </div>
+        </div>
+
+        <h2 class="title is-3 mt-6 has-text-centered">{{ _("How It Works") }}</h2>
+
+        <div class="columns is-vcentered my-6" data-aos="fade-right">
+            <div class="column">
+                <h3 class="title is-4">{{ _("Step 1: Create Your Tour") }}</h3>
+                <p>{{ _("Start by adding general information: a compelling title, a detailed description, and a price that fits your experience.") }}</p>
+                <p class="mt-2">{{ _("Then, use our intuitive editor to place points on the map, attach photos and audio to bring your story to life.") }}</p>
+            </div>
+            <div class="column">
+                <figure class="image">
+                    <img src="{{ url_for('static', path='demos/creators-tools-1.png') }}" alt="Creator Tool Screenshot 1">
+                </figure>
+            </div>
+        </div>
+
+        <div class="columns is-vcentered my-6 reverse-columns-mobile" data-aos="fade-left">
+            <div class="column">
+                <figure class="image">
+                    <img src="{{ url_for('static', path='demos/creators-tools-2.png') }}" alt="Creator Tool Screenshot 2">
+                </figure>
+            </div>
+            <div class="column">
+                <h3 class="title is-4">{{ _("Step 2: Add details") }}</h3>
+                <p>{{ _("Set up each point on the map with images and/or audio, then publish it to the world.") }}</p>
+                <p class="mt-2">{{ _("We promote your tour on our platform using advanced SEO and community channels.") }}</p>
+            </div>
+        </div>
+
+        <div class="columns is-vcentered my-6" data-aos="fade-right">
+            <div class="column">
+                <h3 class="title is-4">{{ _("Step 3: Manage and earn with Every Tour") }}</h3>
+                <p>{{ _("Toggle visibility, edit tours, add new languages and more") }}</p>
+            </div>
+            <div class="column">
+                <figure class="image">
+                    <img src="{{ url_for('static', path='demos/creators-tools-3.png') }}" alt="Creator Tool Screenshot 3">
+                </figure>
+            </div>
+        </div>
+
+        <h2 class="title is-3 mt-6">{{ _("Roadmap") }}</h2>
+        <ul>
+            <li><strong>{{ _("Q1:") }}</strong> {{ _("Launch Creator Tools ✅") }}</li>
+            <li><strong>{{ _("Q2:") }}</strong> {{ _("Mobile Support + PWA") }}</li>
+            <li><strong>{{ _("Q3:") }}</strong> {{ _("Analytics Dashboard") }}</li>
+            <li><strong>{{ _("Q4:") }}</strong> {{ _("Affiliate Program") }}</li>
+        </ul>
+
+        <div class="has-text-centered mt-6">
+            <a href="/register" class="button is-primary is-large">{{ _("Start Creating") }}</a>
+        </div>
+    </div>
+</section>
+
+{% include "modules/landing/footer.html" %}
+
+{% endblock %}
+
+
+
+{% block scripts %}
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+{% endblock %}
