@@ -174,7 +174,7 @@ if not HEADLESS_MODE:
                 'rout': rout.to_dict(),
                 'rout_points': rout_points
             },
-            name='tour_page.html'
+            name='pages/tour.html'
         )
 
     @app.get('/tour/{rout_id}/buy')
