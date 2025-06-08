@@ -3,12 +3,13 @@
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n" 
-"POT-Creation-Date: 2025-06-08 17:14+0200\n"
-"PO-Revision-Date: 2025-03-22 17:09+0100\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-06-08 18:06+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: api/routs/promo.py:89 api/routs/promo.py:129 
+#: api/routs/promo.py:89 api/routs/promo.py:129
 msgid "Promo code created successfully"
 msgstr "Промокод успешно создан"
 
@@ -36,7 +37,7 @@ msgid "Promo code updated successfully"
 msgstr "Промокод успешно обновлен"
 
 #: api/routs/promo.py:225
-msgid "Promo code deactivated successfully" 
+msgid "Promo code deactivated successfully"
 msgstr "Промокод успешно деактивирован"
 
 #: api/routs/promo.py:227 api/routs/promo.py:243
@@ -44,7 +45,7 @@ msgid "Promo code not found"
 msgstr "Промокод не найден"
 
 #: api/routs/promo.py:248
-msgid "Promo code expired" 
+msgid "Promo code expired"
 msgstr "Срок действия промокода истек"
 
 #: api/routs/promo.py:256 api/routs/promo.py:266 bot/modules/promo.py:123
@@ -61,7 +62,7 @@ msgstr "Купить тур"
 
 #: bot/modules/main_menu.py:9
 msgid "Browse My Tours"
-msgstr "Мои купленные туры"
+msgstr "Мои туры"
 
 #: bot/modules/main_menu.py:10
 msgid "Enter Promo Code"
@@ -83,12 +84,12 @@ msgid ""
 msgstr ""
 "Главное меню\n"
 "\n"
-"Выберите один из вариантов:"
+"Выберите одну из опций:"
 
 #: bot/modules/promo.py:49 bot/modules/promo.py:87 bot/modules/shop.py:58
 #: bot/modules/shop.py:78
 msgid "Back to Main Menu"
-msgstr "Назад в главное меню"
+msgstr "Вернуться в главное меню"
 
 #: bot/modules/promo.py:58
 msgid "Please enter your promo code:"
@@ -105,7 +106,7 @@ msgstr "Назад"
 #: bot/modules/shop.py:52 web/templates/old/shop.html:49
 #: web/templates/pages/shop.html:33
 msgid "Next"
-msgstr "Вперед"
+msgstr "Далее"
 
 #: bot/modules/shop.py:85 bot/modules/shop.py:92
 msgid "Failed to load tours. Try again later."
@@ -121,15 +122,15 @@ msgstr "Доступные туры:"
 
 #: bot/modules/tour.py:117
 msgid "Review with comment"
-msgstr "Оставить отзыв с комментарием"
+msgstr "Отзыв с комментарием"
 
 #: bot/modules/tour.py:118 bot/modules/users_tours.py:39
 msgid "Back to Menu"
-msgstr "Назад в меню"
+msgstr "Вернуться в меню"
 
 #: bot/modules/tour.py:121
 msgid "Rate this tour"
-msgstr "Оцените этот тур"
+msgstr "Оценить этот тур"
 
 #: bot/modules/tour.py:149
 msgid "Map of next point"
@@ -162,7 +163,7 @@ msgstr "Навигация по туру:"
 #: bot/modules/tour_card.py:64 bot/payment/payment_gateway.py:96
 #: bot/payment/payment_gateway.py:105 bot/payment/payment_gateway.py:114
 msgid "Back to shop"
-msgstr "Назад в магазин"
+msgstr "Вернуться в магазин"
 
 #: bot/modules/tour_card.py:66
 msgid "Failed to load tour details. Try again later."
@@ -178,7 +179,7 @@ msgstr "Описание"
 
 #: bot/modules/tour_card.py:101 bot/modules/tour_card.py:107
 msgid "Points"
-msgstr "Точки маршрута"
+msgstr "Точки"
 
 #: bot/modules/tour_card.py:101 bot/modules/tour_card.py:107
 msgid "Distance"
@@ -194,7 +195,7 @@ msgstr "Добавить в мой аккаунт"
 
 #: bot/modules/tour_card.py:117 bot/modules/tour_card.py:125
 msgid "Back to Tour List"
-msgstr "Назад к списку туров"
+msgstr "Вернуться к списку туров"
 
 #: bot/modules/tour_card.py:122 web/templates/old/tour_page.html:51
 #: web/templates/pages/tour.html:33
@@ -207,11 +208,11 @@ msgstr "Купить в подарок"
 
 #: bot/modules/users_tours.py:38
 msgid "Buy your first tour"
-msgstr "Купите свой первый тур"
+msgstr "Купить первый тур"
 
 #: bot/modules/users_tours.py:44 bot/modules/users_tours.py:49
 msgid "You have no purchased routes yet."
-msgstr "У вас еще нет купленных маршрутов."
+msgstr "У вас пока нет купленных маршрутов."
 
 #: bot/modules/users_tours.py:64
 msgid "Your Purchased Routes:"
@@ -219,15 +220,15 @@ msgstr "Ваши купленные маршруты:"
 
 #: bot/payment/payment_gateway.py:28
 msgid "Pay with card"
-msgstr "Оплата картой"
+msgstr "Оплатить картой"
 
 #: bot/payment/payment_gateway.py:32 web/templates/pages/checkout.html:41
 msgid "Pay with russian card"
-msgstr "Оплата российской картой"
+msgstr "Оплатить российской картой"
 
 #: bot/payment/payment_gateway.py:35
 msgid " Back to Tour Page"
-msgstr "Вернуться на страницу тура"
+msgstr " Вернуться на страницу тура"
 
 #: bot/payment/payment_gateway.py:61
 msgid "Choose how you want to pay:"
@@ -260,7 +261,7 @@ msgstr "Оплатить"
 
 #: bot/payment/payment_ru.py:46
 msgid " Cancel Payment"
-msgstr "Отмена оплаты"
+msgstr " Отменить оплату"
 
 #: bot/payment/payment_ru.py:119
 msgid "Back to tour page"
@@ -280,19 +281,19 @@ msgstr "К вашим турам"
 
 #: bot/payment/payment_ru.py:173 bot/payment/payment_ru.py:195
 msgid "Payment successful, but order confirmation failed."
-msgstr "Платеж прошел успешно, но подтверждение заказа не удалось."
+msgstr "Оплата прошла успешно, но подтверждение заказа не удалось."
 
 #: bot/payment/payment_ru.py:174 bot/payment/payment_ru.py:196
 msgid "Contact Support: @your_support"
-msgstr "Свяжитесь с нашей поддержкой: @your_support"
+msgstr "Свяжитесь с поддержкой: @your_support"
 
 #: bot/payment/payment_ru.py:175 bot/payment/payment_ru.py:197
 msgid "Your payment token"
-msgstr "Ваш платежный идентификатор"
+msgstr "Ваш платежный токен"
 
 #: bot/payment/payment_ru.py:178 bot/payment/payment_ru.py:188
 msgid "Payment successful! Your order has been confirmed."
-msgstr "Платеж прошел успешно! Ваш заказ подтвержден."
+msgstr "Оплата успешна! Ваш заказ подтвержден."
 
 #: bot/payment/payment_ru.py:179
 msgid "Here is your gift code: "
@@ -303,8 +304,8 @@ msgid ""
 "Your friend may activate it by submitting this code in \"Enter Promo "
 "Code\" button in main menu"
 msgstr ""
-"Ваш друг может активировать его, введя этот код через кнопку \"Ввести "
-"промокод\" в главном меню"
+"Ваш друг может активировать его, введя этот код через кнопку \"Ввести промокод\""
+" в главном меню"
 
 #: bot/payment/payment_ru.py:219
 msgid "Return to tour page"
@@ -312,7 +313,7 @@ msgstr "Вернуться на страницу тура"
 
 #: bot/payment/payment_ru.py:221
 msgid "Payment has been canceled."
-msgstr "Платеж отменен"
+msgstr "Оплата была отменена."
 
 #: web/templates/base.html:12 web/templates/base.html:13
 #: web/templates/base.html:14 web/templates/old/landing.html:9
@@ -322,23 +323,23 @@ msgid ""
 "Browse and explore immersive self-guided tours powered by audio, images, "
 "and maps. Discover new destinations and travel at your own pace."
 msgstr ""
-"Просматривайте и исследуйте увлекательные самостоятельные туры с аудио, "
-"изображениями и картами. Открывайте новые места и путешествуйте в своем "
-"ритме."
+"Исследуйте захватывающие самостоятельные туры с аудио, изображениями и "
+"картами. Откройте для себя новые места и путешествуйте в своем темпе."
 
 #: web/templates/base.html:18 web/templates/base.html:22
 #: web/templates/base.html:28 web/templates/old/landing.html:7
 #: web/templates/old/landing.html:11 web/templates/old/landing.html:17
 msgid "Discover Unique Audio Tours Around the World"
-msgstr "Откройте для себя уникальные аудиотуры по всему миру"
+msgstr "Откройте для себя уникальные аудио-туры по всему миру"
 
 #: web/templates/base.html:20
 msgid ""
 "audio tours, walking tours, self-guided travel, city tours, virtual "
 "travel, cultural tourism, travel app, PockeTour"
 msgstr ""
-"аудиотуры, пешеходные экскурсии, самостоятельные путешествия, экскурсии по городу, виртуальные "
-"путешествия, культурный туризм, приложение для путешествий, PockeTour"
+"аудио-туры, пешеходные туры, самостоятельные путешествия, городские туры, "
+"виртуальные путешествия, культурный туризм, приложение для путешествий, "
+"PockeTour"
 
 #: web/templates/modules/landing/features.html:5
 msgid "Unique Destinations"
@@ -346,7 +347,7 @@ msgstr "Уникальные направления"
 
 #: web/templates/modules/landing/features.html:6
 msgid "Choose from hundreds of carefully crafted tour experiences."
-msgstr "Выбирайте из сотен тщательно разработанных туров."
+msgstr "Выбирайте из сотен тщательно проработанных туров."
 
 #: web/templates/modules/landing/features.html:9
 msgid "Easy Booking"
@@ -362,9 +363,7 @@ msgstr "Интерактивные маршруты"
 
 #: web/templates/modules/landing/features.html:14
 msgid "View real-time maps and track your adventure as you go."
-msgstr ""
-"Смотрите карты в реальном времени и отслеживайте свое путешествие по ходу "
-"маршрута."
+msgstr "Смотрите карты в реальном времени и отслеживайте свое приключение."
 
 #: web/templates/modules/landing/hero_section.html:4
 msgid "Explore the World with Our Tours"
@@ -372,21 +371,21 @@ msgstr "Исследуйте мир с нашими турами"
 
 #: web/templates/modules/landing/hero_section.html:5
 msgid "Discover, Book, and Experience Amazing Travel Destinations"
-msgstr "Откройте, забронируйте и испытайте удивительные места для путешествий"
+msgstr "Откройте, забронируйте и испытайте удивительные направления"
 
 #: web/templates/modules/landing/hero_section.html:6
 #: web/templates/old/my_tours_page.html:60
 #: web/templates/pages/payments/cancel.html:41
 msgid "Browse Tours"
-msgstr "Смотреть туры"
+msgstr "Просмотреть туры"
 
 #: web/templates/modules/landing/mini_shop.html:3
 msgid "Featured Tours"
-msgstr "Избранные туры"
+msgstr "Рекомендуемые туры"
 
 #: web/templates/modules/landing/navbar.html:16
 msgid "For Creators"
-msgstr "Для создателей"
+msgstr "Для авторов"
 
 #: web/templates/modules/landing/navbar.html:17
 msgid "Shop"
@@ -398,14 +397,14 @@ msgstr "Установить приложение"
 
 #: web/templates/modules/landing/navbar.html:22
 msgid "Creator's cabinet"
-msgstr "Кабинет создателя"
+msgstr "Кабинет автора"
 
 #: web/templates/modules/landing/navbar.html:25 web/templates/old/login.html:6
 #: web/templates/old/login.html:30 web/templates/old/login.html:46
 #: web/templates/pages/login.html:3 web/templates/pages/login.html:14
 #: web/templates/pages/login.html:30
 msgid "Login"
-msgstr "Вход"
+msgstr "Войти"
 
 #: web/templates/modules/landing/navbar.html:28
 msgid "Language"
@@ -413,11 +412,11 @@ msgstr "Язык"
 
 #: web/templates/old/checkout.html:10 web/templates/pages/checkout.html:3
 msgid "Checkout for"
-msgstr "Оформление для"
+msgstr "Оформление заказа для"
 
 #: web/templates/old/checkout.html:32 web/templates/pages/checkout.html:18
 msgid "Checkout"
-msgstr "Оформление"
+msgstr "Оформление заказа"
 
 #: web/templates/old/checkout.html:34 web/templates/pages/checkout.html:24
 msgid "Tour Details"
@@ -437,8 +436,8 @@ msgid ""
 "Join our platform and start earning by creating interactive audio and "
 "visual tours."
 msgstr ""
-"Присоединяйтесь к нашей платформе и зарабатывайте, создавая интерактивные "
-"аудио- и визуальные туры."
+"Присоединяйтесь к нашей платформе и начните зарабатывать, создавая "
+"интерактивные аудио и визуальные туры."
 
 #: web/templates/old/for_creators_page.html:10
 #: web/templates/old/for_creators_page.html:16
@@ -447,18 +446,18 @@ msgstr ""
 #: web/templates/pages/for-creators.html:15
 #: web/templates/pages/for-creators.html:29
 msgid "Become a Creator with PockeTour"
-msgstr "Станьте создателем с PockeTour"
+msgstr "Станьте автором с PockeTour"
 
 #: web/templates/old/for_creators_page.html:11
 #: web/templates/old/for_creators_page.html:17
 #: web/templates/pages/for-creators.html:6
 #: web/templates/pages/for-creators.html:7
 msgid "Create interactive travel experiences and earn forever."
-msgstr "Создавайте интерактивные путешествия и зарабатывайте постоянно."
+msgstr "Создавайте интерактивные туры и зарабатывайте всегда."
 
 #: web/templates/old/for_creators_page.html:27
 msgid "Become a Creator"
-msgstr "Стать создателем"
+msgstr "Стать автором"
 
 #: web/templates/old/for_creators_page.html:40
 #: web/templates/pages/for-creators.html:16
@@ -466,8 +465,8 @@ msgid ""
 "Create interactive audio and visual travel tours and earn income from "
 "global travelers."
 msgstr ""
-"Создавайте интерактивные аудио- и визуальные туры и получайте доход от "
-"путешественников со всего мира."
+"Создавайте интерактивные аудио и визуальные туры и зарабатывайте на "
+"путешественниках со всего мира."
 
 #: web/templates/old/for_creators_page.html:64
 #: web/templates/pages/for-creators.html:32
@@ -477,8 +476,8 @@ msgid ""
 "PockeTour creator:"
 msgstr ""
 "Присоединяйтесь к нашей платформе и начните зарабатывать, создавая "
-"интерактивные аудио- и визуальные туры для путешественников по всему "
-"миру. Вот почему стоит стать создателем на PockeTour:"
+"интерактивные аудио и визуальные туры для путешественников по всему миру. "
+"Вот почему вам стоит стать автором PockeTour:"
 
 #: web/templates/old/for_creators_page.html:71
 #: web/templates/pages/for-creators.html:39
@@ -502,7 +501,7 @@ msgstr "Глобальный охват"
 #: web/templates/old/for_creators_page.html:79
 #: web/templates/pages/for-creators.html:47
 msgid "Your tours are instantly available to travelers around the world."
-msgstr "Ваши туры сразу доступны путешественникам по всему миру."
+msgstr "Ваши туры мгновенно доступны путешественникам по всему миру."
 
 #: web/templates/old/for_creators_page.html:85
 #: web/templates/pages/for-creators.html:53
@@ -515,8 +514,8 @@ msgid ""
 "We handle marketing and drive traffic to your tour using powerful SEO "
 "tools and our growing platform audience."
 msgstr ""
-"Мы занимаемся маркетингом и привлекаем трафик к вашему туру с помощью "
-"мощных SEO-инструментов и растущей аудитории нашей платформы."
+"Мы занимаемся маркетингом и привлекаем трафик к вашему туру, используя "
+"мощные инструменты SEO и растущую аудиторию платформы."
 
 #: web/templates/old/for_creators_page.html:92
 #: web/templates/pages/for-creators.html:60
@@ -529,7 +528,7 @@ msgid ""
 "Create in your language, and we will translate it to reach a global "
 "audience. (coming soon)"
 msgstr ""
-"Создавайте на своем языке, а мы переведем — чтобы достичь глобальной "
+"Создавайте на своем языке, и мы переведем его для охвата глобальной "
 "аудитории. (скоро)"
 
 #: web/templates/old/for_creators_page.html:98
@@ -548,8 +547,8 @@ msgid ""
 "Start by adding general information: a compelling title, a detailed "
 "description, and a price that fits your experience."
 msgstr ""
-"Начните с добавления основной информации: привлекательного названия, "
-"подробного описания и подходящей цены."
+"Начните с добавления общей информации: привлекательного названия, подробного "
+"описания и цены, соответствующей вашему опыту."
 
 #: web/templates/old/for_creators_page.html:104
 #: web/templates/pages/for-creators.html:72
@@ -557,8 +556,8 @@ msgid ""
 "Then, use our intuitive editor to place points on the map, attach photos "
 "and audio to bring your story to life."
 msgstr ""
-"Затем воспользуйтесь нашим интуитивным редактором, чтобы разместить точки "
-"на карте, прикрепить фотографии и аудио, оживляя ваш рассказ."
+"Затем используйте наш интуитивно понятный редактор, чтобы разместить точки "
+"на карте, прикрепить фотографии и аудио, чтобы оживить вашу историю."
 
 #: web/templates/old/for_creators_page.html:120
 #: web/templates/pages/for-creators.html:88
@@ -572,7 +571,7 @@ msgid ""
 " the world."
 msgstr ""
 "Настройте каждую точку на карте с изображениями и/или аудио, затем "
-"опубликуйте тур для всего мира."
+"опубликуйте для всего мира."
 
 #: web/templates/old/for_creators_page.html:122
 #: web/templates/pages/for-creators.html:90
@@ -580,40 +579,38 @@ msgid ""
 "We promote your tour on our platform using advanced SEO and community "
 "channels."
 msgstr ""
-"Мы продвигаем ваш тур на нашей платформе, используя современные SEO и "
+"Мы продвигаем ваш тур на нашей платформе, используя продвинутый SEO и "
 "каналы сообщества."
 
 #: web/templates/old/for_creators_page.html:128
 #: web/templates/pages/for-creators.html:96
 msgid "Step 3: Manage and earn with Every Tour"
-msgstr "Шаг 3: Управляйте и зарабатывайте на каждом туре"
+msgstr "Шаг 3: Управляйте и зарабатывайте с каждым туром"
 
 #: web/templates/old/for_creators_page.html:129
 #: web/templates/pages/for-creators.html:97
 msgid "Toggle visibility, edit tours, add new languages and more"
-msgstr ""
-"Управляйте видимостью, редактируйте туры, добавляйте новые языки и многое "
-"другое"
+msgstr "Управляйте видимостью, редактируйте туры, добавляйте новые языки и многое другое"
 
 #: web/templates/old/for_creators_page.html:138
 #: web/templates/pages/for-creators.html:106
 msgid "Roadmap"
-msgstr "Дорожная карта"
+msgstr "План развития"
 
 #: web/templates/old/for_creators_page.html:140
 #: web/templates/pages/for-creators.html:108
 msgid "Q1:"
-msgstr "Q1:"
+msgstr "Кв.1:"
 
 #: web/templates/old/for_creators_page.html:140
 #: web/templates/pages/for-creators.html:108
 msgid "Launch Creator Tools ✅"
-msgstr "Запуск инструментов для создателей ✅"
+msgstr "Запуск инструментов для авторов ✅"
 
 #: web/templates/old/for_creators_page.html:141
 #: web/templates/pages/for-creators.html:109
 msgid "Q2:"
-msgstr "Q2:"
+msgstr "Кв.2:"
 
 #: web/templates/old/for_creators_page.html:141
 #: web/templates/pages/for-creators.html:109
@@ -623,7 +620,7 @@ msgstr "Мобильная поддержка + PWA"
 #: web/templates/old/for_creators_page.html:142
 #: web/templates/pages/for-creators.html:110
 msgid "Q3:"
-msgstr "Q3:"
+msgstr "Кв.3:"
 
 #: web/templates/old/for_creators_page.html:142
 #: web/templates/pages/for-creators.html:110
@@ -633,7 +630,7 @@ msgstr "Панель аналитики"
 #: web/templates/old/for_creators_page.html:143
 #: web/templates/pages/for-creators.html:111
 msgid "Q4:"
-msgstr "Q4:"
+msgstr "Кв.4:"
 
 #: web/templates/old/for_creators_page.html:143
 #: web/templates/pages/for-creators.html:111
@@ -643,13 +640,13 @@ msgstr "Партнерская программа"
 #: web/templates/old/for_creators_page.html:147
 #: web/templates/pages/for-creators.html:115
 msgid "Start Creating"
-msgstr "Начать создание"
+msgstr "Начать создавать"
 
 #: web/templates/old/login.html:34 web/templates/old/register.html:42
 #: web/templates/old/register.html:69 web/templates/pages/login.html:18
 #: web/templates/pages/register.html:26 web/templates/pages/register.html:53
 msgid "Email"
-msgstr "Электронная почта"
+msgstr "Email"
 
 #: web/templates/old/login.html:43 web/templates/pages/login.html:27
 msgid "Enter your password"
@@ -669,7 +666,7 @@ msgstr "Мои купленные туры"
 
 #: web/templates/old/my_tours_page.html:58
 msgid "Nothing here yet"
-msgstr "Здесь пока ничего нет"
+msgstr "Пока здесь ничего нет"
 
 #: web/templates/old/my_tours_page.html:59
 msgid "Start exploring by purchasing your first tour"
@@ -680,15 +677,17 @@ msgstr "Начните исследовать, купив свой первый 
 #: web/templates/pages/register.html:3 web/templates/pages/register.html:13
 #: web/templates/pages/register.html:44 web/templates/pages/register.html:77
 msgid "Register"
-msgstr "Регистрация"
+msgstr "Зарегистрироваться"
 
 #: web/templates/old/register.html:33 web/templates/pages/register.html:17
 msgid "Register as User"
-msgstr "Регистрация как пользователь"
+msgstr "Зарегистрироваться как пользователь"
 
 #: web/templates/old/register.html:34 web/templates/pages/register.html:18
 msgid "Register as Creator"
-msgstr "Регистрация как создатель"
+msgstr "Регистрирация как автор"
 
 #: web/templates/old/register.html:39 web/templates/pages/register.html:23
 msgid "Register as a User"
+msgstr "Регистрация как пользователь"
+
