@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n" 
 "POT-Creation-Date: 2025-06-08 17:14+0200\n"
 "PO-Revision-Date: 2025-03-22 17:09+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: api/routs/promo.py:89 api/routs/promo.py:129
+#: api/routs/promo.py:89 api/routs/promo.py:129 
 msgid "Promo code created successfully"
 msgstr "Промокод успешно создан"
 
@@ -36,7 +36,7 @@ msgid "Promo code updated successfully"
 msgstr "Промокод успешно обновлен"
 
 #: api/routs/promo.py:225
-msgid "Promo code deactivated successfully"
+msgid "Promo code deactivated successfully" 
 msgstr "Промокод успешно деактивирован"
 
 #: api/routs/promo.py:227 api/routs/promo.py:243
@@ -44,7 +44,7 @@ msgid "Promo code not found"
 msgstr "Промокод не найден"
 
 #: api/routs/promo.py:248
-msgid "Promo code expired"
+msgid "Promo code expired" 
 msgstr "Срок действия промокода истек"
 
 #: api/routs/promo.py:256 api/routs/promo.py:266 bot/modules/promo.py:123
@@ -105,7 +105,7 @@ msgstr "Назад"
 #: bot/modules/shop.py:52 web/templates/old/shop.html:49
 #: web/templates/pages/shop.html:33
 msgid "Next"
-msgstr "Вперёд"
+msgstr "Вперед"
 
 #: bot/modules/shop.py:85 bot/modules/shop.py:92
 msgid "Failed to load tours. Try again later."
@@ -211,7 +211,7 @@ msgstr "Купите свой первый тур"
 
 #: bot/modules/users_tours.py:44 bot/modules/users_tours.py:49
 msgid "You have no purchased routes yet."
-msgstr "У вас ещё нет купленных маршрутов."
+msgstr "У вас еще нет купленных маршрутов."
 
 #: bot/modules/users_tours.py:64
 msgid "Your Purchased Routes:"
@@ -219,7 +219,7 @@ msgstr "Ваши купленные маршруты:"
 
 #: bot/payment/payment_gateway.py:28
 msgid "Pay with card"
-msgstr "Оплата кратой"
+msgstr "Оплата картой"
 
 #: bot/payment/payment_gateway.py:32 web/templates/pages/checkout.html:41
 msgid "Pay with russian card"
@@ -231,7 +231,7 @@ msgstr "Вернуться на страницу тура"
 
 #: bot/payment/payment_gateway.py:61
 msgid "Choose how you want to pay:"
-msgstr "Выберете способ оплаты:"
+msgstr "Выберите способ оплаты:"
 
 #: bot/payment/payment_gateway.py:94
 msgid "Tour successfully added to your account!"
@@ -280,7 +280,7 @@ msgstr "К вашим турам"
 
 #: bot/payment/payment_ru.py:173 bot/payment/payment_ru.py:195
 msgid "Payment successful, but order confirmation failed."
-msgstr "Платеж прошёл успешно, но подтверждение заказа не удалось."
+msgstr "Платеж прошел успешно, но подтверждение заказа не удалось."
 
 #: bot/payment/payment_ru.py:174 bot/payment/payment_ru.py:196
 msgid "Contact Support: @your_support"
@@ -288,11 +288,11 @@ msgstr "Свяжитесь с нашей поддержкой: @your_support"
 
 #: bot/payment/payment_ru.py:175 bot/payment/payment_ru.py:197
 msgid "Your payment token"
-msgstr "Ваш платежный индификатор"
+msgstr "Ваш платежный идентификатор"
 
 #: bot/payment/payment_ru.py:178 bot/payment/payment_ru.py:188
 msgid "Payment successful! Your order has been confirmed."
-msgstr "Платеж прошёл успешно! Ваш заказ подтверждён."
+msgstr "Платеж прошел успешно! Ваш заказ подтвержден."
 
 #: bot/payment/payment_ru.py:179
 msgid "Here is your gift code: "
@@ -303,12 +303,12 @@ msgid ""
 "Your friend may activate it by submitting this code in \"Enter Promo "
 "Code\" button in main menu"
 msgstr ""
-"Ваш друг может активировать его, введя этот код через кнопку \"У меня "
-"есть промокод\" в главном меню"
+"Ваш друг может активировать его, введя этот код через кнопку \"Ввести "
+"промокод\" в главном меню"
 
 #: bot/payment/payment_ru.py:219
 msgid "Return to tour page"
-msgstr "Вернутся на страницу тура"
+msgstr "Вернуться на страницу тура"
 
 #: bot/payment/payment_ru.py:221
 msgid "Payment has been canceled."
@@ -350,11 +350,11 @@ msgstr "Выбирайте из сотен тщательно разработа
 
 #: web/templates/modules/landing/features.html:9
 msgid "Easy Booking"
-msgstr "Простой заказ"
+msgstr "Простое бронирование"
 
 #: web/templates/modules/landing/features.html:10
 msgid "Simple checkout and secure payments with PayPal"
-msgstr "Простой процесс покупки и безопасные платежи через PayPal"
+msgstr "Простая оплата и безопасные платежи через PayPal"
 
 #: web/templates/modules/landing/features.html:13
 msgid "Interactive Routes"
@@ -363,8 +363,8 @@ msgstr "Интерактивные маршруты"
 #: web/templates/modules/landing/features.html:14
 msgid "View real-time maps and track your adventure as you go."
 msgstr ""
-"Смотрите карты в реальном времени и отслеживайте свое путешествие по ходу"
-" маршрута."
+"Смотрите карты в реальном времени и отслеживайте свое путешествие по ходу "
+"маршрута."
 
 #: web/templates/modules/landing/hero_section.html:4
 msgid "Explore the World with Our Tours"
@@ -372,7 +372,7 @@ msgstr "Исследуйте мир с нашими турами"
 
 #: web/templates/modules/landing/hero_section.html:5
 msgid "Discover, Book, and Experience Amazing Travel Destinations"
-msgstr "Откройте, забронируйте и испробуйте удивительные путешествия"
+msgstr "Откройте, забронируйте и испытайте удивительные места для путешествий"
 
 #: web/templates/modules/landing/hero_section.html:6
 #: web/templates/old/my_tours_page.html:60
@@ -437,8 +437,8 @@ msgid ""
 "Join our platform and start earning by creating interactive audio and "
 "visual tours."
 msgstr ""
-"Присоединяйтесь к нашей платформе и зарабатывайте, создавая интерактивные"
-" аудио- и визуальные туры."
+"Присоединяйтесь к нашей платформе и зарабатывайте, создавая интерактивные "
+"аудио- и визуальные туры."
 
 #: web/templates/old/for_creators_page.html:10
 #: web/templates/old/for_creators_page.html:16
@@ -557,8 +557,8 @@ msgid ""
 "Then, use our intuitive editor to place points on the map, attach photos "
 "and audio to bring your story to life."
 msgstr ""
-"Затем воспользуйтесь нашим интуитивным редактором, чтобы разместить точки"
-" на карте, прикрепить фотографии и аудио, оживляя ваш рассказ."
+"Затем воспользуйтесь нашим интуитивным редактором, чтобы разместить точки "
+"на карте, прикрепить фотографии и аудио, оживляя ваш рассказ."
 
 #: web/templates/old/for_creators_page.html:120
 #: web/templates/pages/for-creators.html:88
@@ -592,8 +592,8 @@ msgstr "Шаг 3: Управляйте и зарабатывайте на каж
 #: web/templates/pages/for-creators.html:97
 msgid "Toggle visibility, edit tours, add new languages and more"
 msgstr ""
-"Управляйте видимостью, редактируйте туры, добавляйте новые языки и многое"
-" другое"
+"Управляйте видимостью, редактируйте туры, добавляйте новые языки и многое "
+"другое"
 
 #: web/templates/old/for_creators_page.html:138
 #: web/templates/pages/for-creators.html:106
@@ -638,7 +638,7 @@ msgstr "Q4:"
 #: web/templates/old/for_creators_page.html:143
 #: web/templates/pages/for-creators.html:111
 msgid "Affiliate Program"
-msgstr "Партнёрская программа"
+msgstr "Партнерская программа"
 
 #: web/templates/old/for_creators_page.html:147
 #: web/templates/pages/for-creators.html:115
@@ -692,216 +692,3 @@ msgstr "Регистрация как создатель"
 
 #: web/templates/old/register.html:39 web/templates/pages/register.html:23
 msgid "Register as a User"
-msgstr "Зарегистрироваться как пользователь"
-
-#: web/templates/old/register.html:49 web/templates/old/register.html:81
-#: web/templates/pages/register.html:33 web/templates/pages/register.html:65
-msgid "Password"
-msgstr "Пароль"
-
-#: web/templates/old/register.html:51 web/templates/old/register.html:83
-#: web/templates/pages/register.html:35 web/templates/pages/register.html:67
-msgid "Enter password"
-msgstr "Введите пароль"
-
-#: web/templates/old/register.html:54 web/templates/old/register.html:86
-#: web/templates/pages/register.html:38 web/templates/pages/register.html:70
-msgid "At least 8 characters"
-msgstr "Минимум 8 символов"
-
-#: web/templates/old/register.html:55 web/templates/old/register.html:87
-#: web/templates/pages/register.html:39 web/templates/pages/register.html:71
-msgid "One uppercase letter"
-msgstr "Одна заглавная буква"
-
-#: web/templates/old/register.html:56 web/templates/old/register.html:88
-#: web/templates/pages/register.html:40 web/templates/pages/register.html:72
-msgid "One number"
-msgstr "Одна цифра"
-
-#: web/templates/old/register.html:57 web/templates/old/register.html:89
-#: web/templates/pages/register.html:41 web/templates/pages/register.html:73
-msgid "One letter"
-msgstr "Одна буква"
-
-#: web/templates/old/register.html:66 web/templates/pages/register.html:50
-msgid "Register as a Creator"
-msgstr "Зарегистрироваться как создатель"
-
-#: web/templates/old/register.html:75 web/templates/pages/register.html:59
-msgid "Username"
-msgstr "Имя пользователя"
-
-#: web/templates/old/register.html:97 web/templates/pages/register.html:81
-msgid "Already have an account? Login"
-msgstr "Уже есть аккаунт? Войти"
-
-#: web/templates/old/shop.html:6 web/templates/pages/shop.html:3
-msgid "Tours Shop"
-msgstr "Магазин туров"
-
-#: web/templates/old/shop.html:30 web/templates/pages/shop.html:14
-msgid "Tour Store"
-msgstr "Каталог туров"
-
-#: web/templates/old/shop.html:35 web/templates/old/shop.html:40
-#: web/templates/pages/shop.html:19 web/templates/pages/shop.html:24
-msgid "Search"
-msgstr "Поиск"
-
-#: web/templates/old/shop.html:37 web/templates/pages/shop.html:21
-msgid "Search for a tour..."
-msgstr "Поиск тура..."
-
-#: web/templates/old/shop.html:48 web/templates/pages/shop.html:32
-msgid "Previous"
-msgstr "Назад"
-
-#: web/templates/old/tour_page.html:58 web/templates/pages/tour.html:40
-msgid "Tour Points"
-msgstr "Точки маршрута"
-
-#: web/templates/pages/checkout.html:6 web/templates/pages/checkout.html:7
-#: web/templates/pages/checkout.html:8
-msgid "Complete your purchase of"
-msgstr "Завершите покупку"
-
-#: web/templates/pages/checkout.html:51
-msgid "Order Summary"
-msgstr "Сводка заказа"
-
-#: web/templates/pages/checkout.html:54
-msgid "Tour Price"
-msgstr "Цена тура"
-
-#: web/templates/pages/checkout.html:59
-msgid "Discount"
-msgstr "Скидка"
-
-#: web/templates/pages/checkout.html:65
-msgid "Total"
-msgstr "Всего"
-
-#: web/templates/pages/checkout.html:73
-msgid "Back to Tour Page"
-msgstr "Вернуться на страницу тура"
-
-#: web/templates/pages/landing.html:3
-msgid "Discover Unique Audio Tours"
-msgstr "Откройте для себя уникальные аудиотуры"
-
-#: web/templates/pages/shop.html:5 web/templates/pages/shop.html:6
-#: web/templates/pages/shop.html:7
-msgid ""
-"Discover and purchase unique audio tours from local experts worldwide. "
-"Browse our collection of self-guided tours for your next adventure."
-msgstr ""
-"Откройте для себя и приобретите уникальные аудиотуры от местных экспертов по всему миру. "
-"Просмотрите нашу коллекцию самостоятельных туров для вашего следующего приключения."
-
-#: web/templates/pages/payments/cancel.html:4
-#: web/templates/pages/payments/cancel.html:24
-msgid "Payment Cancelled"
-msgstr "Платеж отменен"
-
-#: web/templates/pages/payments/cancel.html:7
-msgid ""
-"Your payment has been cancelled. No charges have been made to your "
-"account."
-msgstr ""
-"Ваш платеж отменен. С вашего "
-"счета» не было произведено никаких списаний."
-
-#: web/templates/pages/payments/cancel.html:25
-msgid "Your payment has been cancelled"
-msgstr "Платеж отменен"
-
-#: web/templates/pages/payments/cancel.html:28
-msgid ""
-"The payment process was stopped. No charges have been made to your "
-"account."
-msgstr ""
-"Процесс оплаты остановлен. С вашего "
-"счета не было произведено никаких списаний."
-
-#: web/templates/pages/payments/cancel.html:29
-msgid "You can try the payment again or browse other tours in our shop."
-msgstr "Вы можете попробовать оплатить еще раз или просмотреть другие туры в нашем магазине."
-
-#: web/templates/pages/payments/error.html:4
-#: web/templates/pages/payments/error.html:25
-msgid "Payment Failed"
-msgstr "Ошибка при оплате"
-
-#: web/templates/pages/payments/error.html:7
-msgid "Your payment could not be processed. Please try again or contact support."
-msgstr "Ваш платеж не может быть обработан. Попробуйте еще раз или обратитесь в службу поддержки."
-
-#: web/templates/pages/payments/error.html:26
-msgid "We could not process your payment"
-msgstr "Мы не смогли обработать ваш платеж"
-
-#: web/templates/pages/payments/error.html:29
-msgid "The transaction was not completed. This could be due to:"
-msgstr "Транзакция не была завершена. Это могло произойти по следующим причинам:"
-
-#: web/templates/pages/payments/error.html:31
-msgid "Insufficient funds"
-msgstr "Недостаточно средств"
-
-#: web/templates/pages/payments/error.html:32
-msgid "Card declined"
-msgstr "Карта отклонена"
-
-#: web/templates/pages/payments/error.html:33
-msgid "Connection issues"
-msgstr "Проблемы с соединением"
-
-#: web/templates/pages/payments/error.html:34
-msgid "Technical problems"
-msgstr "Технические проблемы"
-
-#: web/templates/pages/payments/error.html:36
-msgid "No money has been charged from your account."
-msgstr "С вашего счета не было списано никаких средств."
-
-#: web/templates/pages/payments/error.html:40
-msgid "If you continue to experience issues, please contact our support:"
-msgstr "Если у вас по-прежнему возникают проблемы, обратитесь в нашу службу поддержки:"
-
-#: web/templates/pages/payments/error.html:63
-msgid "Return to Shop"
-msgstr "Вернутся на страницу магазина"
-
-#: web/templates/pages/payments/success.html:3
-msgid "Payment Successful"
-msgstr "Платеж прошёл успешно"
-
-#: web/templates/pages/payments/success.html:6
-msgid "Your payment has been successfully processed. Thank you for your purchase!"
-msgstr "Ваш платеж успешно обработан. Спасибо за покупку!"
-
-#: web/templates/pages/payments/success.html:23
-msgid "Payment Successful!"
-msgstr "Платеж прошёл успешно!"
-
-#: web/templates/pages/payments/success.html:24
-msgid "Thank you for your purchase"
-msgstr "Спасибо за покупку"
-
-#: web/templates/pages/payments/success.html:27
-msgid "Your tour has been added to your account."
-msgstr "Тур успешно добавлен в ваш аккаунт"
-
-#: web/templates/pages/payments/success.html:28
-msgid "You can start your journey right away!"
-msgstr "Вы можете начать свое путешествие прямо сейчас!"
-
-#: web/templates/pages/payments/success.html:39
-msgid "Go to My Tours"
-msgstr "К вашим турам"
-
-#: web/templates/pages/payments/success.html:49
-msgid "Browse More Tours"
-msgstr "Просмотреть другие туры"
-
