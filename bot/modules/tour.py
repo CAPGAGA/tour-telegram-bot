@@ -197,7 +197,7 @@ async def show_tour_point_materials(
     if isinstance(audios, list) and audios:
         for audio in audios:
             audio_path = os.path.join(BASE_DIR, 'web/media/audio', audio)
-            audio_name = f"Audio for point {point.get('point_name')}"
+            audio_name = _("Stop") + ' ' + point.get('point_name')
             if os.path.isfile(audio_path):
                 with open(audio_path, 'rb') as audio_file:
                     message = await context.bot.send_audio(
