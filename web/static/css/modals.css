@@ -1,7 +1,6 @@
 .modal {
     display: none;
     position: fixed;
-    min-width: 30rem;
     max-width: 90%;
     z-index: 1;
     left: 50%;
@@ -11,7 +10,8 @@
     justify-content: center;
     font-family: 'Poppins';
     max-height: 100vh;
-    overflow-x: scroll;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .modal-content {
