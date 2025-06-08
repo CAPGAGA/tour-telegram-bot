@@ -27,7 +27,7 @@ class PromoCreate(BaseModel):
     creator_id: int
     promo_start: Optional[str] = None
     promo_end: Optional[str] = None
-    use_limit: Optional[str] = None
+    use_limit: Optional[int] = None
     routs: list[str]
 
 class PromoEdit(BaseModel):
@@ -69,7 +69,7 @@ async def create_promo(
         creator_id=int(promo.creator_id),
         promo_start=promo_start if promo_start else None,
         promo_end=promo_end if promo_end else None,
-        use_limit=promo.use_limit
+        use_limit= int(promo.use_limit) if promo.use_limit != '' else -1
     )
 
 
