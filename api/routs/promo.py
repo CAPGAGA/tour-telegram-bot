@@ -24,7 +24,7 @@ class PromoCreate(BaseModel):
     code: str
     promo_type: str
     discount: str
-    creator_id: str
+    creator_id: int
     promo_start: Optional[str] = None
     promo_end: Optional[str] = None
     use_limit: Optional[str] = None
@@ -36,7 +36,7 @@ class PromoEdit(BaseModel):
     code: str
     promo_type: str
     discount: str
-    creator_id: str
+    creator_id: int
     promo_start: Optional[str] = None
     promo_end: Optional[str] = None
     use_limit: Optional[str] = None
@@ -66,7 +66,7 @@ async def create_promo(
         code=promo.code,
         promo_type=promo.promo_type,
         discount=promo.discount,
-        creator_id=promo.creator_id,
+        creator_id=int(promo.creator_id),
         promo_start=promo_start if promo_start else None,
         promo_end=promo_end if promo_end else None,
         use_limit=promo.use_limit
