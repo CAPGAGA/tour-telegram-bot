@@ -18,6 +18,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 
 from api.cron.update_currency_rates import fetch_and_store_currency_rates, ensure_currency_rates
+from api.dependencies.user import template_context
+from api.middleware.user import UserMiddleware
 from api.utils.handlers import get_auth_token, get_current_creator, get_locale, get_lang_from_session
 from api.routs.creator import creator_rout_router
 from api.routs.auth_v2 import auth_router
@@ -69,10 +71,14 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(UserMiddleware)
+
 # mount static files
 app.mount("/static", StaticFiles(directory="web/static"), name="static")
 app.mount('/media', StaticFiles(directory='web/media'), name='media')
 templates = Jinja2Templates(directory="web/templates")
+templates.env.globals.update(template_context=template_context)
+
 
 # Babel config
 babel_configs = BabelConfigs(
@@ -95,7 +101,6 @@ app.include_router(geocode_router, prefix='/apiV1')
 app.include_router(promo_router, prefix='/apiV1')
 
 if not HEADLESS_MODE:
-
     # util urls
     app.mount('/sitemap.xml', sitemap)
 
@@ -220,7 +225,7 @@ if not HEADLESS_MODE:
                 "user_id": user[0],
                 "routs": user_owned_routs
             },
-            name='my_tours_page.html'
+            name='pages/my_tours.html'
         )
 
     @app.get(
