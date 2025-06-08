@@ -138,14 +138,19 @@ if not HEADLESS_MODE:
         )
 
     @app.get('/shop')
+    async def redirect_to_correct_shop():
+        return RedirectResponse(url='/shop/1')
+
+    @app.get('/shop/{page}', response_class=HTMLResponse)
     async def shop(
             request: Request,
+            page: int,
             user: Optional[tuple] = Depends(get_current_creator)
     ):
         return templates.TemplateResponse(
             request=request,
             context={"user_id": user[0], "is_creator": user[1]} if user else {},
-            name='shop.html'
+            name='pages/shop.html'
         )
 
     @app.get('/tour/{rout_id}')
