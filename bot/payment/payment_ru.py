@@ -80,7 +80,7 @@ async def construct_invoice(
         'protect_content': invoice_data['invoice_payload']['protect_content'],
         'reply_markup': InlineKeyboardMarkup(keyboard)
     }
-    print(invoice)
+
     return invoice
 
 @user_auth

@@ -6,7 +6,6 @@ from telegram.ext import CallbackContext, CallbackQueryHandler
 from telegram.constants import ParseMode
 
 from bot.decorators.auth import user_auth
-from bot.utils.messages import send_message
 
 API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000/apiV1")
 
@@ -80,14 +79,16 @@ async def check_code(
 
         promo = await validate_code(code)
 
-        if isinstance(promo, str):
-            keyboard = InlineKeyboardMarkup(
+        keyboard = InlineKeyboardMarkup(
+            [
                 [
-                    [
-                        InlineKeyboardButton("🔙 " + _("Back to Main Menu"), callback_data="main_menu")
-                    ]
+                    InlineKeyboardButton("🔙 " + _("Back to Main Menu"), callback_data="main_menu")
                 ]
-            )
+            ]
+        )
+
+        if isinstance(promo, str):
+            # If answer is str then it means that promo code is invalid
             if original_message_id:
                 await context.bot.edit_message_text(
                     chat_id=update.message.chat_id,
@@ -95,6 +96,17 @@ async def check_code(
                     text=promo,
                     reply_markup=keyboard
                 )
+            return
+        if not promo:
+            # If we get None then promo code was not found
+            await context.bot.edit_message_text(
+                chat_id=update.message.chat_id,
+                message_id=original_message_id,
+                text="❌ " + _("Promo code not found or invalid") + "\n\n"
+                     + _("Check your promo code and try again"),
+                parse_mode=ParseMode.MARKDOWN_V2,
+                reply_markup=keyboard
+            )
             return
 
         rout_list = []
