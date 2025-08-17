@@ -235,12 +235,12 @@ async def activate_promo(
     result = await session.execute(query)
     promo = result.scalars().first()
 
+    if not promo:
+        raise HTTPException(status_code=404, detail=_("Promo code not found"))
+
     routs_query = select(PromoCodeRout.rout_id).where(PromoCodeRout.promo_code_id == promo.id)
     routs_result = await session.execute(routs_query)
     routs = routs_result.scalars().all()
-
-    if not promo:
-        raise HTTPException(status_code=404, detail=_("Promo code not found"))
 
     today = datetime.datetime.today()
 

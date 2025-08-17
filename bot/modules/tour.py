@@ -1,3 +1,5 @@
+from typing import Any
+
 import aiohttp
 import os
 
@@ -79,11 +81,17 @@ async def show_tour_point(
 
     # first delete previous messages
     await cleanup_tour_messages(update.effective_chat.id, context)
-
+    print(query.data)
     # start, mid, finish
     state = query.data.split('_')[0]
-    # rout_id or point_id
-    data = query.data.split('_')[-1]
+    # rout_id (for start state) or point_id (for mid and finish states)
+    data = query.data.split('_')[2]
+
+    # Extract previous point ID if present
+    previous_point_id = None
+    if len(query.data.split('_')) > 3:
+        prev_id = query.data.split('_')[3]
+        previous_point_id = prev_id if prev_id != 'None' else None
 
     point = None
 
@@ -102,9 +110,9 @@ async def show_tour_point(
     if point:
         # render point
         if state == 'mid' or state == 'start':
-            await show_tour_point_map(update, context, point, _)
+            await show_tour_point_map(update, context, point, _, previous_point_id)
         elif state == 'info':
-            await show_tour_point_materials(update, context, point, _)
+            await show_tour_point_materials(update, context, point, _, previous_point_id)
         return
 
     # render last message
@@ -135,7 +143,8 @@ async def show_tour_point_map(
         update: Update,
         context: CallbackContext,
         point: dict,
-        _
+        _: Any,
+        previous_point_id: str
 ):
     """Renders point message by updating existing message and cleaning up old ones"""
     chat_id = update.effective_chat.id
@@ -166,7 +175,7 @@ async def show_tour_point_map(
                 [
                     InlineKeyboardButton(
                         _("I am here!"),
-                        callback_data=f"info_mytour_{point['id']}"
+                        callback_data=f"info_mytour_{point['id']}_{previous_point_id}"
                     )
                 ]
             ]
@@ -183,7 +192,8 @@ async def show_tour_point_materials(
         update: Update,
         context: CallbackContext,
         point: dict,
-        _
+        _: Any,
+        previous_point_id: str
 ):
     """Shows point materials and cleans up previous messages"""
     chat_id = update.effective_chat.id
@@ -223,9 +233,13 @@ async def show_tour_point_materials(
 
     # Setup navigation controls
     keyboard = []
+    current_point_id = point['id']
+
     if point.get("next_point"):
-        keyboard.append([InlineKeyboardButton("➡️ " + _("Next Point"), callback_data=f"mid_mytour_{point['next_point']}")])
+        keyboard.append([InlineKeyboardButton("➡️ " + _("Next Point"), callback_data=f"mid_mytour_{point['next_point']}_{current_point_id}")])
+        keyboard.append([InlineKeyboardButton("⬅️ " + _("Previous Point"), callback_data=f"mid_mytour_{previous_point_id}")])
     else:
+        keyboard.append([InlineKeyboardButton("⬅️ " + _("Previous Point"), callback_data=f"mid_mytour_{previous_point_id}")])
         keyboard.append([InlineKeyboardButton("⭐ " + _("Leave review!"), callback_data=f"review_mytour_{point['rout_id']}")])
         keyboard.append([InlineKeyboardButton("✅ " + _("To main menu"), callback_data="main_menu")])
 
