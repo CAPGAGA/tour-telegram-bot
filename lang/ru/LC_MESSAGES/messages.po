@@ -909,3 +909,6 @@ msgstr "Перейти к моим турам"
 #: web/templates/pages/payments/success.html:49
 msgid "Browse More Tours"
 msgstr "Просмотреть больше туров"
+
+msgid "Previous Point"
+msgstr "Предыдущая точка"
