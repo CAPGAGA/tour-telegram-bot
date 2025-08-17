@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}PockeTour - {{ rout.rout_name }}{% endblock %}
+{% block extra_head %}
+    <link href="{{ url_for('static', path='css/leaflet.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/web_tour/maps.css') }}" rel="stylesheet">
+
+{% endblock %}
+{% block content %}
+
+<div class="container is-max-desktop">
+        <div class="section">
+            <!-- Header -->
+            <div class="has-text-centered mb-5">
+                <h1 class="title">Tour Point Navigation</h1>
+                <h2 class="subtitle">Historic Downtown Walk - Stop 1</h2>
+            </div>
+
+            <!-- Location Permission Modal -->
+            <div class="modal" id="locationModal">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">
+                            <span class="icon"><span>📍</span></span>
+                            Location Access
+                        </p>
+                        <button class="delete" id="closeLocationModalBtn"></button>
+                    </header>
+                    <div class="modal-card-body">
+                        <div class="content">
+                            <p><strong>Enable location tracking to enhance your tour experience:</strong></p>
+                            <ul>
+                                <li>See your current position on the map</li>
+                                <li>Get directions to tour points</li>
+                                <li>Track your progress along the route</li>
+                            </ul>
+                            <p class="has-text-grey is-size-7">
+                                Your location data is only used for navigation and is not stored or shared.
+                            </p>
+                        </div>
+                    </div>
+                    <footer class="modal-card-foot">
+                        <button class="button is-primary" id="allowLocationBtn">
+                            <span class="icon"><span>📍</span></span>
+                            <span>Allow Location</span>
+                        </button>
+                        <button class="button" id="skipLocationBtn">Skip</button>
+                    </footer>
+                </div>
+            </div>
+
+            <!-- Location Error Notification (initially hidden) -->
+            <div class="notification is-warning is-light" id="locationError" style="display: none;">
+                <button class="delete" id="closeErrorBtn"></button>
+                <span class="icon"><span>⚠️</span></span>
+                <span id="locationErrorMessage">Location error</span>
+            </div>
+
+
+            <!-- Map Section -->
+            <div class="container">
+                <div class="box">
+                    <h3 class="title is-5">📍 Location</h3>
+                    <div id="map" class="map-container"></div>
+
+                    <!-- Optional control buttons -->
+                    <div class="location-controls">
+                        <button class="button is-small is-primary">
+                            <span class="icon"><span>📍</span></span>
+                        </button>
+                        <button class="button is-small is-info">
+                            <span class="icon"><span>🎯</span></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Gallery Section -->
+            <div class="box mb-5">
+                <h3 class="title is-5 mb-3">📸 Gallery</h3>
+                <div class="columns is-multiline" id="gallery">
+                    <!-- Gallery thumbnails will be populated here -->
+                    <div class="column is-3">
+                        <figure class="image is-square">
+                            <img src="https://picsum.photos/300/300?random=1"
+                                 alt="Tour image 1"
+                                 class="gallery-thumbnail"
+                                 onclick="openModal('https://picsum.photos/800/600?random=1')">
+                        </figure>
+                    </div>
+                    <div class="column is-3">
+                        <figure class="image is-square">
+                            <img src="https://picsum.photos/300/300?random=2"
+                                 alt="Tour image 2"
+                                 class="gallery-thumbnail"
+                                 onclick="openModal('https://picsum.photos/800/600?random=2')">
+                        </figure>
+                    </div>
+                    <div class="column is-3">
+                        <figure class="image is-square">
+                            <img src="https://picsum.photos/300/300?random=3"
+                                 alt="Tour image 3"
+                                 class="gallery-thumbnail"
+                                 onclick="openModal('https://picsum.photos/800/600?random=3')">
+                        </figure>
+                    </div>
+                    <div class="column is-3">
+                        <figure class="image is-square">
+                            <img src="https://picsum.photos/300/300?random=4"
+                                 alt="Tour image 4"
+                                 class="gallery-thumbnail"
+                                 onclick="openModal('https://picsum.photos/800/600?random=4')">
+                        </figure>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audio Section -->
+            <div class="box mb-5">
+                <h3 class="title is-5 mb-3">🎵 Audio Guide</h3>
+                <div class="audio-widget">
+                    <div class="audio-controls">
+                        <button class="button is-primary is-rounded" id="playPauseBtn" onclick="togglePlayPause()">
+                            <span class="icon">
+                                <span id="playIcon">▶️</span>
+                            </span>
+                        </button>
+
+                        <div class="progress-container">
+                            <progress class="progress is-primary" id="audioProgress" value="0" max="100">0%</progress>
+                        </div>
+
+                        <div class="audio-time">
+                            <span id="currentTime">00:00</span> / <span id="duration">00:00</span>
+                        </div>
+
+                        <button class="button is-light is-rounded" onclick="toggleMute()">
+                            <span class="icon">
+                                <span id="muteIcon">🔊</span>
+                            </span>
+                        </button>
+                    </div>
+
+                    <audio id="audioPlayer" preload="metadata">
+                        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
+                        <!-- Replace with your audio file -->
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="has-text-centered">
+                <div class="buttons is-centered">
+                    <button class="button is-light" onclick="previousPoint()">
+                        <span class="icon">
+                            <span>⬅️</span>
+                        </span>
+                        <span>Previous Point</span>
+                    </button>
+                    <button class="button is-primary" onclick="nextPoint()">
+                        <span>Next Point</span>
+                        <span class="icon">
+                            <span>➡️</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for expanded images -->
+    <div class="modal" id="imageModal">
+        <div class="modal-background" onclick="closeModal()"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Tour Image</p>
+                <button class="delete" onclick="closeModal()"></button>
+            </header>
+            <div class="modal-card-body">
+                <img id="expandedImage" src="" alt="Expanded view" class="expanded-image">
+            </div>
+        </div>
+    </div>
+{% block scripts %}
+<script type="module" src="{{ url_for('static', path='js/leaflet.js') }}"></script>
+<script type="module" src="{{ url_for('static', path='js/web_tour/map-widget.js') }}"></script>
+{% endblock %}
+{% endblock %}

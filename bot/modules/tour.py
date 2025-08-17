@@ -81,7 +81,7 @@ async def show_tour_point(
 
     # first delete previous messages
     await cleanup_tour_messages(update.effective_chat.id, context)
-    print(query.data)
+
     # start, mid, finish
     state = query.data.split('_')[0]
     # rout_id (for start state) or point_id (for mid and finish states)

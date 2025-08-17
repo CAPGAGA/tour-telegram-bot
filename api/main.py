@@ -312,6 +312,26 @@ async def tour_admin(
         }
     )
 
+@app.get('/web-tour/{tour_id}')
+async def web_tour(
+    request: Request,
+    tour_id: int,
+    session: AsyncSession = Depends(get_session)
+):
+    query = select(Rout).where(Rout.id == tour_id)
+    result = await session.execute(query)
+    rout = result.scalars().first()
+    if not rout:
+        raise HTTPException(status_code=404, detail="Rout not found")
+    return templates.TemplateResponse(
+        request=request,
+        name='pages/web_tour.html',
+        context={
+            **request.state.user,
+            'rout': rout.to_dict()
+        }
+    )
+
 # middleware
 app.add_middleware(
     BabelMiddleware,
