@@ -107,7 +107,7 @@ async def create_gift_code(
 
     if not order:
         raise HTTPException(status_code=404, detail=_("Order not found"))
-    print(order.status)
+
     if order.status != 'paid':
         raise HTTPException(status_code=400, detail=_("Order not paid"))
 
@@ -116,7 +116,7 @@ async def create_gift_code(
     new_promo = PromoCode(
         code=code,
         promo_type='percent',
-        discount=100,
+        discount=str(100),
         creator_id=1,
         promo_start=datetime.datetime.now(),
         promo_end=datetime.datetime.now() + timedelta(days=365),
