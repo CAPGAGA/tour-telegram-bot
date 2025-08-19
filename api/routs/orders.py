@@ -221,7 +221,7 @@ async def create_free_order(
     new_order = Order(
         user_id=order.user_id,
         rout_id=order.rout_id,
-        amount=0,
+        amount=str(0),
         payment_method='Free',
         invoice_id=f'Free_{order.user_id}_{order.rout_id}',
         payment_link=None
