@@ -69,7 +69,7 @@ async def show_tour_details(
         return
 
     rout_name_raw = tour["rout_name"]
-    base_price_raw = str(tour["base_price"])
+    base_price_raw = float(str(tour["base_price"]).replace("\\", ""))
     description_raw = tour["rout_description"]
     distance_raw = str(round(float(tour['distance']), 2))
     points_raw = str(tour['total_points'])
@@ -86,9 +86,9 @@ async def show_tour_details(
     final_price = base_price_raw
     if promo_type != 'None' and promo_discount != 'None':
         if promo_type == "flat":
-            final_price = max(0, float(base_price_raw) - float(promo_discount))
+            final_price = max(0, float(base_price_raw) - float(promo_discount.replace("\\", ""))
         elif promo_type == "percent":
-            discount_amount = (float(base_price_raw) * float(promo_discount)) / 100
+            discount_amount = (float(base_price_raw) * (1 - (float(promo_discount.replace("\\", "")) / 100)
             final_price = max(0, float(base_price_raw) - discount_amount)
         
         final_price = str(round(final_price, 2))
