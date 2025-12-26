@@ -117,7 +117,7 @@ async def check_code(
             if promo.get('type') == 'flat':
                 calculated_price = float(rout.get('base_price')) - float(promo.get('discount'))
             elif promo.get('type') == 'percent':
-                calculated_price = float(rout.get('base_price')) * (1 - float(promo.get('discount')))
+                calculated_price = float(rout.get('base_price')) * (1 - float(promo.get('discount') / 100))
 
             rout_list.append(
                 [
