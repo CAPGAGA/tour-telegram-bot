@@ -48,7 +48,7 @@ async def show_tour_details(
     await query.answer()
 
     # Parse callback data
-    _, _, promo_type, promo_discount, tour_id = query.data.split("_")
+    temp1, temp2, promo_type, promo_discount, tour_id = query.data.split("_")
 
     tour = await fetch_tour_details(tour_id)
     user_tours = await fetch_users_tours(user.get("id"))
